@@ -26,6 +26,18 @@ char map[9][9]={
     1,0,0,0,0,0,0,0,4,
     3,2,2,2,2,2,2,2,6
 };
+
+char mapCountWalk[9][9]={
+    0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0
+};
 /*
 char map[9][9] = {
     9,10,10,10,10,8,8,14,13,
@@ -49,7 +61,7 @@ char getMapWall(char row,char col){
     return map[row][col];
 }
 
-char getWall(int s1,int s2,int s3,char direction){
+char getWall(float s1,float s2,float s3,char direction){
     //read 3 Ultra sonic Sensor
     // s1 top | s2 right | s3 left
     char wall = 0;
@@ -80,6 +92,7 @@ char getWall(int s1,int s2,int s3,char direction){
 }
 //x,y  0-8
 void setMapWall(char row,char col,char wall){
+    mapCountWalk[row][col] = 1;
     map[row][col] = wall | getMapWall(row,col);  //set this box
     if((wall & 8) && (row-1 >= 0 )){      //add bottom wall to top box
         map[row-1][col] = map[row-1][col] | 2;
@@ -143,6 +156,16 @@ void printMapV2(){
     }
 }
 
+void printMapCountWalk(){
+    int i,j;
+    for(i=0;i<9;i++){
+        for(j=0;j<9;j++){
+            printf("%d ",mapCountWalk[i][j]);
+        }
+        printf("\n");
+    }
+}
+
 void shortedPath(char targetRow,char targetCol,char startRow,char startCol){
     char i,j,row=startRow,col=startCol;
 
@@ -199,6 +222,7 @@ void printHeap(){
 }
 
 void main(){
+    initHeap();
 
     /*
     setMapWall(6,6,getWall(50,10,10,8));
@@ -207,26 +231,9 @@ void main(){
     setMapWall(5,4,getWall(10,50,10,1));
     setMapWall(4,4,getWall(50,10,10,8));*/
 
-    initHeap();
-    appendHeap(8,8);
-    appendHeap(8,7);
-    appendHeap(7,8);
-    appendHeap(7,8);
-    appendHeap(7,8);
-    appendHeap(7,8);
-    appendHeap(7,8);
-    appendHeap(7,8);
-    appendHeap(7,8);
-    appendHeap(7,8);
-    appendHeap(1,1);
-    appendHeap(1,1);
-    printHeap();
-
-    for(int i =0;i<15;i++){
-        struct Node n = popHeap();
-        printf("Row: %d Col: %d\n",n.row,n.col);
-    }
     printMap();
+
+
 
     //printMap();
     //printMapV2();
