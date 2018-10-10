@@ -1,5 +1,6 @@
 # include<stdio.h>
-
+#define wallDistance 20
+#define linkListSize 15
 
 /*
 bit 0000
@@ -39,17 +40,19 @@ char map[9][9] = {
     7,3,6,3,10,10,10,10,6
 };*/
 
+struct Node{
+    char next,row,col;
+}linkList[15];
+
 char posRow = 8,posCol = 8,robotDirection = 8;
 
-char getMapWall(char x,char y){
-    return map[x][y];
+char getMapWall(char row,char col){
+    return map[row][col];
 }
 
-
-char getWall(int s1,int s2,int s3,char x,char y,char direction){
+char getWall(int s1,int s2,int s3,char direction){
     //read 3 Ultra sonic Sensor
     // s1 top | s2 right | s3 left
-    int wallDistance = 20;
     char wall = 0;
     switch(direction){
     case 8://top                       || WALL ||
@@ -58,7 +61,7 @@ char getWall(int s1,int s2,int s3,char x,char y,char direction){
         if(s3 < wallDistance)wall+=1;   //left
         break;
     case 4://right
-        if(s1 < wallDistance)wall+=4;   //left
+        if(s1 < wallDistance)wall+=4;   //right
         if(s2 < wallDistance)wall+=2;   //bottom
         if(s3 < wallDistance)wall+=8;   //top
         break;
@@ -69,33 +72,30 @@ char getWall(int s1,int s2,int s3,char x,char y,char direction){
         break;
     case 1://left
         if(s1 < wallDistance)wall+=1;   //left
-        if(s2 < wallDistance)wall+=2;   //bottom
-        if(s3 < wallDistance)wall+=8;   //top
+        if(s2 < wallDistance)wall+=8;   //top
+        if(s3 < wallDistance)wall+=2;   //bottom
     break;
     default:;
     }
-    return (wall | getMapWall(x,y));
+    return (wall);
 }
 
 //x,y  0-8
-void setMapWall(char x,char y,char wall){
-    map[x][y] = wall;                   //set this box
-    if((wall & 8) && (x-1 >= 0 )){      //add bottom wall to top box
-        map[x-1][y] = map[x-1][y] | 2;
+void setMapWall(char row,char col,char wall){
+    map[row][col] = wall | getMapWall(row,col);  //set this box
+    if((wall & 8) && (row-1 >= 0 )){      //add bottom wall to top box
+        map[row-1][col] = map[row-1][col] | 2;
     }
-    if((wall & 4) && (y+1 <= 8 )){      //add left wall to right box
-        map[x][y+1] = map[x][y+1] | 1;
+    if((wall & 4) && (col+1 <= 8 )){      //add left wall to right box
+        map[row][col+1] = map[row][col+1] | 1;
     }
-    if((wall & 2) && (x+1 <= 8 )){      //add top wall to bottom box
-        map[x+1][y] = map[x+1][y] | 8;
+    if((wall & 2) && (row+1 <= 8 )){      //add top wall to bottom box
+        map[row+1][col] = map[row+1][col] | 8;
     }
-    if((wall & 1) && (y-1 >= 0 )){      //add right wall to left box
-        map[x][y-1] = map[x][y-1] | 4;
+    if((wall & 1) && (col-1 >= 0 )){      //add right wall to left box
+        map[row][col-1] = map[row][col-1] | 4;
     }
 }
-
-
-
 
 void printMap(){
     int i,j;
@@ -145,23 +145,57 @@ void printMapV2(){
     }
 }
 
-void shortedPath(char targetRow,char targetCol,char startRow,char startCol){
+void initLinkList(){
+    int i;
+    for(i=0;i<linkListSize;i++){
+        linkList[i].col=0;
+        linkList[i].row=0;
+        linkList[i].next=-1;
+    }
+}
 
+void shortedPath(char targetRow,char targetCol,char startRow,char startCol){
+    char i,j,row=startRow,col=startCol;
+
+    //implement link list
+    struct Node{
+        char next,row,col;
+    };
+
+    struct Box{
+        char route[40],routeIndex,isCheck;
+    }mapBox[9][9];
+
+    //init mapNode
+    for(i = 0;i<9;i++){
+        for(j=0;j<9;j++){
+            mapBox[i][j].isCheck = 0;
+            mapBox[i][j].routeIndex = 0;
+        }
+    }
+/*
+    if((map[row][col] & 8) == 0)
+    if((map[row][col] & 4) == 0)
+    if((map[row][col] & 2) == 0)
+    if((map[row][col] & 1) == 0)*/
 }
 
 void main(){
+
     /*
-    setMapWall(6,6,getWall(50,10,10,6,6,8));
-    setMapWall(5,6,getWall(10,10,50,5,6,8));
-    setMapWall(5,5,getWall(50,10,10,5,5,1));
-    setMapWall(5,4,getWall(10,50,10,5,4,1));
-    setMapWall(4,4,getWall(50,10,10,4,4,8));
-    printMap();*/
+    setMapWall(6,6,getWall(50,10,10,8));
+    setMapWall(5,6,getWall(10,10,50,8));
+    setMapWall(5,5,getWall(50,10,10,1));
+    setMapWall(5,4,getWall(10,50,10,1));
+    setMapWall(4,4,getWall(50,10,10,8));*/
+
+
+    printMap();
 
     //printMap();
     //printMapV2();
 
-
+    //shortedPath(4,4,8,8);
 
 }
 

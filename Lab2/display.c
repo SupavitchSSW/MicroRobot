@@ -1,4 +1,11 @@
 
+
+
+char a[2][2]={
+	1,1,
+	1,1};
+
+
 task main()
 {
 	playSound(soundBeepBeep);
