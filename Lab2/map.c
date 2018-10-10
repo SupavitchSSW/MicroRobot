@@ -1,6 +1,6 @@
 # include<stdio.h>
 #define wallDistance 20
-#define linkListSize 15
+#define HeapSize 50
 
 /*
 bit 0000
@@ -15,7 +15,6 @@ bit    1 is left
 */
 
 // default map
-
 char map[9][9]={
     9,8,8,8,8,8,8,8,12,
     1,0,0,0,0,0,0,0,4,
@@ -42,9 +41,9 @@ char map[9][9] = {
 
 struct Node{
     char next,row,col;
-}linkList[15];
+}heap[HeapSize];
 
-char posRow = 8,posCol = 8,robotDirection = 8;
+char posRow = 8,posCol = 8,robotDirection = 8,useHeap=0,createHeap=0,nextHeap=1;
 
 char getMapWall(char row,char col){
     return map[row][col];
@@ -79,7 +78,6 @@ char getWall(int s1,int s2,int s3,char direction){
     }
     return (wall);
 }
-
 //x,y  0-8
 void setMapWall(char row,char col,char wall){
     map[row][col] = wall | getMapWall(row,col);  //set this box
@@ -145,22 +143,8 @@ void printMapV2(){
     }
 }
 
-void initLinkList(){
-    int i;
-    for(i=0;i<linkListSize;i++){
-        linkList[i].col=0;
-        linkList[i].row=0;
-        linkList[i].next=-1;
-    }
-}
-
 void shortedPath(char targetRow,char targetCol,char startRow,char startCol){
     char i,j,row=startRow,col=startCol;
-
-    //implement link list
-    struct Node{
-        char next,row,col;
-    };
 
     struct Box{
         char route[40],routeIndex,isCheck;
@@ -180,6 +164,40 @@ void shortedPath(char targetRow,char targetCol,char startRow,char startCol){
     if((map[row][col] & 1) == 0)*/
 }
 
+void initHeap(){
+    int i;
+    for(i=0;i<HeapSize;i++){
+        heap[i].col=0;
+        heap[i].row=0;
+        heap[i].next=-1;
+    }
+}
+
+void appendHeap(char row,char col){
+    heap[createHeap].next = nextHeap;
+    heap[createHeap].col = row;
+    heap[createHeap].row = col;
+
+    nextHeap += 1;
+    createHeap += 1;
+    if(nextHeap == HeapSize)nextHeap = 0;
+    if(createHeap == HeapSize)createHeap = 0;
+}
+
+struct Node popHeap(){
+    struct Node n = heap[useHeap];
+    useHeap += 1;
+    if(useHeap == HeapSize)useHeap = 0;
+    return n;
+}
+
+void printHeap(){
+    int i;
+    for(i=0 ; i<HeapSize;i++){
+        printf("i: %d row:%d col:%d next:%d\n",i,heap[i].row,heap[i].col,heap[i].next);
+    }
+}
+
 void main(){
 
     /*
@@ -189,12 +207,29 @@ void main(){
     setMapWall(5,4,getWall(10,50,10,1));
     setMapWall(4,4,getWall(50,10,10,8));*/
 
+    initHeap();
+    appendHeap(8,8);
+    appendHeap(8,7);
+    appendHeap(7,8);
+    appendHeap(7,8);
+    appendHeap(7,8);
+    appendHeap(7,8);
+    appendHeap(7,8);
+    appendHeap(7,8);
+    appendHeap(7,8);
+    appendHeap(7,8);
+    appendHeap(1,1);
+    appendHeap(1,1);
+    printHeap();
 
+    for(int i =0;i<15;i++){
+        struct Node n = popHeap();
+        printf("Row: %d Col: %d\n",n.row,n.col);
+    }
     printMap();
 
     //printMap();
     //printMapV2();
-
     //shortedPath(4,4,8,8);
 
 }
