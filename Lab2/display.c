@@ -1,10 +1,3 @@
-#define offsetx 5
-#define offsety 5
-
-char a[2][2]={
-	1,2,
-	4,8 };
-
 char map[9][9]={
     9,8,8,8,8,8,8,8,12,
     1,0,0,0,0,0,0,0,4,
@@ -23,7 +16,6 @@ task main()
 {
 	playSound(soundBeepBeep);
 	delay(1000);
-	//(x,y,char)
 	displayMap();
 	delay(10000);
 }

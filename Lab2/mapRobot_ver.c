@@ -2,6 +2,7 @@
 #define wallDistance 20
 #define HeapSize 30
 
+
 /*
 bit 0000
     8421
@@ -140,6 +141,7 @@ struct Node popHeap(){
 
 
 void shortedPath(char targetRow,char targetCol,char startRow,char startCol){
+<<<<<<< HEAD:Lab2/mapRobot_ver.c
 
     char i,j,row=startRow,col=startCol;
     //printf("Start searching shorted path \n From: %d,%d  -> %d,%d\n",startRow,startCol,targetRow,targetCol);
@@ -149,24 +151,41 @@ void shortedPath(char targetRow,char targetCol,char startRow,char startCol){
     }Box;
 
     Box mapBox[9][9];
+=======
+    char i,j,row=startRow,col=startCol,route[50];
+    printf("Start searching shorted path \n From: %d,%d  -> %d,%d\n",startRow,startCol,targetRow,targetCol);
+
+    struct Box{
+        char preRow,preCol,preDirection,isCheck;
+    }mapBox[9][9];
+>>>>>>> 00b0f61fcfa9cf98291d97f2392e2cce7bc9f92d:Lab2/map.c
 
     //init mapNode
     for(i = 0;i<9;i++){
         for(j=0;j<9;j++){
             mapBox[i][j].isCheck = 0;
-            mapBox[i][j].routeIndex = 0;
+            mapBox[i][j].preRow = 0;
+            mapBox[i][j].preCol = 0;
+            mapBox[i][j].preDirection = 0;
         }
     }
+    mapBox[startRow][startCol].isCheck = 1;
 
     do{
       //  printf("search Row: %d Col: %d Wall: %d | ",row,col,map[row][col]);
         //left
         if(((map[row][col] & 1) == 0) && (mapCountWalk[row][col-1] == 1) &&(mapBox[row][col-1].isCheck == 0)){
+<<<<<<< HEAD:Lab2/mapRobot_ver.c
       //      printf("left  ");
                         //set value to next Box
+=======
+            printf("left  ");
+            //set value to next Box
+>>>>>>> 00b0f61fcfa9cf98291d97f2392e2cce7bc9f92d:Lab2/map.c
             mapBox[row][col-1].isCheck = 1;
-            //mapBox[row-1][col].route[] = 1;
-            //mapBox[row-1][col].routeIndex+=1;
+            mapBox[row][col-1].preRow = row;
+            mapBox[row][col-1].preCol = col;
+            mapBox[row][col-1].preDirection = 1;
             if(row == targetRow && col-1 == targetCol){
        //             printf("Found !!!\n");
                 break;
@@ -178,8 +197,9 @@ void shortedPath(char targetRow,char targetCol,char startRow,char startCol){
       //      printf("Top  ");
             //set value to next Box
             mapBox[row-1][col].isCheck = 1;
-            //mapBox[row-1][col].route[] = 1;
-            //mapBox[row-1][col].routeIndex+=1;
+            mapBox[row-1][col].preRow = row;
+            mapBox[row-1][col].preCol = col;
+            mapBox[row-1][col].preDirection = 8;
             if(row-1 == targetRow && col == targetCol){
        //         printf("Found !!!\n");
                 break;
@@ -191,8 +211,9 @@ void shortedPath(char targetRow,char targetCol,char startRow,char startCol){
      //       printf("right  ");
                         //set value to next Box
             mapBox[row][col+1].isCheck = 1;
-            //mapBox[row-1][col].route[] = 1;
-            //mapBox[row-1][col].routeIndex+=1;
+            mapBox[row][col+1].preRow = row;
+            mapBox[row][col+1].preCol = col;
+            mapBox[row][col+1].preDirection = 4;
             if(row == targetRow && col+1 == targetCol){
        //             printf("Found !!!\n");
                 break;
@@ -201,11 +222,16 @@ void shortedPath(char targetRow,char targetCol,char startRow,char startCol){
         }
         //bottom
         if(((map[row][col] & 2) == 0) && (mapCountWalk[row+1][col] == 1) && (mapBox[row+1][col].isCheck == 0)){
+<<<<<<< HEAD:Lab2/mapRobot_ver.c
       //      printf("bottom clear ");
+=======
+            printf("bottom ");
+>>>>>>> 00b0f61fcfa9cf98291d97f2392e2cce7bc9f92d:Lab2/map.c
                         //set value to next Box
             mapBox[row+1][col].isCheck = 1;
-            //mapBox[row-1][col].route[] = 1;
-            //mapBox[row-1][col].routeIndex+=1;
+            mapBox[row+1][col].preRow = row;
+            mapBox[row+1][col].preCol = col;
+            mapBox[row+1][col].preDirection = 2;
             if(row+1 == targetRow && col == targetCol){
     //                printf("Found !!!\n");
                 break;
@@ -226,7 +252,43 @@ void shortedPath(char targetRow,char targetCol,char startRow,char startCol){
             printf("%d ",mapBox[i][j].isCheck);
         }
         printf("\n");
+<<<<<<< HEAD:Lab2/mapRobot_ver.c
     }*/
+=======
+    }
+    printf("===================\n");
+
+    //print mapBox direction
+    for(i = 0;i<9;i++){
+        for(j=0;j<9;j++){
+            printf("%d ",mapBox[i][j].preDirection);
+        }
+        printf("\n");
+    }
+
+    //generate route
+    row = targetRow;
+    col = targetCol;
+    char index = 0,temp;
+
+    do{
+    route[index] = mapBox[row][col].preDirection;
+    temp = row;
+    row = mapBox[row][col].preRow;
+    col = mapBox[temp][col].preCol;
+    }while(route[index++] != 0);
+
+    //print route
+    printf("\n========= route count: %d ===========\n",strlen(route));
+    for(i=0;i<index-1;i++){
+        printf("%d ",route[i]);
+    }
+    printf("\n====================\n");
+
+
+    //return route
+
+>>>>>>> 00b0f61fcfa9cf98291d97f2392e2cce7bc9f92d:Lab2/map.c
 }
 
 task main(){
@@ -237,8 +299,16 @@ task main(){
     setMapWall(5,4,getWall(10,50,10,1));
     setMapWall(4,4,getWall(50,10,10,8));*/
     //printf("%d",map[8][8] & 8);
+<<<<<<< HEAD:Lab2/mapRobot_ver.c
     shortedPath(4,4,8,8);
     //printf("______________\n");
+=======
+    printMap();
+    shortedPath(8,8,4,4);
+    printHeap();
+    printf("______________\n");
+
+>>>>>>> 00b0f61fcfa9cf98291d97f2392e2cce7bc9f92d:Lab2/map.c
     //printMap();
     //printMapV2();
     //shortedPath(4,4,8,8);
