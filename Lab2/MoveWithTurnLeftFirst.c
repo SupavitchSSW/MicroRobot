@@ -23,9 +23,45 @@ void reset();
 
 task main()
 {
-	move_forward();
-	turn90right();
+	walkFisrtLeft();
 }
+//--------------------------------------------------------------------------------------
+void walkFisrtLeft(){
+	reset();
+	float left_dis  	= SensorValue(leftUltra);
+	float right_dis 	= SensorValue(rightUltra);
+	float front_dis 	= getUSDistance(frontUltra);
+
+	//1-Way
+	if(left_dis <=baseWall && right_dis<=baseWall && front_dis>baseFront){
+		move_forward();
+	}
+	//1-Way have Left
+	else if(left_dis >baseWall && right_dis<=baseWall && front_dis<=baseFront){
+		turn90left();
+		move_forward();
+	}
+	//1-Way have Right
+	else if(left_dis <=baseWall && right_dis>baseWall && front_dis<=baseFront){
+		turn90right();
+		move_forward();
+	}
+	//2-Ways have Left and Forward
+	else if(left_dis >baseWall && right_dis<=baseWall && front_dis>baseFront){
+		turn90left();
+		move_forward();
+	}
+	//2-Ways have Right and Forward
+	else if(left_dis <=baseWall && right_dis>baseWall && front_dis>baseFront){
+		move_forward();
+	}
+	//2-Ways have Left and Right
+	else if(left_dis >baseWall && right_dis>baseWall && front_dis<=baseFront){
+		turn90left();
+		move_forward();
+	}
+}
+
 //--------------------------------------------------------------------------------------
 void move_forward(){
 		reset();
