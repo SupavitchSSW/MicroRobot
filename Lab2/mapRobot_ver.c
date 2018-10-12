@@ -1,4 +1,4 @@
-# include<stdio.h>
+
 #define wallDistance 20
 #define HeapSize 30
 
@@ -54,11 +54,13 @@ char mapCountWalk[9][9]={
 };
 
 
-struct Node{
+typedef struct{
     char next,row,col;
-}heap[HeapSize];
+}Node;
 
-char posRow = 8,posCol = 8,robotDirection = 8,useHeap=0,createHeap=0,nextHeap=1;
+Node heap[HeapSize];
+
+char posRow = 8, posCol = 8,robotDirection = 8,useHeap=0,createHeap=0,nextHeap=1;
 
 char getMapWall(char row,char col){
     return map[row][col];
@@ -110,73 +112,6 @@ void setMapWall(char row,char col,char wall){
         map[row][col-1] = map[row][col-1] | 4;
     }
 }
-
-void printMap(){
-    int i,j;
-    for(i=0;i<9;i++){
-        for(j=0;j<9;j++){
-            printf("%d ",map[i][j]);
-        }
-        printf("\n");
-    }
-}
-
-void printMapV2(){
-    char mapWall[27][27];
-    int i,j,x,z;
-
-    //init mapWall
-    for(i = 0;i<27;i++){
-        for(j=0;j<27;j++){
-            mapWall[i][j] = '.';
-        }
-    }
-
-    /*
-    for(i=0;i<9;i++){
-        for(j=0;j<9;j++){
-            if((map[i][j] & 8) > 0){mapWall[i*2+i][(j*2)+j] = '_';}
-            if((map[i][j] & 4) > 0)mapWall[(i*2)+1+i][(j*2)+2+j] = '|';
-            if((map[i][j] & 2) > 0){mapWall[(i*2)+2+i][(j*2)+j] = '_';}
-            if((map[i][j] & 1) > 0)mapWall[(i*2)+1+j][j*2+i] = '|';
-        }
-    }*/
-
-    /*
-    i=0;
-    j=8;
-    if((map[i][j] & 8) > 0)mapWall[i*3][(j*3)+1] = '_';
-    if((map[i][j] & 4) > 0)mapWall[(i*3)+1][(j*3)+2] = '|';
-    if((map[i][j] & 2) > 0)mapWall[(i*3)+2][(j*3)+1] = '_';
-    if((map[i][j] & 1) > 0)mapWall[(i*3)+1][j*3] = '|';*/
-
-    for(i = 0;i<27;i++){
-        for(j=0;j<27;j++){
-            printf("%c",mapWall[i][j]);
-        }
-        printf("\n");
-    }
-}
-
-void printMapCountWalk(){
-    int i,j;
-    for(i=0;i<9;i++){
-        for(j=0;j<9;j++){
-            printf("%d ",mapCountWalk[i][j]);
-        }
-        printf("\n");
-    }
-}
-
-void initHeap(){
-    int i;
-    for(i=0;i<HeapSize;i++){
-        heap[i].col=0;
-        heap[i].row=0;
-        heap[i].next=-1;
-    }
-}
-
 void appendHeap(char row,char col){
     heap[createHeap].next = nextHeap;
     heap[createHeap].col = col;
@@ -184,8 +119,10 @@ void appendHeap(char row,char col){
 
     nextHeap += 1;
     createHeap += 1;
-    if(nextHeap == HeapSize)nextHeap = 0;
-    if(createHeap == HeapSize)createHeap = 0;
+    if(nextHeap == HeapSize)
+    	    nextHeap = 0;
+    if(createHeap == HeapSize)
+    	    createHeap = 0;
 }
 
 char isHeapEmpty(){
@@ -194,27 +131,24 @@ char isHeapEmpty(){
 }
 
 struct Node popHeap(){
-    struct Node n = heap[useHeap];
-    heap[useHeap].next = -1;                // already use
+    Node n = heap[useHeap];
+    heap[useHeap].next = -1;                   // already use
     useHeap += 1;
     if(useHeap == HeapSize)useHeap = 0;
     return n;
 }
 
-void printHeap(){
-    int i;
-    for(i=0 ; i<HeapSize;i++){
-        printf("i: %d row:%d col:%d next:%d\n",i,heap[i].row,heap[i].col,heap[i].next);
-    }
-}
 
 void shortedPath(char targetRow,char targetCol,char startRow,char startCol){
-    char i,j,row=startRow,col=startCol;
-    printf("Start searching shorted path \n From: %d,%d  -> %d,%d\n",startRow,startCol,targetRow,targetCol);
 
-    struct Box{
-        char route[40],routeIndex,isCheck;
-    }mapBox[9][9];
+    char i,j,row=startRow,col=startCol;
+    //printf("Start searching shorted path \n From: %d,%d  -> %d,%d\n",startRow,startCol,targetRow,targetCol);
+
+    typedef struct{
+        char route[3],routeIndex,isCheck;
+    }Box;
+
+    Box mapBox[9][9];
 
     //init mapNode
     for(i = 0;i<9;i++){
@@ -225,55 +159,55 @@ void shortedPath(char targetRow,char targetCol,char startRow,char startCol){
     }
 
     do{
-        printf("search Row: %d Col: %d Wall: %d | ",row,col,map[row][col]);
+      //  printf("search Row: %d Col: %d Wall: %d | ",row,col,map[row][col]);
         //left
         if(((map[row][col] & 1) == 0) && (mapCountWalk[row][col-1] == 1) &&(mapBox[row][col-1].isCheck == 0)){
-            printf("left  ");
+      //      printf("left  ");
                         //set value to next Box
             mapBox[row][col-1].isCheck = 1;
             //mapBox[row-1][col].route[] = 1;
             //mapBox[row-1][col].routeIndex+=1;
             if(row == targetRow && col-1 == targetCol){
-                    printf("Found !!!\n");
+       //             printf("Found !!!\n");
                 break;
             }
             appendHeap(row,col-1);
         }
         //top
-        if(((map[row][col] & 8) == 0) && (mapCountWalk[row-1][col] == 1) && (mapBox[row-1][col].isCheck == 0)){
-            printf("Top  ");
+        if( ((map[row][col] & 8) == 0) && (mapCountWalk[row-1][col] == 1) && (mapBox[row-1][col].isCheck == 0)){
+      //      printf("Top  ");
             //set value to next Box
             mapBox[row-1][col].isCheck = 1;
             //mapBox[row-1][col].route[] = 1;
             //mapBox[row-1][col].routeIndex+=1;
             if(row-1 == targetRow && col == targetCol){
-                printf("Found !!!\n");
+       //         printf("Found !!!\n");
                 break;
             }
             appendHeap(row-1,col);
         }
         //right
         if(((map[row][col] & 4) == 0 )&& (mapCountWalk[row][col+1] == 1 )&&( mapBox[row][col+1].isCheck == 0)){
-            printf("right  ");
+     //       printf("right  ");
                         //set value to next Box
             mapBox[row][col+1].isCheck = 1;
             //mapBox[row-1][col].route[] = 1;
             //mapBox[row-1][col].routeIndex+=1;
             if(row == targetRow && col+1 == targetCol){
-                    printf("Found !!!\n");
+       //             printf("Found !!!\n");
                 break;
             }
             appendHeap(row,col+1);
         }
         //bottom
         if(((map[row][col] & 2) == 0) && (mapCountWalk[row+1][col] == 1) && (mapBox[row+1][col].isCheck == 0)){
-            printf("bottom clear ");
+      //      printf("bottom clear ");
                         //set value to next Box
             mapBox[row+1][col].isCheck = 1;
             //mapBox[row-1][col].route[] = 1;
             //mapBox[row-1][col].routeIndex+=1;
             if(row+1 == targetRow && col == targetCol){
-                    printf("Found !!!\n");
+    //                printf("Found !!!\n");
                 break;
             }
             appendHeap(row+1,col);
@@ -283,21 +217,19 @@ void shortedPath(char targetRow,char targetCol,char startRow,char startCol){
         row = n.row;
         col = n.col;
 
-        printf("\n");
+   //     printf("\n");
     }while(1);
 
     //print searched box
-    for(i = 0;i<9;i++){
+   /* for(i = 0;i<9;i++){
         for(j=0;j<9;j++){
             printf("%d ",mapBox[i][j].isCheck);
         }
         printf("\n");
-    }
+    }*/
 }
 
-void main(){
-    initHeap();
-
+task main(){
     /*
     setMapWall(6,6,getWall(50,10,10,8));
     setMapWall(5,6,getWall(10,10,50,8));
@@ -305,14 +237,9 @@ void main(){
     setMapWall(5,4,getWall(10,50,10,1));
     setMapWall(4,4,getWall(50,10,10,8));*/
     //printf("%d",map[8][8] & 8);
-    printMap();
     shortedPath(4,4,8,8);
-    printHeap();
-    printf("______________\n");
-
+    //printf("______________\n");
     //printMap();
     //printMapV2();
     //shortedPath(4,4,8,8);
-
 }
-
