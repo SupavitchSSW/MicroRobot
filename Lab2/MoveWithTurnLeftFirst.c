@@ -11,55 +11,94 @@
 
 #define baseLeft 		0.9
 #define baseRight 	0.9
-#define baseFront 	8.5
+#define baseFront 	20.0
 #define baseWall    2.0
 #define baseSpeedTurn 10
 
+void checkWall();
 void walkFisrtLeft();
 void move_forward();
 void turn90left();
 void turn90right();
 void reset();
 
+int leftWall=0;
+int rightWall=0;
+int frontWall=0;
+
 task main()
 {
+	while(1){
 	walkFisrtLeft();
+	}
 }
 //--------------------------------------------------------------------------------------
-void walkFisrtLeft(){
+void checkWall(){
 	reset();
+
 	float left_dis  	= SensorValue(leftUltra);
 	float right_dis 	= SensorValue(rightUltra);
 	float front_dis 	= getUSDistance(frontUltra);
 
+	//CheckLeft
+	if(left_dis<=baseWall){
+		leftWall=1;
+		//playSound();
+	}
+	else
+		leftWall=0;
+
+	//CheckRight
+	if(right_dis<=baseWall){
+		rightWall=1;
+		//playSound();
+	}
+	else
+		rightWall=0;
+
+	//CheckFront
+	if(front_dis<=baseFront){
+		frontWall=1;
+		//playSound();
+	}
+	else
+		frontWall=0;
+
+}
+
+//--------------------------------------------------------------------------------------
+void walkFisrtLeft(){
+	checkWall();
+
 	//1-Way
-	if(left_dis <=baseWall && right_dis<=baseWall && front_dis>baseFront){
+	if(leftWall==1 && rightWall==1 && frontWall==0){
 		move_forward();
 	}
 	//1-Way have Left
-	else if(left_dis >baseWall && right_dis<=baseWall && front_dis<=baseFront){
+	else if(leftWall==0 && rightWall==1 && frontWall==1){
 		turn90left();
 		move_forward();
 	}
 	//1-Way have Right
-	else if(left_dis <=baseWall && right_dis>baseWall && front_dis<=baseFront){
+	else if(leftWall==1 && rightWall==0 && frontWall==1){
 		turn90right();
 		move_forward();
 	}
 	//2-Ways have Left and Forward
-	else if(left_dis >baseWall && right_dis<=baseWall && front_dis>baseFront){
+	else if(leftWall==0 && rightWall==1 && frontWall==0){
 		turn90left();
 		move_forward();
 	}
 	//2-Ways have Right and Forward
-	else if(left_dis <=baseWall && right_dis>baseWall && front_dis>baseFront){
+	else if(leftWall==1 && rightWall==0 && frontWall==0){
 		move_forward();
 	}
 	//2-Ways have Left and Right
-	else if(left_dis >baseWall && right_dis>baseWall && front_dis<=baseFront){
+	else if(leftWall==0 && rightWall==0 && frontWall==1){
 		turn90left();
 		move_forward();
 	}
+	//end if-else
 }
 
 //--------------------------------------------------------------------------------------
