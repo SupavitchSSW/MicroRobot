@@ -57,15 +57,15 @@ char map[9][9]={
 };
 
 char mapCountWalk[9][9]={
-    1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1
+    0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0
 };
 
 
@@ -363,7 +363,7 @@ void displayMap(){
 		 }
 		 offsetyy = offsetyy+14;
 	}
-	 playSound(soundBeepBeep);
+	playSound(soundBeepBeep);
 }
 
 void DisplayBlockcount(){
@@ -418,6 +418,7 @@ void calDirection(char dirFunc)
 }
 
 void calPosition(){
+	eraseLine(position[0]*14,position[1]*17,position[0]*14+20,position[0]*14);
 	 switch(direction){
 	   case 1 :
 	      position[1]--;
@@ -432,6 +433,7 @@ void calPosition(){
 	      position[0]--;
 	      break;
    }
+   drawLine(position[0]*14,position[1]*17,position[0]*14+20,position[0]*14);
 }
 
 
