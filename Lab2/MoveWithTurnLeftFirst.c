@@ -8,7 +8,7 @@
 #define baseSpeed 	35 //first test with 45
 #define baseSpeedCollis 25
 #define blockDistance 630 //Base 625
-#define jane 1.15 //fisrt test with 1.7
+#define jane 1.18 //fisrt test with 1.7
 
 #define baseLeft 		1.0 //check collis when walk
 #define baseRight 	1.0 //check collis when walk
@@ -463,22 +463,22 @@ char getWall(float s1,float s2,float s3){
     char wall = 0;
     switch(direction){
     case 8://top                       || WALL ||
-        if(s1 < wallDistance)wall+=8;   //top
+        if(s1 < baseFront)wall+=8;   //top
         if(s2 < wallDistance)wall+=4;   //right
         if(s3 < wallDistance)wall+=1;   //left
         break;
     case 4://right
-        if(s1 < wallDistance)wall+=4;   //right
+        if(s1 < baseFront)wall+=4;   //right
         if(s2 < wallDistance)wall+=2;   //bottom
         if(s3 < wallDistance)wall+=8;   //top
         break;
     case 2://bottom
-        if(s1 < wallDistance)wall+=2;   //bottom
+        if(s1 < baseFront)wall+=2;   //bottom
         if(s2 < wallDistance)wall+=1;   //left
         if(s3 < wallDistance)wall+=4;   //right
         break;
     case 1://left
-        if(s1 < wallDistance)wall+=1;   //left
+        if(s1 < baseFront)wall+=1;   //left
         if(s2 < wallDistance)wall+=8;   //top
         if(s3 < wallDistance)wall+=2;   //bottom
     break;
