@@ -10,7 +10,7 @@
 #define blockDistance 630 //Base 625
 #define jane 1.24 //fisrt test with 1.7 //Low Battery 1.24 //Full Baterry 1.24
 
-#define baseFront 	20.0//check wall in func check
+#define baseFront 	18.0//check wall in func check
 #define baseWall    1.9 //check wall in func check
 #define baseSpeedTurn 10
 #define baseFrontCollis 7
@@ -23,6 +23,7 @@ void move_forward();
 void moveUntilCollis();
 void turn90left();
 void turn90right();
+void setBaseLeftRightDistance();
 void reset();
 //J
 static void displayMap();
@@ -74,8 +75,7 @@ task main()
 	resetGyro(gyroSensor);
 	degreeBlock = getGyroDegrees(gyroSensor);
 	baseDegree = getGyroDegrees(gyroSensor);
-	baseLeft  	= SensorValue(leftUltra);
-	baseRight 	= SensorValue(rightUltra);
+	setBaseLeftRightDistance();
 
 	while(1){
 		walkFisrtLeft();
@@ -179,12 +179,9 @@ void walkFisrtLeft(){
 		turn90left();
 		move_forward();
 	}
-
-	baseLeft  	= SensorValue(leftUltra);
-	baseRight 	= SensorValue(rightUltra);
-	degreeBlock = getGyroDegrees(gyroSensor);
 	//end if-else
-	//checkDegree();
+	degreeBlock = getGyroDegrees(gyroSensor);
+
 }
 
 //--------------------------------------------------------------------------------------
@@ -306,12 +303,12 @@ void turn90left(){
 	while(baseDegree != -89){
 		baseDegree = getGyroDegrees(gyroSensor);
 		if(baseDegree > -89){
-			 motor[leftMotor] = -20;
-		   motor[rightMotor] = 20;
+			 motor[leftMotor] = -10;
+		   motor[rightMotor] = 10;
 		}
 		else if(baseDegree < -89){
-			 motor[leftMotor]  = 20;
-		   motor[rightMotor] = -20;
+			 motor[leftMotor]  = 10;
+		   motor[rightMotor] = -10;
 	}
 
 }
@@ -320,7 +317,7 @@ void turn90left(){
 	motor[leftMotor]  = 0;
 	motor[rightMotor] = 0;
 	wait1Msec(500);
-
+	setBaseLeftRightDistance();
 	resetGyro(gyroSensor);
 	baseDegree = getGyroDegrees(gyroSensor);
 	calDirection('l');
@@ -339,21 +336,33 @@ void turn90right(){
 		baseDegree = getGyroDegrees(gyroSensor);
 
 		if(baseDegree < 88){
-			 motor[leftMotor]  = 20;
-		   motor[rightMotor] =-20;
+			 motor[leftMotor]  = 10;
+		   motor[rightMotor] =-10;
 		}
 		else if(baseDegree > 88){
-			 motor[leftMotor]  = -20;
-		   motor[rightMotor] = 20;
+			 motor[leftMotor]  = -10;
+		   motor[rightMotor] = 10;
    	}
   }
 
 	motor[leftMotor]  = 0;
 	motor[rightMotor] = 0;
 	wait1Msec(500);
+	setBaseLeftRightDistance();
 	resetGyro(gyroSensor);
 	baseDegree = getGyroDegrees(gyroSensor);
 	calDirection('r');
+}
+//--------------------------------------------------------------------------------------
+void setBaseLeftRightDistance(){
+	baseLeft  	= SensorValue(leftUltra);
+	baseRight 	= SensorValue(rightUltra);
+	if(baseLeft<0.7){
+		baseLeft=0.7;
+	}
+	if(baseRight<0.7){
+		baseRight=0.7;
+	}
 }
 //--------------------------------------------------------------------------------------
 
