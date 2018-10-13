@@ -7,11 +7,11 @@
 
 #define baseSpeed 	30 //first test with 45
 #define baseSpeedCollis 25
-#define blockDistance 650 //Base 625
-#define jane 1.1 //fisrt test with 1.7
+#define blockDistance 640 //Base 625
+#define jane 1.2 //fisrt test with 1.7
 
-#define baseLeft 		0.9
-#define baseRight 	0.9
+#define baseLeft 		1.0
+#define baseRight 	1.0
 #define baseFront 	20.0
 #define baseWall    1.8
 #define baseSpeedTurn 10
@@ -23,7 +23,6 @@ void move_forward();
 void moveUntilCollis();
 void turn90left();
 void turn90right();
-//void checkDegree();
 void reset();
 static void DisplayBlockcount(void);
 static void calPosition(void);
@@ -108,6 +107,7 @@ void checkWall(){
 }
 
 //--------------------------------------------------------------------------------------
+//Perfect
 void walkFisrtLeft(){
 	checkWall();
 
@@ -315,25 +315,7 @@ void turn90right(){
 	calDirection('r');
 }
 //--------------------------------------------------------------------------------------
-//Not work
-/*void checkDegree(){
-	int checkDegree = getGyroDegrees(gyroSensor);
-	while(checkDegree>=15 || checkDegree <= -15){
-		checkDegree = getGyroDegrees(gyroSensor);
-		if(checkDegree>=15){
-			motor[leftMotor] = -10;
-			motor[rightMotor] = 10;
-		}
-		else if(checkDegree <= -15){
-			motor[leftMotor] = 10;
-			motor[rightMotor] = -10;
-		}
-	}
-	motor[leftMotor] = 0;
-	motor[rightMotor] = 0;
-}*/
 
-//--------------------------------------------------------------------------------------
 void reset(){
 		motor[leftMotor] = 0;
 		motor[rightMotor] = 0;
