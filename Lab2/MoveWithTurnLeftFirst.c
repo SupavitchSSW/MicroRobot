@@ -35,7 +35,6 @@ int leftWall=0;
 int rightWall=0;
 int frontWall=0;
 float baseDegree;
-<<<<<<< HEAD
 int direction = 8;
 int position[2] = {8,8};
 
@@ -51,9 +50,8 @@ char map[9][9]={
     3,2,2,2,2,2,2,10,6
 };
 
-=======
+
 //Use 2 sensor(left-right) for check is robot tong mai
->>>>>>> 4ae13bebe1deacdb690072eb27dcb539dada3a6d
 task main()
 {
 	resetGyro(gyroSensor);
@@ -369,7 +367,8 @@ void DisplayBlockcount(){
 	  sprintf(str1,"%d",direction);
 	  sprintf(str2,"(%d,%d)",position[0],position[1]);
 	  displayBigTextLine(5,str1);
-	  displayBigTextLine(6,str1);
+	  displayBigTextLine(8,str2);
+	  delay(100);
 
 }
 
@@ -379,32 +378,32 @@ void calDirection(char dirFunc)
 {
 	  if(dirFunc == 'l'){
 	  	 switch(direction){
-	  	    case '8' :
+	  	    case 8 :
 	  	       direction = 1;
 	  	       break;
-	  	    case '4' :
+	  	    case 4 :
 	  	       direction = 8;
 	  	       break;
-	  	    case '2' :
+	  	    case 2 :
 	  	       direction = 4;
 	  	       break;
-	  	    case '1' :
+	  	    case 1 :
 	  	       direction = 2;
 	  	       break;
 	  	 }
 	  }
 	  else if(dirFunc == 'r'){
 	  	 switch(direction){
-	  	    case '8' :
+	  	    case 8 :
 	  	       direction = 4;
 	  	       break;
-	  	    case '4' :
+	  	    case 4 :
 	  	       direction = 2;
 	  	       break;
-	  	    case '2' :
+	  	    case 2 :
 	  	       direction = 1;
 	  	       break;
-	  	    case '1' :
+	  	    case 1 :
 	  	       direction = 8;
 	  	       break;
 	  	 }
