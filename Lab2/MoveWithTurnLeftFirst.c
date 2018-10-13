@@ -8,7 +8,7 @@
 #define baseSpeed 	35 //first test with 45
 #define baseSpeedCollis 25
 #define blockDistance 630 //Base 625
-#define jane 1.1 //fisrt test with 1.7
+#define jane 1.15 //fisrt test with 1.7
 
 #define baseLeft 		1.0 //check collis when walk
 #define baseRight 	1.0 //check collis when walk
@@ -226,13 +226,13 @@ while((getMotorEncoder(leftMotor) <= blockDistance) || (getMotorEncoder(rightMot
 		if((getMotorEncoder(leftMotor) >= blockDistance) && (getMotorEncoder(rightMotor) < blockDistance)){
 			while((getMotorEncoder(rightMotor) <= blockDistance)){
 				motor[leftMotor] = 0;
-				motor[rightMotor] = 5;
+				motor[rightMotor] = 3;
 			}
 
 		}
-		else if((getMotorEncoder(leftMotor) < blockDistance) && (getMotorEncoder(rightMotor) >= blockDistance)){
+		if((getMotorEncoder(leftMotor) < blockDistance) && (getMotorEncoder(rightMotor) >= blockDistance)){
 			while((getMotorEncoder(leftMotor) <= blockDistance)){
-				motor[leftMotor] = 5;
+				motor[leftMotor] = 3;
 				motor[rightMotor] = 0;
 			}
 		}//end if else
@@ -432,14 +432,7 @@ void calDirection(char dirFunc)
 }
 
 void calPosition(){
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> 7b19e8aabc338d3f2478255861a23cd57316b84f
 	//draw current position
-	eraseLine(position[0]*14,position[1]*17,position[0]*14+20,position[0]*14);
->>>>>>> 7b19e8aabc338d3f2478255861a23cd57316b84f
 	 switch(direction){
 	   case 1 :
 	      position[1]--;
