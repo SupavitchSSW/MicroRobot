@@ -5,15 +5,15 @@
 #pragma config(Motor,  motorB,          leftMotor,     tmotorEV3_Large, PIDControl, driveLeft, encoder)
 #pragma config(Motor,  motorC,          rightMotor,    tmotorEV3_Large, PIDControl, driveRight, encoder)
 
-#define baseSpeed 	30 //first test with 45
+#define baseSpeed 	35 //first test with 45
 #define baseSpeedCollis 25
-#define blockDistance 640 //Base 625
-#define jane 1.2 //fisrt test with 1.7
+#define blockDistance 630 //Base 625
+#define jane 1.1 //fisrt test with 1.7
 
-#define baseLeft 		1.0
-#define baseRight 	1.0
-#define baseFront 	20.0
-#define baseWall    1.8
+#define baseLeft 		1.0 //check collis when walk
+#define baseRight 	1.0 //check collis when walk
+#define baseFront 	20.0//check wall in func check
+#define baseWall    1.8 //check wall in func check
 #define baseSpeedTurn 10
 #define baseFrontCollis 7
 #define wallDistance 1.8
@@ -58,6 +58,7 @@ char map[9][9]={
 
 char mapCountWalk[9][9]={
     0,0,0,0,0,0,0,0,0,
+<<<<<<< HEAD
 	0,0,0,0,0,0,0,0,0,
 	0,0,0,0,0,0,0,0,0,
 	0,0,0,0,0,0,0,0,0,
@@ -66,10 +67,18 @@ char mapCountWalk[9][9]={
 	0,0,0,0,0,0,0,0,0,
 	0,0,0,0,0,0,0,0,0,
 	0,0,0,0,0,0,0,0,0
+=======
+    0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,
+		0,0,0,0,0,0,0,0,0,
+>>>>>>> 240cc54a63f0c6273d3780e121b442ac26103d50
 };
 
-
-//Use 2 sensor(left-right) for check is robot tong mai
 task main()
 {
 	resetGyro(gyroSensor);
@@ -190,7 +199,7 @@ void move_forward(){
 		setMotorTarget(rightMotor,blockDistance,0);
 		float front_dis = getUSDistance(frontUltra);
 
-while((getMotorEncoder(leftMotor) <= blockDistance) && (getMotorEncoder(rightMotor) <= blockDistance)) {
+while((getMotorEncoder(leftMotor) <= blockDistance) || (getMotorEncoder(rightMotor) <= blockDistance)) {
 
 			float left_dis  	= SensorValue(leftUltra);
 			float right_dis 	= SensorValue(rightUltra);
@@ -223,8 +232,22 @@ while((getMotorEncoder(leftMotor) <= blockDistance) && (getMotorEncoder(rightMot
 				motor[leftMotor] = baseSpeed + (-1 * degree * jane);
 				motor[rightMotor] = baseSpeed + (degree * jane);
 			}
-
 		}//end while loop
+
+		if((getMotorEncoder(leftMotor) >= blockDistance) && (getMotorEncoder(rightMotor) < blockDistance)){
+			while((getMotorEncoder(rightMotor) <= blockDistance)){
+				motor[leftMotor] = 0;
+				motor[rightMotor] = 5;
+			}
+
+		}
+		else if((getMotorEncoder(leftMotor) < blockDistance) && (getMotorEncoder(rightMotor) >= blockDistance)){
+			while((getMotorEncoder(leftMotor) <= blockDistance)){
+				motor[leftMotor] = 5;
+				motor[rightMotor] = 0;
+			}
+		}//end if else
+
     calPosition();
 }
 //--------------------------------------------------------------------------------------
@@ -346,6 +369,7 @@ void reset(){
 		resetMotorEncoder(rightMotor);
 		wait1Msec(1000);
 }
+//---------------------------------------------------------
 
 // =============================== J code ==========================================
 
