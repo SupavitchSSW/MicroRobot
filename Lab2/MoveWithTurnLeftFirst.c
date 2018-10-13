@@ -433,7 +433,10 @@ void calDirection(char dirFunc)
 
 void calPosition(){
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> 7b19e8aabc338d3f2478255861a23cd57316b84f
 	//draw current position
 	eraseLine(position[0]*14,position[1]*17,position[0]*14+20,position[0]*14);
 >>>>>>> 7b19e8aabc338d3f2478255861a23cd57316b84f
