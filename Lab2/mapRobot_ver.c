@@ -18,15 +18,15 @@ bit    1 is left
 // default map
 
 char map[9][9]={
-    9,8,8,8,8,8,8,8,12,
-    1,0,0,0,0,0,0,0,4,
-    1,0,0,0,0,0,0,0,4,
-    1,0,0,0,0,0,0,0,4,
-    1,0,0,0,0,0,0,0,4,
-    1,0,0,0,0,0,0,0,4,
-    1,0,0,0,0,0,0,9,12,
-    1,0,0,0,0,0,0,5,5,
-    3,2,2,2,2,2,2,6,7
+    9,8,8,9,10,12,8,8,12,
+    1,0,0,1,12,3,12,0,4,
+    1,0,0,5,1,10,4,0,4,
+    1,0,0,5,5,15,1,12,4,
+    1,0,9,6,3,10,6,5,4,
+    1,0,3,10,10,10,12,3,12,
+    1,0,0,0,0,0,5,15,5,
+    1,0,0,0,0,0,5,15,5,
+    3,2,2,2,2,2,3,10,6
 };
 
 /*
@@ -61,7 +61,7 @@ typedef struct{
 
 Node heap[HeapSize];
 
-char posRow = 8, posCol = 8,popRow=0,popCol=0,robotDirection = 8,useHeap=0,createHeap=0,nextHeap=1,route[30];
+char direction=8,posRow = 8, posCol = 8,popRow=0,popCol=0,useHeap=0,createHeap=0,nextHeap=1,route[30];
 
 char getMapWall(char row,char col){
     return map[row][col];
@@ -143,9 +143,9 @@ void popHeap(){
 }
 
 
-void shortedPath(char targetRow,char targetCol,char startRow,char startCol){
+void shortestPath(char targetRow,char targetCol,char startRow,char startCol){
     char i,j,row=startRow,col=startCol;
-    //printf("Start searching shorted path \n From: %d,%d  -> %d,%d\n",startRow,startCol,targetRow,targetCol);
+    //printf("Start searching shortestPath \n From: %d,%d  -> %d,%d\n",startRow,startCol,targetRow,targetCol);
 
     typedef struct{
         char preRow,preCol,preDirection,isCheck;
@@ -265,17 +265,93 @@ void shortedPath(char targetRow,char targetCol,char startRow,char startCol){
     }while(route[index++] != 0);
 
     //print route
-/*
+
     printf("\n========= route count: %d ===========\n",strlen(route));
     for(i=0;i<index-1;i++){
         printf("%d ",route[i]);
     }
     printf("\n====================\n");
-*/
+
     //return route
 }
 
-task main(){
+void runShortestRoute(){
+    char i;
+
+    for(i = 0;i<strlen(route);i++){
+        switch(route[i]){
+        case 8:                             //8 revert to 2
+            if(direction == 1){
+                printf("L");
+                //turn90left();
+            }else if(direction == 8){
+                printf("LL");
+                //turn90left();
+                //turn90left();
+            }else if(direction == 4){
+                printf("R");
+                //turn90right();
+            }
+            //debug
+            direction = 2;
+
+            break;
+        case 4:                             //4 revert to 1
+            if(direction == 8){
+                    printf("L");
+                //turn90left();
+            }else if(direction == 4){
+                printf("LL");
+                //turn90left();
+                //turn90left();
+            }else if(direction == 2){
+                printf("R");
+                //turn90right();
+            }
+            //debug
+            direction = 1;
+            break;
+        case 2:                             //2 revert to 8
+            if(direction == 4){
+                    printf("L");
+                //turn90left();
+            }else if(direction == 2){
+                printf("LL");
+                //turn90left();
+                //turn90left();
+            }else if(direction == 1){
+                printf("R");
+                //turn90right();
+            }
+            //debug
+            direction = 8;
+            break;
+        case 1:                             //1 revert to 4
+            if(direction == 2){
+                    printf("L");
+                //turn90left();
+            }else if(direction == 1){
+                printf("LL");
+                //turn90left();
+                //turn90left();
+            }else if(direction == 8){
+                printf("R");
+                //turn90right();
+            }
+            //debug
+            direction = 4;
+            break;
+        default:;
+        }
+        printf("M");
+        //move_forward();
+    }
+
+    //finish
+}
+
+
+void main(){
     /*
     setMapWall(6,6,getWall(50,10,10,8));
     setMapWall(5,6,getWall(10,10,50,8));
@@ -283,9 +359,11 @@ task main(){
     setMapWall(5,4,getWall(10,50,10,1));
     setMapWall(4,4,getWall(50,10,10,8));*/
     //printf("%d",map[8][8] & 8);
-    shortedPath(4,4,8,8);
+
+    shortestPath(3,3,8,8);
+    runShortestRoute();
     //printf("______________\n");
     //printMap();
     //printMapV2();
-    //shortedPath(4,4,8,8);
+    //shortestPath(4,4,8,8);
 }
