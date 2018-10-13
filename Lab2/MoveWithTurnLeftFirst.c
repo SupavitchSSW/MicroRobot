@@ -58,16 +58,6 @@ char map[9][9]={
 
 char mapCountWalk[9][9]={
     0,0,0,0,0,0,0,0,0,
-<<<<<<< HEAD
-	0,0,0,0,0,0,0,0,0,
-	0,0,0,0,0,0,0,0,0,
-	0,0,0,0,0,0,0,0,0,
-	0,0,0,0,0,0,0,0,0,
-	0,0,0,0,0,0,0,0,0,
-	0,0,0,0,0,0,0,0,0,
-	0,0,0,0,0,0,0,0,0,
-	0,0,0,0,0,0,0,0,0
-=======
     0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,
@@ -75,8 +65,7 @@ char mapCountWalk[9][9]={
     0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,
-		0,0,0,0,0,0,0,0,0,
->>>>>>> 240cc54a63f0c6273d3780e121b442ac26103d50
+    0,0,0,0,0,0,0,0,0
 };
 
 task main()
@@ -382,7 +371,8 @@ void displayMap(){
 		 {
 		   string cat = "";
 		   sprintf(cat,"%d",map[i][j]);
-		   displayStringAt(j+10+offsetxx,i+115-offsetyy ,cat );
+		   if(i == position[0] && j == position[1])displayStringAt(j+10+offsetxx,i+115-offsetyy ,"X" );
+		   else displayStringAt(j+10+offsetxx,i+115-offsetyy ,cat );
 		   offsetxx = offsetxx+17;
 		 }
 		 offsetyy = offsetyy+14;
@@ -442,7 +432,11 @@ void calDirection(char dirFunc)
 }
 
 void calPosition(){
+<<<<<<< HEAD
+=======
+	//draw current position
 	eraseLine(position[0]*14,position[1]*17,position[0]*14+20,position[0]*14);
+>>>>>>> 7b19e8aabc338d3f2478255861a23cd57316b84f
 	 switch(direction){
 	   case 1 :
 	      position[1]--;
@@ -457,7 +451,6 @@ void calPosition(){
 	      position[0]--;
 	      break;
    }
-   drawLine(position[0]*14,position[1]*17,position[0]*14+20,position[0]*14);
 }
 
 
