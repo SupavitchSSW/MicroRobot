@@ -16,7 +16,9 @@
 #define baseWall    1.8
 #define baseSpeedTurn 10
 #define baseFrontCollis 7
+#define wallDistance 1.8
 
+//Jane
 void checkWall();
 void walkFisrtLeft();
 void move_forward();
@@ -24,10 +26,15 @@ void moveUntilCollis();
 void turn90left();
 void turn90right();
 void reset();
+//J
+static void displayMap();
 static void DisplayBlockcount(void);
 static void calPosition(void);
 static void calDirection(char dirFunc);
-
+//Field
+char getMapWall(char row,char col);
+char getWall(float s1,float s2,float s3);
+void setMapWall(char row,char col,char wall);
 
 
 int leftWall=0;
@@ -44,9 +51,21 @@ char map[9][9]={
     1,0,0,0,0,0,0,0,4,
     1,0,0,0,0,0,0,0,4,
     1,0,0,0,0,0,0,0,4,
-    1,0,0,0,0,0,0,2,4,
-    1,0,0,0,0,0,4,15,5,
-    3,2,2,2,2,2,2,10,6
+    1,0,0,0,0,0,0,0,4,
+    1,0,0,0,0,0,0,0,2,
+    3,2,2,2,2,2,2,2,6
+};
+
+char mapCountWalk[9][9]={
+    1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1
 };
 
 
@@ -59,7 +78,8 @@ task main()
 
 	while(1){
 		walkFisrtLeft();
-		DisplayBlockcount();
+		displayMap();
+		//DisplayBlockcount();
 	}
 }
 //--------------------------------------------------------------------------------------
@@ -70,6 +90,9 @@ void checkWall(){
 	float left_dis  	= SensorValue(leftUltra);
 	float right_dis 	= SensorValue(rightUltra);
 	float front_dis 	= getUSDistance(frontUltra);
+
+	//update map with setMapWall
+	setMapWall(position[0],position[1],getWall(front_dis,right_dis,left_dis));
 
 	//CheckLeft
 	if(left_dis<=baseWall){
@@ -324,6 +347,8 @@ void reset(){
 		wait1Msec(1000);
 }
 
+// =============================== J code ==========================================
+
 void displayMap(){
 	long offsetyy = 0;
 	for(long i=0;i < 9;i++)
@@ -407,4 +432,61 @@ void calPosition(){
 	      position[0]--;
 	      break;
    }
+}
+
+
+//====================================== Field code ======================
+
+
+char getMapWall(char row,char col){
+    return map[row][col];
+}
+
+char getWall(float s1,float s2,float s3){
+    //read 3 Ultra sonic Sensor
+    // s1 top | s2 right | s3 left
+    char wall = 0;
+    switch(direction){
+    case 8://top                       || WALL ||
+        if(s1 < wallDistance)wall+=8;   //top
+        if(s2 < wallDistance)wall+=4;   //right
+        if(s3 < wallDistance)wall+=1;   //left
+        break;
+    case 4://right
+        if(s1 < wallDistance)wall+=4;   //right
+        if(s2 < wallDistance)wall+=2;   //bottom
+        if(s3 < wallDistance)wall+=8;   //top
+        break;
+    case 2://bottom
+        if(s1 < wallDistance)wall+=2;   //bottom
+        if(s2 < wallDistance)wall+=1;   //left
+        if(s3 < wallDistance)wall+=4;   //right
+        break;
+    case 1://left
+        if(s1 < wallDistance)wall+=1;   //left
+        if(s2 < wallDistance)wall+=8;   //top
+        if(s3 < wallDistance)wall+=2;   //bottom
+    break;
+    default:;
+    }
+    return (wall);
+}
+//x,y  0-8
+void setMapWall(char row,char col,char wall){
+    mapCountWalk[row][col] = 1;
+    map[row][col] = wall | getMapWall(row,col);  //set this box
+    if((wall & 8) && (row-1 >= 0 )){      //add bottom wall to top box
+      char a = row-1;
+    	map[a][col] = map[a][col] | 2;
+    }
+    if((wall & 4) && (col+1 <= 8 )){      //add left wall to right box
+    	map[row][col+1] = map[row][col+1] | 1;
+    }
+    if((wall & 2) && (row+1 <= 8 )){      //add top wall to bottom box
+      map[row+1][col] = map[row+1][col] | 8;
+    }
+    if((wall & 1) && (col-1 >= 0 )){      //add right wall to left box
+    	char a = col-1;
+      map[row][a] = map[row][a] | 4;
+    }
 }
