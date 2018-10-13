@@ -143,9 +143,9 @@ void popHeap(){
 }
 
 
-void shortedPath(char targetRow,char targetCol,char startRow,char startCol){
+void shortestPath(char targetRow,char targetCol,char startRow,char startCol){
     char i,j,row=startRow,col=startCol;
-    //printf("Start searching shorted path \n From: %d,%d  -> %d,%d\n",startRow,startCol,targetRow,targetCol);
+    //printf("Start searching shortestPath \n From: %d,%d  -> %d,%d\n",startRow,startCol,targetRow,targetCol);
 
     typedef struct{
         char preRow,preCol,preDirection,isCheck;
@@ -275,6 +275,7 @@ void shortedPath(char targetRow,char targetCol,char startRow,char startCol){
     //return route
 }
 
+
 task main(){
     /*
     setMapWall(6,6,getWall(50,10,10,8));
@@ -283,9 +284,9 @@ task main(){
     setMapWall(5,4,getWall(10,50,10,1));
     setMapWall(4,4,getWall(50,10,10,8));*/
     //printf("%d",map[8][8] & 8);
-    shortedPath(4,4,8,8);
+    shortestPath(4,4,8,8);
     //printf("______________\n");
     //printMap();
     //printMapV2();
-    //shortedPath(4,4,8,8);
+    //shortestPath(4,4,8,8);
 }
