@@ -5,17 +5,17 @@
 #pragma config(Motor,  motorB,          leftMotor,     tmotorEV3_Large, PIDControl, driveLeft, encoder)
 #pragma config(Motor,  motorC,          rightMotor,    tmotorEV3_Large, PIDControl, driveRight, encoder)
 
-#define baseSpeed 	45
+#define baseSpeed 	30 //first test with 45
 #define baseSpeedCollis 25
-#define blockDistance 635 //Base 625
-#define jane 1.7 //fisrt test with 1.7
+#define blockDistance 650 //Base 625
+#define jane 1.1 //fisrt test with 1.7
 
 #define baseLeft 		0.9
 #define baseRight 	0.9
 #define baseFront 	20.0
-#define baseWall    2.0
+#define baseWall    1.8
 #define baseSpeedTurn 10
-#define baseFrontCollis 6
+#define baseFrontCollis 7
 
 void checkWall();
 void walkFisrtLeft();
@@ -23,7 +23,7 @@ void move_forward();
 void moveUntilCollis();
 void turn90left();
 void turn90right();
-void checkDegree();
+//void checkDegree();
 void reset();
 static void DisplayBlockcount(void);
 static void calPosition(void);
@@ -35,6 +35,7 @@ int leftWall=0;
 int rightWall=0;
 int frontWall=0;
 float baseDegree;
+<<<<<<< HEAD
 int direction = 8;
 int position[2] = {8,8};
 
@@ -50,6 +51,9 @@ char map[9][9]={
     3,2,2,2,2,2,2,10,6
 };
 
+=======
+//Use 2 sensor(left-right) for check is robot tong mai
+>>>>>>> 4ae13bebe1deacdb690072eb27dcb539dada3a6d
 task main()
 {
 	resetGyro(gyroSensor);
@@ -62,6 +66,7 @@ task main()
 	}
 }
 //--------------------------------------------------------------------------------------
+//Perfect!!
 void checkWall(){
 	reset();
 
@@ -141,7 +146,7 @@ void walkFisrtLeft(){
 	}
 	//3-Ways
 	else if(leftWall==0 && rightWall==0 && frontWall==0){
-		turn90right();
+		//turn90right();
 		//turn90left();
 		move_forward();
 	}
@@ -153,7 +158,7 @@ void walkFisrtLeft(){
 		move_forward();
 	}
 	//end if-else
-	checkDegree();
+	//checkDegree();
 }
 
 //--------------------------------------------------------------------------------------
@@ -202,10 +207,19 @@ while((getMotorEncoder(leftMotor) <= blockDistance) && (getMotorEncoder(rightMot
     calPosition();
 }
 //--------------------------------------------------------------------------------------
+//Perfect!!
 void moveUntilCollis(){
 		float front_dis 	= getUSDistance(frontUltra);
+	while(front_dis<baseFrontCollis){
+		front_dis 	= getUSDistance(frontUltra);
+		motor[leftMotor] = -1*baseSpeedCollis;
+		motor[rightMotor] = -1*baseSpeedCollis;
+	}
+	motor[leftMotor] = 0;
+	motor[rightMotor] = 0;
+	wait1Msec(500);
 
-	while(front_dis > baseFrontCollis){
+	while(front_dis >= baseFrontCollis){
 		float left_dis  	= SensorValue(leftUltra);
 		float right_dis 	= SensorValue(rightUltra);
 		front_dis 	= getUSDistance(frontUltra);
@@ -267,6 +281,7 @@ void turn90left(){
 	motor[leftMotor]  = 0;
 	motor[rightMotor] = 0;
 	wait1Msec(500);
+
 	resetGyro(gyroSensor);
 	baseDegree = getGyroDegrees(gyroSensor);
 	calDirection('l');
@@ -302,7 +317,8 @@ void turn90right(){
 	calDirection('r');
 }
 //--------------------------------------------------------------------------------------
-void checkDegree(){
+//Not work
+/*void checkDegree(){
 	int checkDegree = getGyroDegrees(gyroSensor);
 	while(checkDegree>=15 || checkDegree <= -15){
 		checkDegree = getGyroDegrees(gyroSensor);
@@ -317,7 +333,7 @@ void checkDegree(){
 	}
 	motor[leftMotor] = 0;
 	motor[rightMotor] = 0;
-}
+}*/
 
 //--------------------------------------------------------------------------------------
 void reset(){
