@@ -16,7 +16,7 @@ bit    1 is left
 */
 
 // default map
-/*
+
 char map[9][9]={
     9,8,8,8,8,8,8,8,12,
     1,0,0,0,0,0,0,0,4,
@@ -24,12 +24,12 @@ char map[9][9]={
     1,0,0,0,0,0,0,0,4,
     1,0,0,0,0,0,0,0,4,
     1,0,0,0,0,0,0,0,4,
-    1,0,0,0,0,0,0,2,4,
-    1,0,0,0,0,0,4,15,5,
-    3,2,2,2,2,2,2,10,6
-};*/
+    1,0,0,0,0,0,0,9,12,
+    1,0,0,0,0,0,0,5,5,
+    3,2,2,2,2,2,2,6,7
+};
 
-
+/*
 char map[9][9] = {
     9,10,10,10,10,8,8,14,13,
     7,9,10,8,10,4,1,12,7,
@@ -40,7 +40,7 @@ char map[9][9] = {
     1,4,5,1,10,2,14,5,5,
     5,5,5,1,10,10,10,6,5,
     7,3,6,3,10,10,10,10,6
-};
+};*/
 
 char mapCountWalk[9][9]={
     1,1,1,1,1,1,1,1,1,
@@ -57,11 +57,11 @@ char mapCountWalk[9][9]={
 
 typedef struct{
     char next,row,col;
-}Node,NNN;
+}Node;
 
 Node heap[HeapSize];
 
-char posRow = 8, posCol = 8,robotDirection = 8,useHeap=0,createHeap=0,nextHeap=1;
+char posRow = 8, posCol = 8,popRow=0,popCol=0,robotDirection = 8,useHeap=0,createHeap=0,nextHeap=1,route[30];
 
 char getMapWall(char row,char col){
     return map[row][col];
@@ -101,16 +101,18 @@ void setMapWall(char row,char col,char wall){
     mapCountWalk[row][col] = 1;
     map[row][col] = wall | getMapWall(row,col);  //set this box
     if((wall & 8) && (row-1 >= 0 )){      //add bottom wall to top box
-        map[row-1][col] = map[row-1][col] | 2;
+      char a = row-1;
+    	map[a][col] = map[a][col] | 2;
     }
     if((wall & 4) && (col+1 <= 8 )){      //add left wall to right box
-        map[row][col+1] = map[row][col+1] | 1;
+    	map[row][col+1] = map[row][col+1] | 1;
     }
     if((wall & 2) && (row+1 <= 8 )){      //add top wall to bottom box
-        map[row+1][col] = map[row+1][col] | 8;
+      map[row+1][col] = map[row+1][col] | 8;
     }
     if((wall & 1) && (col-1 >= 0 )){      //add right wall to left box
-        map[row][col-1] = map[row][col-1] | 4;
+    	char a = col-1;
+      map[row][a] = map[row][a] | 4;
     }
 }
 void appendHeap(char row,char col){
@@ -131,17 +133,18 @@ char isHeapEmpty(){
     else return 0;
 }
 
-struct Node popHeap(){
-    Node n = heap[useHeap];
+void popHeap(){
+    popCol= heap[useHeap].col;
+    popRow = heap[useHeap].row;
     heap[useHeap].next = -1;                   // already use
     useHeap += 1;
     if(useHeap == HeapSize)useHeap = 0;
-    return n;
+    return ;
 }
 
 
 void shortedPath(char targetRow,char targetCol,char startRow,char startCol){
-    char i,j,row=startRow,col=startCol,route[50];
+    char i,j,row=startRow,col=startCol;
     //printf("Start searching shorted path \n From: %d,%d  -> %d,%d\n",startRow,startCol,targetRow,targetCol);
 
     typedef struct{
@@ -162,7 +165,7 @@ void shortedPath(char targetRow,char targetCol,char startRow,char startCol){
     mapBox[startRow][startCol].isCheck = 1;
 
     do{
-      //  printf("search Row: %d Col: %d Wall: %d | ",row,col,map[row][col]);
+        //printf("search Row: %d Col: %d Wall: %d | \n",row,col,map[row][col]);
         //left
         if(((map[row][col] & 1) == 0) && (mapCountWalk[row][col-1] == 1) &&(mapBox[row][col-1].isCheck == 0)){
       //      printf("left  ");
@@ -219,17 +222,18 @@ void shortedPath(char targetRow,char targetCol,char startRow,char startCol){
             }
             appendHeap(row+1,col);
         }
-
-        Node n = popHeap();
-        row = n.row;
-        col = n.col;
+        if(isHeapEmpty() == 0){
+            popHeap();
+            row = popRow;
+            col = popCol;
+        }
 
    //     printf("\n");
     }while(1);
 
     //print searched box
 
-    /*
+    /*.
     for(i = 0;i<9;i++){
         for(j=0;j<9;j++){
             printf("%d ",mapBox[i][j].isCheck);
@@ -261,14 +265,13 @@ void shortedPath(char targetRow,char targetCol,char startRow,char startCol){
     }while(route[index++] != 0);
 
     //print route
-    /*
+/*
     printf("\n========= route count: %d ===========\n",strlen(route));
     for(i=0;i<index-1;i++){
         printf("%d ",route[i]);
     }
     printf("\n====================\n");
-    */
-
+*/
     //return route
 }
 
