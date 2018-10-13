@@ -8,7 +8,7 @@
 #define baseSpeed 	30 //first test with 45
 #define baseSpeedCollis 25
 #define blockDistance 650 //Base 625
-#define jane 1.7 //fisrt test with 1.7
+#define jane 1.1 //fisrt test with 1.7
 
 #define baseLeft 		0.9
 #define baseRight 	0.9
@@ -43,6 +43,7 @@ task main()
 	}
 }
 //--------------------------------------------------------------------------------------
+//Perfect!!
 void checkWall(){
 	reset();
 
@@ -122,7 +123,7 @@ void walkFisrtLeft(){
 	}
 	//3-Ways
 	else if(leftWall==0 && rightWall==0 && frontWall==0){
-		turn90right();
+		//turn90right();
 		//turn90left();
 		move_forward();
 	}
@@ -183,6 +184,7 @@ while((getMotorEncoder(leftMotor) <= blockDistance) && (getMotorEncoder(rightMot
 
 }
 //--------------------------------------------------------------------------------------
+//Perfect!!
 void moveUntilCollis(){
 		float front_dis 	= getUSDistance(frontUltra);
 	while(front_dis<baseFrontCollis){
@@ -256,6 +258,7 @@ void turn90left(){
 	motor[leftMotor]  = 0;
 	motor[rightMotor] = 0;
 	wait1Msec(500);
+
 	resetGyro(gyroSensor);
 	baseDegree = getGyroDegrees(gyroSensor);
 
