@@ -5,15 +5,15 @@
 #pragma config(Motor,  motorB,          leftMotor,     tmotorEV3_Large, PIDControl, driveLeft, encoder)
 #pragma config(Motor,  motorC,          rightMotor,    tmotorEV3_Large, PIDControl, driveRight, encoder)
 
-#define baseSpeed 	30 //first test with 45
+#define baseSpeed 	35 //first test with 45
 #define baseSpeedCollis 25
-#define blockDistance 640 //Base 625
-#define jane 1.2 //fisrt test with 1.7
+#define blockDistance 625 //Base 625
+#define jane 1.0 //fisrt test with 1.7
 
-#define baseLeft 		1.0
-#define baseRight 	1.0
-#define baseFront 	20.0
-#define baseWall    1.8
+#define baseLeft 		1.0 //check collis when walk
+#define baseRight 	1.0 //check collis when walk
+#define baseFront 	20.0//check wall in func check
+#define baseWall    1.8 //check wall in func check
 #define baseSpeedTurn 10
 #define baseFrontCollis 7
 #define wallDistance 1.8
@@ -57,19 +57,17 @@ char map[9][9]={
 };
 
 char mapCountWalk[9][9]={
-    1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1
+    0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,
+		0,0,0,0,0,0,0,0,0,
 };
 
-
-//Use 2 sensor(left-right) for check is robot tong mai
 task main()
 {
 	resetGyro(gyroSensor);
@@ -346,6 +344,7 @@ void reset(){
 		resetMotorEncoder(rightMotor);
 		wait1Msec(1000);
 }
+//---------------------------------------------------------
 
 // =============================== J code ==========================================
 
