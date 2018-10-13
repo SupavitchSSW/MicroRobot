@@ -7,8 +7,8 @@
 
 #define baseSpeed 	35 //first test with 45
 #define baseSpeedCollis 25
-#define blockDistance 625 //Base 625
-#define jane 1.0 //fisrt test with 1.7
+#define blockDistance 630 //Base 625
+#define jane 1.1 //fisrt test with 1.7
 
 #define baseLeft 		1.0 //check collis when walk
 #define baseRight 	1.0 //check collis when walk
@@ -188,7 +188,7 @@ void move_forward(){
 		setMotorTarget(rightMotor,blockDistance,0);
 		float front_dis = getUSDistance(frontUltra);
 
-while((getMotorEncoder(leftMotor) <= blockDistance) && (getMotorEncoder(rightMotor) <= blockDistance)) {
+while((getMotorEncoder(leftMotor) <= blockDistance) || (getMotorEncoder(rightMotor) <= blockDistance)) {
 
 			float left_dis  	= SensorValue(leftUltra);
 			float right_dis 	= SensorValue(rightUltra);
@@ -221,8 +221,22 @@ while((getMotorEncoder(leftMotor) <= blockDistance) && (getMotorEncoder(rightMot
 				motor[leftMotor] = baseSpeed + (-1 * degree * jane);
 				motor[rightMotor] = baseSpeed + (degree * jane);
 			}
-
 		}//end while loop
+
+		if((getMotorEncoder(leftMotor) >= blockDistance) && (getMotorEncoder(rightMotor) < blockDistance)){
+			while((getMotorEncoder(rightMotor) <= blockDistance)){
+				motor[leftMotor] = 0;
+				motor[rightMotor] = 5;
+			}
+
+		}
+		else if((getMotorEncoder(leftMotor) < blockDistance) && (getMotorEncoder(rightMotor) >= blockDistance)){
+			while((getMotorEncoder(leftMotor) <= blockDistance)){
+				motor[leftMotor] = 5;
+				motor[rightMotor] = 0;
+			}
+		}//end if else
+
     calPosition();
 }
 //--------------------------------------------------------------------------------------
