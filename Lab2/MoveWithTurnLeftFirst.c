@@ -9,7 +9,9 @@
 #define baseSpeed 26 //first test with 28 and 0.0885
 #define baseSpeedCollis 20
 #define blockDistance 630 //Base 625
-#define jane 0.0894 //maybe work at 0.048 --> 0.058 --> 0.068 better work -->0.072 almost perfect -->0.0725 not ok -->0.0738 Perfect
+float jane = 0.0738; //maybe work at 0.048 --> 0.058 --> 0.068 better work -->0.072 almost perfect -->0.0725 not ok -->0.0738 Perfect
+                    //recent use 0.0894
+float  janeBoth = 0.11;
 
 #define baseFront 	20//check wall in func check
 #define baseWall    18//check wall in func check
@@ -26,11 +28,14 @@ void turn90left();
 void turn90right();
 void setBaseLeftRightDistance();
 void reset();
+
 //J
-static void displayMap();
+static void displayMap(void);
 static void DisplayBlockcount(void);
 static void calPosition(void);
 static void calDirection(char dirFunc);
+static void forceToStraight(void);
+
 //Field
 char getMapWall(char row,char col);
 char getWall(float s1,float s2,float s3);
@@ -45,8 +50,8 @@ float baseDegree=0;
 int direction = 8;
 int position[2] = {8,8};
 int degreeBlock;
-int baseLeft=9; //check collis when walk
-int baseRight=9 ; //check collis when walk
+int baseLeft=11; //check collis when walk
+int baseRight=11 ; //check collis when walk
 float degree=0;
 int left_dis=0;
 float eiei=1;//0.78;//
@@ -82,15 +87,17 @@ task main()
 	resetGyro(gyroSensor);
 	degreeBlock = getGyroDegrees(gyroSensor);
 	baseDegree = getGyroDegrees(gyroSensor);
-	setBaseLeftRightDistance();
+	//setBaseLeftRightDistance();
 
 	while(1){
 		walkFisrtLeft();
 		displayMap();
 		//DisplayBlockcount();
+	  //move_forward();
 	}
 }
 //--------------------------------------------------------------------------------------
+
 //Perfect!!
 void checkWall(){
 	reset();
@@ -204,10 +211,24 @@ while((getMotorEncoder(leftMotor) <= blockDistance) || (getMotorEncoder(rightMot
 			right_dis 	= SensorValue(rightUltra);
 			front_dis 	= getUSDistance(frontUltra);
 
+      //when bot not on the right angle
+      forceToStraight();
+
+			//when bot so close to the wall
+			if(left_dis <= 5 || right_dis <= 5) {
+           jane = 0.5;
+           janeBoth = 0.5;
+       }
+       else{
+           jane = 0.0738;
+           janeBoth = 0.11;
+       }
+
+
 			//Only Right Wall
 			if(left_dis>=baseWall && right_dis<baseWall){
 				degree=(baseRight-right_dis)*eiei;
-				motor[leftMotor] = baseSpeed + (-1 * degree * jane);
+				motor[leftMotor]  = baseSpeed + (-1 * degree * jane);
 				motor[rightMotor] = baseSpeed + (degree * jane);
 			}
 			//Only Left Wall
@@ -226,8 +247,8 @@ while((getMotorEncoder(leftMotor) <= blockDistance) || (getMotorEncoder(rightMot
 			//Have Wall
 			else if(left_dis<baseWall && right_dis<baseWall){
 				degree=(left_dis-right_dis)*eiei;//(left_dis-baseLeft)*eiei;//
-				motor[leftMotor] = baseSpeed + (-1 * degree * jane);
-				motor[rightMotor] = baseSpeed + (degree * jane);
+				motor[leftMotor] = baseSpeed + (-1 * degree * janeBoth);
+				motor[rightMotor] = baseSpeed + (degree * janeBoth);
 
 			}
 		}//end while loop
@@ -252,7 +273,7 @@ void moveUntilCollis(){
 		right_dis 	= SensorValue(rightUltra);
 		front_dis 	= getUSDistance(frontUltra);
 
-	//Only Right Wall
+	   //Only Right Wall
 			if(left_dis>=baseWall && right_dis<baseWall){
 				float degree=(baseRight-right_dis)*eiei;
 				motor[leftMotor] = baseSpeed + (-1 * degree * jane);
@@ -286,18 +307,18 @@ void turn90left(){
 	reset();
 
 	//int degree = getGyroDegrees(gyroSensor);
-	motor[leftMotor] = -20;
-	motor[rightMotor] = 20;
+	motor[leftMotor] = -15;
+	motor[rightMotor] = 15;
 	wait1Msec(200);
-	while(baseDegree != -90){
+	while(baseDegree != -89){
 		baseDegree = getGyroDegrees(gyroSensor);
-		if(baseDegree >= -91){
-			 motor[leftMotor] = -10;
-		   motor[rightMotor] = 10;
+		if(baseDegree > -87){
+			 motor[leftMotor] = -11;
+		   motor[rightMotor] = 11;
 		}
-		else if(baseDegree < -89){
-			 motor[leftMotor]  = 10;
-		   motor[rightMotor] = -10;
+		else if(baseDegree < -85){
+			 motor[leftMotor]  = 3;
+		   motor[rightMotor] = -3;
 	}
 
 }
@@ -318,19 +339,19 @@ void turn90left(){
 void turn90right(){
 	reset();
 
-	motor[leftMotor] = 20;
-	motor[rightMotor] = -20;
+	motor[leftMotor] = 15;
+	motor[rightMotor] = -15;
 	wait1Msec(200);
-	while(baseDegree != 90){
+	while(baseDegree != 87){
 		baseDegree = getGyroDegrees(gyroSensor);
 
-		if(baseDegree < 89){
-			 motor[leftMotor]  = 10;
-		   motor[rightMotor] =-10;
+		if(baseDegree < 87){
+			 motor[leftMotor]  = 8;
+		   motor[rightMotor] =-8;
 		}
-		else if(baseDegree >= 91){
-			 motor[leftMotor]  = -10;
-		   motor[rightMotor] = 10;
+		else if(baseDegree >= 85){
+			 motor[leftMotor]  = -3;
+		   motor[rightMotor] = 3;
    	}
   }
 
@@ -346,13 +367,19 @@ void turn90right(){
 void setBaseLeftRightDistance(){
 	baseLeft  	= SensorValue(leftUltra);
 	baseRight 	= SensorValue(rightUltra);
+
 	if(baseLeft<7||baseLeft>11){
-		baseLeft=7;
+		baseLeft=5;
 	}
 
+
 	if(baseRight<7||baseRight>11){
-		baseRight=7;
+		baseRight=5;
 	}
+
+
+
+
 }
 //--------------------------------------------------------------------------------------
 
@@ -363,9 +390,27 @@ void reset(){
 		resetMotorEncoder(rightMotor);
 		wait1Msec(1000);
 }
-//---------------------------------------------------------
 
-// =============================== J code ==========================================
+
+// ====================================== new modify area ====================================================
+
+void forceToStraight(){
+	  degree = getGyroDegrees(gyroSensor);
+	  if(degree <= -13 ){
+
+           motor[leftMotor]  = 3;
+		       motor[rightMotor] = -3;
+		       wait10Msec(100);
+        }
+        else  if(degree > 14 ){
+
+           motor[leftMotor]  = -3;
+		       motor[rightMotor] = 3;
+		       wait10Msec(100);
+        }
+}
+
+// =============================== J code =====================================================================
 
 void displayMap(){
 	long offsetyy = 0;
