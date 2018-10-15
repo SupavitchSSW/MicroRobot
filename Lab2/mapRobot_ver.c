@@ -184,72 +184,103 @@ void shortestPath(char targetRow,char targetCol,char startRow,char startCol){
     }
     mapBox[startRow][startCol].isCheck = 1;
 
-    do{
-        //printf("search Row: %d Col: %d Wall: %d | \n",row,col,map[row][col]);
-        //left
-        if(((map[row][col] & 1) == 0) && (mapCountWalk[row][col-1] == 1) &&(mapBox[row][col-1].isCheck == 0)){
-      //      printf("left  ");
-                        //set value to next Box
-            mapBox[row][col-1].isCheck = 1;
-            mapBox[row][col-1].preRow = row;
-            mapBox[row][col-1].preCol = col;
-            mapBox[row][col-1].preDirection = 1;
-            if(row == targetRow && col-1 == targetCol){
-       //             printf("Found !!!\n");
-                break;
+    if(startRow == targetRow && startCol == targetCol){
+        printf("\n========= route count: %d ===========\n",strlen(route));
+    }else{
+        do{
+            //printf("search Row: %d Col: %d Wall: %d | \n",row,col,map[row][col]);
+            //left
+            if(((map[row][col] & 1) == 0) && (mapCountWalk[row][col-1] == 1) &&(mapBox[row][col-1].isCheck == 0)){
+          //      printf("left  ");
+                            //set value to next Box
+                mapBox[row][col-1].isCheck = 1;
+                mapBox[row][col-1].preRow = row;
+                mapBox[row][col-1].preCol = col;
+                mapBox[row][col-1].preDirection = 1;
+                if(row == targetRow && col-1 == targetCol){
+           //             printf("Found !!!\n");
+                    break;
+                }
+                appendHeap(row,col-1);
             }
-            appendHeap(row,col-1);
-        }
-        //top
-        if( ((map[row][col] & 8) == 0) && (mapCountWalk[row-1][col] == 1) && (mapBox[row-1][col].isCheck == 0)){
-      //      printf("Top  ");
-            //set value to next Box
-            mapBox[row-1][col].isCheck = 1;
-            mapBox[row-1][col].preRow = row;
-            mapBox[row-1][col].preCol = col;
-            mapBox[row-1][col].preDirection = 8;
-            if(row-1 == targetRow && col == targetCol){
-       //         printf("Found !!!\n");
-                break;
+            //top
+            if( ((map[row][col] & 8) == 0) && (mapCountWalk[row-1][col] == 1) && (mapBox[row-1][col].isCheck == 0)){
+          //      printf("Top  ");
+                //set value to next Box
+                mapBox[row-1][col].isCheck = 1;
+                mapBox[row-1][col].preRow = row;
+                mapBox[row-1][col].preCol = col;
+                mapBox[row-1][col].preDirection = 8;
+                if(row-1 == targetRow && col == targetCol){
+           //         printf("Found !!!\n");
+                    break;
+                }
+                appendHeap(row-1,col);
             }
-            appendHeap(row-1,col);
-        }
-        //right
-        if(((map[row][col] & 4) == 0 )&& (mapCountWalk[row][col+1] == 1 )&&( mapBox[row][col+1].isCheck == 0)){
-     //       printf("right  ");
-                        //set value to next Box
-            mapBox[row][col+1].isCheck = 1;
-            mapBox[row][col+1].preRow = row;
-            mapBox[row][col+1].preCol = col;
-            mapBox[row][col+1].preDirection = 4;
-            if(row == targetRow && col+1 == targetCol){
-       //             printf("Found !!!\n");
-                break;
+            //right
+            if(((map[row][col] & 4) == 0 )&& (mapCountWalk[row][col+1] == 1 )&&( mapBox[row][col+1].isCheck == 0)){
+         //       printf("right  ");
+                            //set value to next Box
+                mapBox[row][col+1].isCheck = 1;
+                mapBox[row][col+1].preRow = row;
+                mapBox[row][col+1].preCol = col;
+                mapBox[row][col+1].preDirection = 4;
+                if(row == targetRow && col+1 == targetCol){
+           //             printf("Found !!!\n");
+                    break;
+                }
+                appendHeap(row,col+1);
             }
-            appendHeap(row,col+1);
-        }
-        //bottom
-        if(((map[row][col] & 2) == 0) && (mapCountWalk[row+1][col] == 1) && (mapBox[row+1][col].isCheck == 0)){
-      //      printf("bottom  ");
-                        //set value to next Box
-            mapBox[row+1][col].isCheck = 1;
-            mapBox[row+1][col].preRow = row;
-            mapBox[row+1][col].preCol = col;
-            mapBox[row+1][col].preDirection = 2;
-            if(row+1 == targetRow && col == targetCol){
-    //                printf("Found !!!\n");
-                break;
+            //bottom
+            if(((map[row][col] & 2) == 0) && (mapCountWalk[row+1][col] == 1) && (mapBox[row+1][col].isCheck == 0)){
+          //      printf("bottom  ");
+                            //set value to next Box
+                mapBox[row+1][col].isCheck = 1;
+                mapBox[row+1][col].preRow = row;
+                mapBox[row+1][col].preCol = col;
+                mapBox[row+1][col].preDirection = 2;
+                if(row+1 == targetRow && col == targetCol){
+        //                printf("Found !!!\n");
+                    break;
+                }
+                appendHeap(row+1,col);
             }
-            appendHeap(row+1,col);
-        }
-        if(isHeapEmpty() == 0){
-            popHeap();
-            row = popRow;
-            col = popCol;
-        }
+            if(isHeapEmpty() == 0){
+                popHeap();
+                row = popRow;
+                col = popCol;
+            }
 
-   //     printf("\n");
-    }while(1);
+       //     printf("\n");
+        }while(1);
+
+
+            //generate route
+        row = targetRow;
+        col = targetCol;
+        char index = 0,temp;
+
+        do{
+        route[index] = mapBox[row][col].preDirection;
+        temp = row;
+        row = mapBox[row][col].preRow;
+        col = mapBox[temp][col].preCol;
+        }while(route[index++] != 0);
+
+        //clear heap
+        clearHeap();
+
+        //print route
+
+        printf("\n========= route count: %d ===========\n",strlen(route));
+        for(i=0;i<index-1;i++){
+            printf("%d ",route[i]);
+        }
+        printf("\n====================\n");
+
+        index = 0;
+    }
+
 
     //print searched box
 
@@ -272,30 +303,6 @@ void shortestPath(char targetRow,char targetCol,char startRow,char startCol){
 
     */
 
-    //generate route
-    row = targetRow;
-    col = targetCol;
-    char index = 0,temp;
-
-    do{
-    route[index] = mapBox[row][col].preDirection;
-    temp = row;
-    row = mapBox[row][col].preRow;
-    col = mapBox[temp][col].preCol;
-    }while(route[index++] != 0);
-
-    //clear heap
-    clearHeap();
-
-    //print route
-
-    printf("\n========= route count: %d ===========\n",strlen(route));
-    for(i=0;i<index-1;i++){
-        printf("%d ",route[i]);
-    }
-    printf("\n====================\n");
-
-    index = 0;
     //return route
 }
 
@@ -383,6 +390,11 @@ void main(){
     setMapWall(5,4,getWall(10,50,10,1));
     setMapWall(4,4,getWall(50,10,10,8));*/
     //printf("%d",map[8][8] & 8);
+
+    shortestPath(8,8,7,7);
+    runShortestRoute();
+    shortestPath(7,7,4,4);
+    runShortestRoute();
 
     //printf("______________\n");
     //printMap();
