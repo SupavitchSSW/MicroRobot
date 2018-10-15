@@ -16,7 +16,7 @@ bit    1 is left
 */
 
 // default map
-
+/*
 char map[9][9]={
     9,8,8,9,10,12,8,8,12,
     1,0,0,1,12,3,12,0,4,
@@ -27,9 +27,9 @@ char map[9][9]={
     1,0,0,0,0,0,5,15,5,
     1,0,0,0,0,0,5,15,5,
     3,2,2,2,2,2,3,10,6
-};
+};*/
 
-/*
+
 char map[9][9] = {
     9,10,10,10,10,8,8,14,13,
     7,9,10,8,10,4,1,12,7,
@@ -40,7 +40,7 @@ char map[9][9] = {
     1,4,5,1,10,2,14,5,5,
     5,5,5,1,10,10,10,6,5,
     7,3,6,3,10,10,10,10,6
-};*/
+};
 
 char mapCountWalk[9][9]={
     1,1,1,1,1,1,1,1,1,
@@ -115,6 +115,7 @@ void setMapWall(char row,char col,char wall){
       map[row][a] = map[row][a] | 4;
     }
 }
+
 void appendHeap(char row,char col){
     heap[createHeap].next = nextHeap;
     heap[createHeap].col = col;
@@ -142,6 +143,25 @@ void popHeap(){
     return ;
 }
 
+void clearHeap(){
+    char i;
+    for(i=0;i<HeapSize;i++){
+        heap[i].next = -1;
+    }
+
+    useHeap = 0;
+    createHeap = 0;
+    nextHeap = 1;
+    popRow = 0;
+    popCol = 0;
+}
+
+void printHeap(){
+    char i;
+    for(i=0;i<HeapSize;i++){
+        printf("heap Row: %d Col: %d Next: %d | \n",heap[i].row,heap[i].col,heap[i].next);
+    }
+}
 
 void shortestPath(char targetRow,char targetCol,char startRow,char startCol){
     char i,j,row=startRow,col=startCol;
@@ -264,6 +284,9 @@ void shortestPath(char targetRow,char targetCol,char startRow,char startCol){
     col = mapBox[temp][col].preCol;
     }while(route[index++] != 0);
 
+    //clear heap
+    clearHeap();
+
     //print route
 
     printf("\n========= route count: %d ===========\n",strlen(route));
@@ -272,6 +295,7 @@ void shortestPath(char targetRow,char targetCol,char startRow,char startCol){
     }
     printf("\n====================\n");
 
+    index = 0;
     //return route
 }
 
@@ -360,8 +384,6 @@ void main(){
     setMapWall(4,4,getWall(50,10,10,8));*/
     //printf("%d",map[8][8] & 8);
 
-    shortestPath(3,3,8,8);
-    runShortestRoute();
     //printf("______________\n");
     //printMap();
     //printMapV2();

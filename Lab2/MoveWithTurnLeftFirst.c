@@ -40,6 +40,7 @@ static void forceToStraight(void);
 char getMapWall(char row,char col);
 char getWall(float s1,float s2,float s3);
 void setMapWall(char row,char col,char wall);
+void showMeDawae();
 
 
 int leftWall=0;
@@ -501,7 +502,9 @@ void calPosition(){
 
 
 //====================================== Field code ======================
-
+void showMeDawae(){
+    checkWall();
+}
 
 char getMapWall(char row,char col){
     return map[row][col];
