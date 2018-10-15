@@ -734,12 +734,11 @@ void shortestPath(char targetRow,char targetCol,char startRow,char startCol){
 
         //print route
 				/*
-        printf("\n========= route count: %d ===========\n",strlen(route));
         for(i=0;i<index-1;i++){
             printf("%d ",route[i]);
-        }
-        printf("\n====================\n");
-        */
+
+        }*/
+
 
         index = 0;
     }
@@ -768,7 +767,12 @@ void shortestPath(char targetRow,char targetCol,char startRow,char startCol){
 
     //return route
 }
-
+/*
+void move_forward();
+void moveUntilCollis();
+void turn90left();
+void turn90right();
+*/
 void runShortestRoute(){
     char i;
 
@@ -777,14 +781,14 @@ void runShortestRoute(){
         case 8:                             //8 revert to 2
             if(direction == 1){
                 //printf("L");
-                //turn90left();
+                turn90left();
             }else if(direction == 8){
                 //printf("LL");
-                //turn90left();
-                //turn90left();
+                turn90left();
+                turn90left();
             }else if(direction == 4){
                 //printf("R");
-                //turn90right();
+                turn90right();
             }
             //debug
             //direction = 2;
@@ -793,14 +797,14 @@ void runShortestRoute(){
         case 4:                             //4 revert to 1
             if(direction == 8){
                 //printf("L");
-                //turn90left();
+                turn90left();
             }else if(direction == 4){
                 //printf("LL");
-                //turn90left();
-                //turn90left();
+                turn90left();
+                turn90left();
             }else if(direction == 2){
                 //printf("R");
-                //turn90right();
+                turn90right();
             }
             //debug
             //direction = 1;
@@ -808,14 +812,14 @@ void runShortestRoute(){
         case 2:                             //2 revert to 8
             if(direction == 4){
                 //printf("L");
-                //turn90left();
+                turn90left();
             }else if(direction == 2){
                 //printf("LL");
-                //turn90left();
-                //turn90left();
+                turn90left();
+                turn90left();
             }else if(direction == 1){
                 //printf("R");
-                //turn90right();
+                turn90right();
             }
             //debug
             //direction = 8;
@@ -823,14 +827,14 @@ void runShortestRoute(){
         case 1:                             //1 revert to 4
             if(direction == 2){
                 //printf("L");
-                //turn90left();
+                turn90left();
             }else if(direction == 1){
                 //printf("LL");
-                //turn90left();
-                //turn90left();
+                turn90left();
+                turn90left();
             }else if(direction == 8){
                 //printf("R");
-                //turn90right();
+                turn90right();
             }
             //debug
             //direction = 4;
@@ -839,6 +843,12 @@ void runShortestRoute(){
         }
         //printf("M");
         //move_forward();
+
+        front_dis 	= getUSDistance(frontUltra);
+				if(front_dis<=baseFront){
+					moveUntilCollis();
+				}
+				move_forward();
     }
 
     //finish
