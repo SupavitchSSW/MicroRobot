@@ -98,7 +98,10 @@ char map[9][9]={
 };
 
 char mapCountWalk[9][9]={
+<<<<<<< HEAD
 
+=======
+>>>>>>> ac449263a8f96c84f9bd07d3512faef59936059e
     0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,
@@ -108,7 +111,10 @@ char mapCountWalk[9][9]={
     0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,1
+<<<<<<< HEAD
 
+=======
+>>>>>>> ac449263a8f96c84f9bd07d3512faef59936059e
 };
 
 
@@ -144,10 +150,22 @@ task main()
 	degreeBlock = getGyroDegrees(gyroSensor);
 	baseDegree = getGyroDegrees(gyroSensor);
 	//setBaseLeftRightDistance();
+<<<<<<< HEAD
 
 	while(1){
      turn90left();
 	}
+=======
+	playSound(soundException);
+	delay(1000);
+	showMeDawae();
+	delay(1000);
+	playSound(soundBeepBeep);
+	delay(1000);
+	shortestPath(8,8,4,4);
+	runShortestRoute();
+
+>>>>>>> ac449263a8f96c84f9bd07d3512faef59936059e
 }
 //--------------------------------------------------------------------------------------
 
