@@ -37,6 +37,7 @@ static void calDirection(char dirFunc);
 static void forceToStraight(void);
 
 //Field
+void checkFrontWall();
 char getMapWall(char row,char col);
 char getWall(float s1,float s2,float s3);
 void setMapWall(char row,char col,char wall);
@@ -102,6 +103,34 @@ char mapCountWalk[9][9]={
     0,0,0,0,0,0,0,0,0
 };
 
+
+//test map
+/*
+
+char map[9][9]={
+    9,8,8,8,8,8,8,8,12,
+    1,0,0,0,0,0,0,0,4,
+    1,0,0,0,0,0,0,0,4,
+    1,0,0,0,0,0,0,0,4,
+    1,0,0,0,0,0,0,0,4,
+    1,0,0,0,0,0,0,0,4,
+    1,0,0,0,0,0,0,0,4,
+    1,0,0,0,0,0,0,0,2,
+    3,2,2,2,2,2,2,2,6
+};
+
+char mapCountWalk[9][9]={
+	1,1,1,1,1,1,1,1,1,
+	1,1,1,1,1,1,1,1,1,
+	1,1,1,1,1,1,1,1,1,
+	1,1,1,1,1,1,1,1,1,
+	1,1,1,1,1,1,1,1,1,
+	1,1,1,1,1,1,1,1,1,
+	1,1,1,1,1,1,1,1,1,
+	1,1,1,1,1,1,1,1,1,
+	1,1,1,1,1,1,1,1,1
+};
+*/
 task main()
 {
 	resetGyro(gyroSensor);
@@ -114,6 +143,9 @@ task main()
 		displayMap();
 		//DisplayBlockcount();
 	  //move_forward();
+
+		//shortsestPath(8,8,4,4);
+		//runShortestRoute();
 	}
 }
 //--------------------------------------------------------------------------------------
@@ -521,6 +553,16 @@ void calPosition(){
 
 
 //====================================== Field code ======================
+void checkFrontWall(){
+	front_dis 	= getUSDistance(frontUltra);
+	if(front_dis<=baseFront){
+		moveUntilCollis();
+	}
+
+}
+
+
+
 void showMeDawae(){
     checkWall();
 }
@@ -767,27 +809,27 @@ void shortestPath(char targetRow,char targetCol,char startRow,char startCol){
 
     //return route
 }
-/*
-void move_forward();
-void moveUntilCollis();
-void turn90left();
-void turn90right();
-*/
+
 void runShortestRoute(){
     char i;
 
     for(i = 0;i<strlen(route);i++){
+
         switch(route[i]){
         case 8:                             //8 revert to 2
             if(direction == 1){
                 //printf("L");
+            		checkFrontWall();
                 turn90left();
             }else if(direction == 8){
                 //printf("LL");
+								checkFrontWall();
                 turn90left();
+                checkFrontWall();
                 turn90left();
             }else if(direction == 4){
                 //printf("R");
+            		checkFrontWall();
                 turn90right();
             }
             //debug
@@ -797,13 +839,17 @@ void runShortestRoute(){
         case 4:                             //4 revert to 1
             if(direction == 8){
                 //printf("L");
+            	checkFrontWall();
                 turn90left();
             }else if(direction == 4){
                 //printf("LL");
+            		checkFrontWall();
                 turn90left();
+                checkFrontWall();
                 turn90left();
             }else if(direction == 2){
                 //printf("R");
+            		checkFrontWall();
                 turn90right();
             }
             //debug
@@ -812,13 +858,17 @@ void runShortestRoute(){
         case 2:                             //2 revert to 8
             if(direction == 4){
                 //printf("L");
+            		checkFrontWall();
                 turn90left();
             }else if(direction == 2){
                 //printf("LL");
+            		checkFrontWall();
                 turn90left();
+                checkFrontWall();
                 turn90left();
             }else if(direction == 1){
                 //printf("R");
+								checkFrontWall();
                 turn90right();
             }
             //debug
@@ -827,13 +877,17 @@ void runShortestRoute(){
         case 1:                             //1 revert to 4
             if(direction == 2){
                 //printf("L");
+            		checkFrontWall();
                 turn90left();
             }else if(direction == 1){
                 //printf("LL");
+            		checkFrontWall();
                 turn90left();
+                checkFrontWall();
                 turn90left();
             }else if(direction == 8){
                 //printf("R");
+            		checkFrontWall();
                 turn90right();
             }
             //debug
@@ -842,12 +896,6 @@ void runShortestRoute(){
         default:;
         }
         //printf("M");
-        //move_forward();
-
-        front_dis 	= getUSDistance(frontUltra);
-				if(front_dis<=baseFront){
-					moveUntilCollis();
-				}
 				move_forward();
     }
 
