@@ -56,6 +56,7 @@ void runShortestRoute();
 void pushStack(char num);
 char popStack();
 char isStackEmpty();
+void printBlockCount();
 
 // ======= Shortest Path
 //heap
@@ -64,7 +65,7 @@ typedef struct{
 }Node;
 
 Node heap[HeapSize];
-char popRow=0,popCol=0,useHeap=0,createHeap=0,nextHeap=1,route[routeSize],stack[stackSize],topStack=1;
+char popRow=0,popCol=0,useHeap=0,createHeap=0,nextHeap=1,route[routeSize],stack[stackSize],topStack=1,countShortestPathBlock=0;
 
 // =======
 
@@ -161,6 +162,7 @@ task main()
 	   runShortestRoute();
 	   playSoundFile("Bravo");
      delay(2000);
+	 printBlockCount();
 	while(1){
 
 	}
@@ -821,6 +823,9 @@ void shortestPath(char targetRow,char targetCol,char startRow,char startCol){
         col = mapBox[temp][col].preCol;
         }while(route[index++] != 0);
 
+		//set shortest path count
+		countShortestPathBlock = strlen(route);
+
         //clear heap
         clearHeap();
 
@@ -1132,4 +1137,19 @@ void showMeDawae(){
 	    if(canPop)popStackAndRun();
 
     }while(!isStackEmpty());
+}
+
+void printBlockCount(){
+	char i,j,count;
+	//count avaliable block
+	for(i=0;i<9;i++){
+		for(j=0;i<9;j++){
+			if(mapCountWalk[i][j] == 1)count++;
+		}
+	}
+
+	string s;
+	sprintf(s,"Avaliable: %d |Used: %d",count,countShortestPathBlock);
+	displayBigTextLine(5,s);
+
 }
