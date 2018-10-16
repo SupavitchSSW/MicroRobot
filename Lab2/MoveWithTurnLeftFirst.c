@@ -86,15 +86,15 @@ int front_dis=0;
 
 
 char map[9][9]={
-	  15,15,15,15,15,15,15,15,15,
-	  15,15,15,15,15,15,15,15,15,
-    15,9 ,10,10,8 ,10,10,12,15,
-    15,5 ,15,15,5 ,15,15,5 ,15,
-    15,3 ,10,8 ,2 ,10,10,4 ,15,
-    15,15,15,5 ,15,15,15,3 ,12,
-    15,15,15,3 ,12,15,13,15,5,
-    15,15,15,15,5 ,15,5 ,15,5,
-    15,15,15,11,2 ,10,2 ,10,6
+	  0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0
 };
 
 char mapCountWalk[9][9]={
@@ -274,7 +274,7 @@ while((getMotorEncoder(leftMotor) <= blockDistance) || (getMotorEncoder(rightMot
 			front_dis 	= getUSDistance(frontUltra);
 
       //when bot not on the right angle
-      forceToStraight();
+      //forceToStraight();
 
 			//when bot so close to the wall
 			if(left_dis <= 5 || right_dis <= 5) {
