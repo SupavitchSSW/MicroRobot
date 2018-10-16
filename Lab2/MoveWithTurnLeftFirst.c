@@ -18,6 +18,7 @@ float  janeBoth = 0.11;
 #define baseSpeedTurn 10
 #define baseFrontCollis 8
 #define wallDistance 18//field check wall
+#define routeSize 30
 
 //Jane
 void checkWall();
@@ -58,7 +59,7 @@ typedef struct{
 }Node;
 
 Node heap[HeapSize];
-char popRow=0,popCol=0,useHeap=0,createHeap=0,nextHeap=1,route[30];
+char popRow=0,popCol=0,useHeap=0,createHeap=0,nextHeap=1,route[routeSize];
 
 // =======
 
@@ -897,7 +898,9 @@ void runShortestRoute(){
         }
         //printf("M");
 				move_forward();
+				degreeBlock = getGyroDegrees(gyroSensor);
     }
-
+    //clear route
+    for(i = 0;i<routeSize;i++)route[i]=0;
     //finish
 }
