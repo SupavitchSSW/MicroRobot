@@ -155,8 +155,10 @@ task main()
      delay(2000);
 	   playSound(soundBeepBeep);
 	   delay(1000);
-	   shortestPath(8,8,6,6);
+	   shortestPath(8,8,4,4);
 	   runShortestRoute();
+	   motor[leftMotor]  = 0;
+	   motor[rightMotor] = 0;
 	   playSoundFile("Bravo");
      delay(2000);
 	   printBlockCount();
@@ -232,8 +234,8 @@ while((getMotorEncoder(leftMotor) <= blockDistance) || (getMotorEncoder(rightMot
 
 			//when bot so close to the wall
 			if(left_dis <= 6 || right_dis <= 6) {
-           jane = 0.1;
-           janeBoth = 0.1;
+           jane = 0.2;
+           janeBoth = 0.2;
        }
        else{
            jane = 0.0738;
@@ -353,16 +355,16 @@ void turn90left(){
 	}*/
 
 
-	motor[leftMotor] = -12;
-	motor[rightMotor] = 12;
+	motor[leftMotor] = -11;
+	motor[rightMotor] = 11;
 	wait1Msec(200);
-	while(baseDegree != -87){
+	while(baseDegree != -88){
 		baseDegree = getGyroDegrees(gyroSensor);
-		if(baseDegree > -85){
+		if(baseDegree > -86){
 			 motor[leftMotor] = -10;
 		   motor[rightMotor] = 10;
 		}
-		else if(baseDegree <= -85){
+		else if(baseDegree <= -86){
 			 motor[leftMotor]  = 3;
 		   motor[rightMotor] = -3;
 	}
@@ -396,12 +398,12 @@ void turn90right(){
 	motor[leftMotor] = 15;
 	motor[rightMotor] = -15;
 	wait1Msec(200);
-	while(baseDegree != 87){
+	while(baseDegree != 88){
 		baseDegree = getGyroDegrees(gyroSensor);
 
 		if(baseDegree < 87){
-			 motor[leftMotor]  = 8;
-		   motor[rightMotor] =-8;
+			 motor[leftMotor]  = 10;
+		   motor[rightMotor] =-10;
 		}
 		else if(baseDegree >= 87){
 			 motor[leftMotor]  = -3;
@@ -1052,17 +1054,17 @@ void showMeDawae(){
 }
 
 void printBlockCount(){
-	char i,j,count;
+	int count = 0;
 	//count avaliable block
 	eraseDisplay();
-	for(i=0;i<9;i++){
-		for(j=0;i<9;j++){
+	for(int i=0;i<9;i++){
+		for(int j=0;j<9;j++){
 			if(mapCountWalk[i][j] == 1)count++;
 		}
 	}
 
 	string s;
-	sprintf(s,"Avaliable: %d |Used: %d",count,countShortestPathBlock);
+	sprintf(s,"(%d,%d)",count,countShortestPathBlock);
 	displayBigTextLine(5,s);
 
 }
