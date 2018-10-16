@@ -25,7 +25,6 @@ float  janeBoth = 0.11;
 
 //Jane
 void checkWall();
-void walkFisrtLeft();
 void move_forward();
 void moveUntilCollis();
 void turn90left();
@@ -35,10 +34,8 @@ void reset();
 
 //J
 static void displayMap(void);
-static void DisplayBlockcount(void);
 static void calPosition(void);
 static void calDirection(char dirFunc);
-static void forceToStraight(void);
 
 //Field
 void checkFrontWall();
@@ -54,9 +51,9 @@ void printHeap();
 void shortestPath(char targetRow,char targetCol,char startRow,char startCol);
 void runShortestRoute();
 void pushStack(char num);
-char popStack();
-char isStackEmpty();
-void printBlockCount();
+char popStack(void);
+char isStackEmpty(void);
+void printBlockCount(void);
 
 // ======= Shortest Path
 //heap
@@ -162,11 +159,7 @@ task main()
 	   runShortestRoute();
 	   playSoundFile("Bravo");
      delay(2000);
-	 printBlockCount();
-	while(1){
-
-	}
-
+	   printBlockCount();
 }
 //--------------------------------------------------------------------------------------
 
@@ -217,59 +210,6 @@ void checkWall(){
 }
 
 //--------------------------------------------------------------------------------------
-//Perfect
-void walkFisrtLeft(){
-	checkWall();
-
-	//1-Way
-	if(leftWall==1 && rightWall==1 && frontWall==0){
-		move_forward();
-	}
-	//1-Way have Left
-	else if(leftWall==0 && rightWall==1 && frontWall==1){
-		moveUntilCollis();
-		turn90left();
-		move_forward();
-	}
-	//1-Way have Right
-	else if(leftWall==1 && rightWall==0 && frontWall==1){
-		moveUntilCollis();
-		turn90right();
-		move_forward();
-	}
-	//2-Ways have Left and Forward
-	else if(leftWall==0 && rightWall==1 && frontWall==0){
-		turn90left();
-		move_forward();
-	}
-	//2-Ways have Right and Forward
-	else if(leftWall==1 && rightWall==0 && frontWall==0){
-		move_forward();
-	}
-	//2-Ways have Left and Right
-	else if(leftWall==0 && rightWall==0 && frontWall==1){
-		moveUntilCollis();
-		turn90left();
-		move_forward();
-	}
-	//3-Ways
-	else if(leftWall==0 && rightWall==0 && frontWall==0){
-		move_forward();
-	}
-	//Death End
-	else if(leftWall==1 && rightWall==1 && frontWall==1){
-		moveUntilCollis();
-		turn90left();
-		moveUntilCollis();
-		turn90left();
-		move_forward();
-	}
-	//end if-else
-	degreeBlock = getGyroDegrees(gyroSensor);
-
-}
-
-//--------------------------------------------------------------------------------------
 void move_forward(){
 		reset();
 
@@ -289,7 +229,7 @@ while((getMotorEncoder(leftMotor) <= blockDistance) || (getMotorEncoder(rightMot
 			//when bot so close to the wall
 			if(left_dis <= 6 || right_dis <= 6) {
            jane = 0.2;
-           janeBoth = 0.15;
+           janeBoth = 0.2;
        }
        else{
            jane = 0.0738;
@@ -502,24 +442,6 @@ void reset(){
 }
 
 
-// ====================================== new modify area ====================================================
-
-void forceToStraight(){
-	  degree = getGyroDegrees(gyroSensor);
-	  if(degree <= -13 ){
-
-           motor[leftMotor]  = 3;
-		       motor[rightMotor] = -3;
-		       wait10Msec(100);
-        }
-        else  if(degree > 14 ){
-
-           motor[leftMotor]  = -3;
-		       motor[rightMotor] = 3;
-		       wait10Msec(100);
-        }
-}
-
 // =============================== J code =====================================================================
 
 void displayMap(){
@@ -539,20 +461,6 @@ void displayMap(){
 	}
 	playSound(soundBeepBeep);
 }
-
-void DisplayBlockcount(){
-
-	  delay(100);
-	  eraseDisplay();
-	  string str1,str2;
-	  sprintf(str1,"%d",direction);
-	  sprintf(str2,"(%d,%d)",position[0],position[1]);
-	  displayBigTextLine(5,str1);
-	  displayBigTextLine(8,str2);
-	  delay(100);
-
-}
-
 
 //calculate direct
 void calDirection(char dirFunc)
