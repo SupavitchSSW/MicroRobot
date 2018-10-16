@@ -150,7 +150,8 @@ task main()
  	   playSound(soundException);
 	   delay(1000);
 	   showMeDawae();
-     delay(1000);
+	   playSoundFile("Kung fu");
+       delay(2000);
 	   playSound(soundBeepBeep);
 	   delay(1000);
 	   shortestPath(8,8,4,4);
