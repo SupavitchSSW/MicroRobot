@@ -12,6 +12,7 @@
 float jane = 0.0738; //maybe work at 0.048 --> 0.058 --> 0.068 better work -->0.072 almost perfect -->0.0725 not ok -->0.0738 Perfect
                     //recent use 0.0894
 float  janeBoth = 0.11;
+#define Jay 0.14
 
 #define baseFront 	20//check wall in func check
 #define baseWall    18//check wall in func check
@@ -20,7 +21,7 @@ float  janeBoth = 0.11;
 #define wallDistance 18//field check wall
 #define routeSize 30
 #define HeapSize 30
-#define stackSize 50
+#define stackSize 40
 
 //Jane
 void checkWall();
@@ -71,7 +72,7 @@ char popRow=0,popCol=0,useHeap=0,createHeap=0,nextHeap=1,route[routeSize],stack[
 int leftWall=0;
 int rightWall=0;
 int frontWall=0;
-float baseDegree=0;
+int baseDegree=0;
 
 int direction = 8;
 int position[2] = {8,8};
@@ -80,9 +81,9 @@ int baseLeft=11; //check collis when walk
 int baseRight=11 ; //check collis when walk
 float degree=0;
 int left_dis=0;
-float eiei=1;//0.78;//
 int right_dis=0;
 int front_dis=0;
+int error=0;
 
 
 char map[9][9]={
@@ -144,19 +145,25 @@ task main()
 	degreeBlock = getGyroDegrees(gyroSensor);
 	baseDegree = getGyroDegrees(gyroSensor);
 	//setBaseLeftRightDistance();
-
-
-	while(1){
+	/*while(1){
+		turn90left();
+	}*/
  	   playSound(soundException);
 	   delay(1000);
 	   showMeDawae();
-	   playSoundFile("Kung fu");
-       delay(2000);
 	   playSound(soundBeepBeep);
 	   delay(1000);
-	   shortestPath(8,8,4,4);
+	   playSoundFile("Airbrake");
+     delay(2000);
+	   playSound(soundBeepBeep);
+	   delay(1000);
+	   shortestPath(8,8,6,6);
 	   runShortestRoute();
-}
+	   playSoundFile("Bravo");
+     delay(2000);
+	while(1){
+
+	}
 
 }
 //--------------------------------------------------------------------------------------
@@ -278,38 +285,38 @@ while((getMotorEncoder(leftMotor) <= blockDistance) || (getMotorEncoder(rightMot
       //forceToStraight();
 
 			//when bot so close to the wall
-			if(left_dis <= 5 || right_dis <= 5) {
-           jane = 0.5;
-           janeBoth = 0.5;
+			if(left_dis <= 6 || right_dis <= 6) {
+           jane = 0.2;
+           janeBoth = 0.15;
        }
        else{
            jane = 0.0738;
-           janeBoth = 0.11;
+           janeBoth = 0.08;
        }
 
 
 			//Only Right Wall
 			if(left_dis>=baseWall && right_dis<baseWall){
-				degree=(baseRight-right_dis)*eiei;
+				degree=(baseRight-right_dis);
 				motor[leftMotor]  = baseSpeed + (-1 * degree * jane);
 				motor[rightMotor] = baseSpeed + (degree * jane);
 			}
 			//Only Left Wall
 			else if(left_dis<baseWall && right_dis>=baseWall){
-				degree=(left_dis-baseLeft)*eiei;
+				degree=(left_dis-baseLeft);
 				motor[leftMotor] = baseSpeed + (-1 * degree * jane);
 				motor[rightMotor] = baseSpeed + (degree * jane);
 				}
 			//Not Have Wall
 			else if(left_dis>=baseWall && right_dis>=baseWall){
 				degree = getGyroDegrees(gyroSensor);
-				degree = degree-((degreeBlock+baseDegree)/2);
+				degree = degree-((baseDegree));
 				motor[leftMotor] = baseSpeed + (-1 * degree * jane);
 				motor[rightMotor] = baseSpeed + (degree * jane);
 				}
 			//Have Wall
 			else if(left_dis<baseWall && right_dis<baseWall){
-				degree=(left_dis-right_dis)*eiei;//(left_dis-baseLeft)*eiei;//
+				degree=(left_dis-right_dis);//(left_dis-baseLeft)*eiei;//
 				motor[leftMotor] = baseSpeed + (-1 * degree * janeBoth);
 				motor[rightMotor] = baseSpeed + (degree * janeBoth);
 
@@ -338,26 +345,26 @@ void moveUntilCollis(){
 
 	   //Only Right Wall
 			if(left_dis>=baseWall && right_dis<baseWall){
-				float degree=(baseRight-right_dis)*eiei;
+				float degree=(baseRight-right_dis);
 				motor[leftMotor] = baseSpeed + (-1 * degree * jane);
 				motor[rightMotor] = baseSpeed + (degree * jane);
 			}
 			//Only Left Wall
 			else if(left_dis<baseWall && right_dis>=baseWall){
-				degree=(left_dis-baseLeft)*eiei;
+				degree=(left_dis-baseLeft);
 				motor[leftMotor] = baseSpeed + (-1 * degree * jane);
 				motor[rightMotor] = baseSpeed + (degree * jane);
 			}
 			//Not Have Wall
 			else if(left_dis>=baseWall && right_dis>=baseWall){
 				degree = getGyroDegrees(gyroSensor);
-				degree = degree-((degreeBlock+baseDegree)/2);
+				degree = degree-((baseDegree));
 				motor[leftMotor] = baseSpeed + (-1 * degree * jane);
 				motor[rightMotor] = baseSpeed + (degree * jane);
 			}
 			//Have Wall
 			else if(left_dis<baseWall && right_dis<baseWall){
-				degree=(left_dis-right_dis)*eiei;//(left_dis-baseLeft)*eiei;//
+				degree=(left_dis-right_dis);//(left_dis-baseLeft)*eiei;//
 				motor[leftMotor] = baseSpeed + (-1 * degree * jane);
 				motor[rightMotor] = baseSpeed + (degree * jane);
 			}
@@ -369,38 +376,76 @@ void moveUntilCollis(){
 void turn90left(){
 	reset();
 
-	//int degree = getGyroDegrees(gyroSensor);
-	motor[leftMotor] = -15;
-	motor[rightMotor] = 15;
-	wait1Msec(200);
-	while(baseDegree != -89){
+/*	baseDegree = getGyroDegrees(gyroSensor);
+	while(baseDegree!=-89){
 		baseDegree = getGyroDegrees(gyroSensor);
-		if(baseDegree > -87){
+		error = -90-baseDegree;
+		motor[leftMotor] = 2+(error*Jay);
+		motor[rightMotor] =2+(-1*error*Jay);
+
+	}*/
+
+	/*int gyro = 0, pid = 0 ,x_error = 0,y_error = 0;
+	for (int i = 0 ; i < 10000 ; i++) {
+		x_error = gyro;
+		y_error += gyro;
+		gyro = 87 + getGyroDegrees(gyroSensor);
+		pid = gyro * 0.5 + (gyro - x_error) * 15;
+		motor[leftMotor]= pid;
+		motor[rightMotor]= pid * (-1);
+	}
+
+	motor[leftMotor] = 0;
+	motor[rightMotor]= 0 ;
+
+	if(SensorValue[gyroSensor] < 18 && SensorValue[gyroSensor] != 10){
+		for(int x = 0 ; x < 8000 ; x++){
+			int k = (8 - SensorValue[gyroSensor]) * (-3);
+				motor[leftMotor] = k;
+	      motor[rightMotor]= k ;
+		}
+	}*/
+
+
+	motor[leftMotor] = -12;
+	motor[rightMotor] = 12;
+	wait1Msec(200);
+	while(baseDegree != -88){
+		baseDegree = getGyroDegrees(gyroSensor);
+		if(baseDegree > -86){
 			 motor[leftMotor] = -11;
 		   motor[rightMotor] = 11;
 		}
-		else if(baseDegree < -85){
+		else if(baseDegree <= -86){
 			 motor[leftMotor]  = 3;
 		   motor[rightMotor] = -3;
 	}
 
 }
 
-
 	motor[leftMotor]  = 0;
 	motor[rightMotor] = 0;
 	wait1Msec(500);
-	setBaseLeftRightDistance();
+	//setBaseLeftRightDistance();
 	resetGyro(gyroSensor);
 	baseDegree = getGyroDegrees(gyroSensor);
 	calDirection('l');
 
 }
 
-//--------------------------------------------------------------------------------------
+//--------------------------------+++++++++++------------------------------------------------------
 
 void turn90right(){
 	reset();
+
+/*	baseDegree = getGyroDegrees(gyroSensor);
+	while(baseDegree!=90){
+		baseDegree = getGyroDegrees(gyroSensor);
+		int error = 90-baseDegree;
+		motor[leftMotor] = error*Jay;
+		motor[rightMotor] =-1*error*Jay;
+
+	}*/
 
 	motor[leftMotor] = 15;
 	motor[rightMotor] = -15;
@@ -412,7 +457,7 @@ void turn90right(){
 			 motor[leftMotor]  = 8;
 		   motor[rightMotor] =-8;
 		}
-		else if(baseDegree >= 85){
+		else if(baseDegree >= 87){
 			 motor[leftMotor]  = -3;
 		   motor[rightMotor] = 3;
    	}
@@ -955,7 +1000,7 @@ void showMeDawae(){
     				checkFrontWall();
     				turn90left();
     				move_forward();
-    				degreeBlock = getGyroDegrees(gyroSensor);
+    				//degreeBlock = getGyroDegrees(gyroSensor);
     				pushStack(1);
     				canPop = 0;
     				continue;
@@ -966,7 +1011,7 @@ void showMeDawae(){
     				checkFrontWall();
     				turn90left();
     				move_forward();
-   					degreeBlock = getGyroDegrees(gyroSensor);
+   					//degreeBlock = getGyroDegrees(gyroSensor);
    					pushStack(8);
    					canPop = 0;
    					continue;
@@ -977,7 +1022,7 @@ void showMeDawae(){
     				checkFrontWall();
     				turn90left();
     				move_forward();
-    				degreeBlock = getGyroDegrees(gyroSensor);
+    			//	degreeBlock = getGyroDegrees(gyroSensor);
     				pushStack(4);
     				canPop = 0;
     				continue;
@@ -988,7 +1033,7 @@ void showMeDawae(){
     				checkFrontWall();
     				turn90left();
     				move_forward();
-    				degreeBlock = getGyroDegrees(gyroSensor);
+    				//degreeBlock = getGyroDegrees(gyroSensor);
     				pushStack(2);
     				canPop = 0;
     				continue;
@@ -1001,7 +1046,7 @@ void showMeDawae(){
 	    	if(direction == 8){																					//front wall is 8
     			if(mapCountWalk[position[0]-1][position[1]] == 0){
     				move_forward();
-    				degreeBlock = getGyroDegrees(gyroSensor);
+    			//	degreeBlock = getGyroDegrees(gyroSensor);
     				pushStack(8);
     				canPop = 0;
     				continue;
@@ -1010,7 +1055,7 @@ void showMeDawae(){
     		else if(direction == 4){																		//front wall is 4
     			if(mapCountWalk[position[0]][position[1]+1] == 0){
     				move_forward();
-    				degreeBlock = getGyroDegrees(gyroSensor);
+    			//	degreeBlock = getGyroDegrees(gyroSensor);
     				pushStack(4);
     				canPop = 0;
     				continue;
@@ -1019,7 +1064,7 @@ void showMeDawae(){
     		else if(direction == 2){																		//front wall is 2
     			if(mapCountWalk[position[0]+1][position[1]] == 0){
     				move_forward();
-    				degreeBlock = getGyroDegrees(gyroSensor);
+    			//	degreeBlock = getGyroDegrees(gyroSensor);
     				pushStack(2);
     				canPop = 0;
     				continue;
@@ -1028,7 +1073,7 @@ void showMeDawae(){
     		else if(direction == 1){																		//front wall is 1
     			if(mapCountWalk[position[0]][position[1]-1] == 0){
     				move_forward();
-    				degreeBlock = getGyroDegrees(gyroSensor);
+    				//degreeBlock = getGyroDegrees(gyroSensor);
     				pushStack(1);
     				canPop = 0;
     				continue;
@@ -1043,7 +1088,7 @@ void showMeDawae(){
     				checkFrontWall();
     				turn90right();
     				move_forward();
-   					degreeBlock = getGyroDegrees(gyroSensor);
+   					//degreeBlock = getGyroDegrees(gyroSensor);
    					pushStack(4);
    					canPop = 0;
    					continue;
@@ -1054,7 +1099,7 @@ void showMeDawae(){
     				checkFrontWall();
     				turn90right();
     				move_forward();
-   					degreeBlock = getGyroDegrees(gyroSensor);
+   					//degreeBlock = getGyroDegrees(gyroSensor);
    					pushStack(2);
    					canPop = 0;
    					continue;
@@ -1065,7 +1110,7 @@ void showMeDawae(){
     				checkFrontWall();
     				turn90right();
     				move_forward();
-   					degreeBlock = getGyroDegrees(gyroSensor);
+   					//degreeBlock = getGyroDegrees(gyroSensor);
    					pushStack(1);
    					canPop = 0;
    					continue;
@@ -1076,7 +1121,7 @@ void showMeDawae(){
     				checkFrontWall();
     				turn90right();
     				move_forward();
-   					degreeBlock = getGyroDegrees(gyroSensor);
+   					//degreeBlock = getGyroDegrees(gyroSensor);
    					pushStack(8);
    					canPop = 0;
    					continue;
