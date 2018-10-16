@@ -98,17 +98,6 @@ char map[9][9]={
 };
 
 char mapCountWalk[9][9]={
-<<<<<<< HEAD
-    1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1
-=======
     0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,
@@ -118,7 +107,6 @@ char mapCountWalk[9][9]={
     0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,1
->>>>>>> f6df459a47d219ec05b2566f4c4592e1752db815
 };
 
 
@@ -154,37 +142,15 @@ task main()
 	degreeBlock = getGyroDegrees(gyroSensor);
 	baseDegree = getGyroDegrees(gyroSensor);
 	//setBaseLeftRightDistance();
-<<<<<<< HEAD
-
-		shortestPath(8,8,6,6);
-		runShortestRoute();
-
-		shortestPath(6,6,2,1);
-		runShortestRoute();
-
-	/*while(1){
-		//walkFisrtLeft();
-=======
 	playSound(soundException);
 	delay(1000);
 	showMeDawae();
 	delay(1000);
 	playSound(soundBeepBeep);
 	delay(1000);
-	/*while(1){
-		walkFisrtLeft();
->>>>>>> f6df459a47d219ec05b2566f4c4592e1752db815
-		displayMap();
-		//DisplayBlockcount();
-	  //move_forward();
-	}*/
+	shortestPath(8,8,4,4);
+	runShortestRoute();
 
-<<<<<<< HEAD
-=======
-		//shortsestPath(8,8,4,4);
-		//runShortestRoute();
-	}*/
->>>>>>> f6df459a47d219ec05b2566f4c4592e1752db815
 }
 //--------------------------------------------------------------------------------------
 
