@@ -106,7 +106,7 @@ char mapCountWalk[9][9]={
     0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0
+    0,0,0,0,0,0,0,0,1
 };
 
 
@@ -143,8 +143,13 @@ task main()
 	degreeBlock = getGyroDegrees(gyroSensor);
 	baseDegree = getGyroDegrees(gyroSensor);
 	//setBaseLeftRightDistance();
-
-	while(1){
+	playSound(soundException);
+	delay(1000);
+	showMeDawae();
+	delay(1000);
+	playSound(soundBeepBeep);
+	delay(1000);
+	/*while(1){
 		walkFisrtLeft();
 		displayMap();
 		//DisplayBlockcount();
@@ -152,7 +157,7 @@ task main()
 
 		//shortsestPath(8,8,4,4);
 		//runShortestRoute();
-	}
+	}*/
 }
 //--------------------------------------------------------------------------------------
 
@@ -311,7 +316,7 @@ while((getMotorEncoder(leftMotor) <= blockDistance) || (getMotorEncoder(rightMot
 			}
 		}//end while loop
 
-    //calPosition();
+    calPosition();
 }
 //--------------------------------------------------------------------------------------
 //Perfect!!
@@ -926,6 +931,8 @@ char isStackEmpty(){
 }
 
 void popStackAndRun(){
+		delay(500);
+		playSound(soundException);
 		route[0] = popStack();
 		if(route[0] != 99)runShortestRoute();
 }
@@ -937,6 +944,7 @@ void showMeDawae(){
 
     do{
     	checkWall();
+    	delay(500);
     	displayMap();
     	canPop = 1;
 
@@ -950,6 +958,7 @@ void showMeDawae(){
     				degreeBlock = getGyroDegrees(gyroSensor);
     				pushStack(1);
     				canPop = 0;
+    				continue;
     			}
     		}
     		else if(direction == 4){																		//left wall is 8
@@ -960,6 +969,7 @@ void showMeDawae(){
    					degreeBlock = getGyroDegrees(gyroSensor);
    					pushStack(8);
    					canPop = 0;
+   					continue;
     			}
     		}
     		else if(direction == 2){																		//left wall is 4
@@ -970,6 +980,7 @@ void showMeDawae(){
     				degreeBlock = getGyroDegrees(gyroSensor);
     				pushStack(4);
     				canPop = 0;
+    				continue;
     			}
     		}
     		else if(direction == 1){																		//left wall is 2
@@ -980,6 +991,7 @@ void showMeDawae(){
     				degreeBlock = getGyroDegrees(gyroSensor);
     				pushStack(2);
     				canPop = 0;
+    				continue;
     			}
     		}
     	}
@@ -990,8 +1002,9 @@ void showMeDawae(){
     			if(mapCountWalk[position[0]-1][position[1]] == 0){
     				move_forward();
     				degreeBlock = getGyroDegrees(gyroSensor);
-    				pushStack(8)
+    				pushStack(8);
     				canPop = 0;
+    				continue;
     			}
     		}
     		else if(direction == 4){																		//front wall is 4
@@ -1000,6 +1013,7 @@ void showMeDawae(){
     				degreeBlock = getGyroDegrees(gyroSensor);
     				pushStack(4);
     				canPop = 0;
+    				continue;
     			}
     		}
     		else if(direction == 2){																		//front wall is 2
@@ -1008,6 +1022,7 @@ void showMeDawae(){
     				degreeBlock = getGyroDegrees(gyroSensor);
     				pushStack(2);
     				canPop = 0;
+    				continue;
     			}
     		}
     		else if(direction == 1){																		//front wall is 1
@@ -1016,6 +1031,7 @@ void showMeDawae(){
     				degreeBlock = getGyroDegrees(gyroSensor);
     				pushStack(1);
     				canPop = 0;
+    				continue;
     			}
     		}
 	    }
@@ -1030,6 +1046,7 @@ void showMeDawae(){
    					degreeBlock = getGyroDegrees(gyroSensor);
    					pushStack(4);
    					canPop = 0;
+   					continue;
     			}
     		}
     		else if(direction == 4){																		//right wall is 2
@@ -1040,6 +1057,7 @@ void showMeDawae(){
    					degreeBlock = getGyroDegrees(gyroSensor);
    					pushStack(2);
    					canPop = 0;
+   					continue;
     			}
     		}
     		else if(direction == 2){																		//right wall is 1
@@ -1050,6 +1068,7 @@ void showMeDawae(){
    					degreeBlock = getGyroDegrees(gyroSensor);
    					pushStack(1);
    					canPop = 0;
+   					continue;
     			}
     		}
     		else if(direction == 1){																		//right wall is 8
@@ -1060,6 +1079,7 @@ void showMeDawae(){
    					degreeBlock = getGyroDegrees(gyroSensor);
    					pushStack(8);
    					canPop = 0;
+   					continue;
     			}
     		}
 	    }
