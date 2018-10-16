@@ -432,19 +432,11 @@ void main(){
     pushStack(4);
     printStack();
     direction = 4;
-
-    route[0] = popStack();
-    runShortestRoute();
-    route[0] = popStack();
-    runShortestRoute();
-    route[0] = popStack();
-    runShortestRoute();
-
-
     while(isStackEmpty()){
         route[0] = popStack();
         runShortestRoute();
     }
+
     //printf("______________\n");
     //printMap();
     //printMapV2();

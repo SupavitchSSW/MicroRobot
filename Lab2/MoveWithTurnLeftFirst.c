@@ -63,7 +63,7 @@ typedef struct{
 }Node;
 
 Node heap[HeapSize];
-char popRow=0,popCol=0,useHeap=0,createHeap=0,nextHeap=1,route[routeSize],stack[stackSize],topStack=0;
+char popRow=0,popCol=0,useHeap=0,createHeap=0,nextHeap=1,route[routeSize],stack[stackSize],topStack=1;
 
 // =======
 
@@ -83,6 +83,7 @@ int left_dis=0;
 float eiei=1;//0.78;//
 int right_dis=0;
 int front_dis=0;
+
 
 char map[9][9]={
     9,8,8,8,8,8,8,8,12,
@@ -813,7 +814,6 @@ void runShortestRoute(){
     char i;
 
     for(i = 0;i<strlen(route);i++){
-
         switch(route[i]){
         case 8:                             //8 revert to 2
             if(direction == 1){
@@ -925,6 +925,146 @@ char isStackEmpty(){
     else return 0;
 }
 
+void popStackAndRun(){
+		route[0] = popStack();
+		if(route[0] != 99)runShortestRoute();
+}
+
 void showMeDawae(){
-    checkWall();
+    //init stack
+    stack[0] = 99;
+    char canPop = 0;
+
+    do{
+    	checkWall();
+    	displayMap();
+    	canPop = 1;
+
+
+    	if(leftWall == 0){																						// ==================== left
+    		if(direction == 8){																					//left wall is 1
+    			if(mapCountWalk[position[0]][position[1]-1] == 0){
+    				checkFrontWall();
+    				turn90left();
+    				move_forward();
+    				degreeBlock = getGyroDegrees(gyroSensor);
+    				pushStack(1);
+    				canPop = 0;
+    			}
+    		}
+    		else if(direction == 4){																		//left wall is 8
+    			if(mapCountWalk[position[0]-1][position[1]] == 0){
+    				checkFrontWall();
+    				turn90left();
+    				move_forward();
+   					degreeBlock = getGyroDegrees(gyroSensor);
+   					pushStack(8);
+   					canPop = 0;
+    			}
+    		}
+    		else if(direction == 2){																		//left wall is 4
+    			if(mapCountWalk[position[0]][position[1]+1] == 0){
+    				checkFrontWall();
+    				turn90left();
+    				move_forward();
+    				degreeBlock = getGyroDegrees(gyroSensor);
+    				pushStack(4);
+    				canPop = 0;
+    			}
+    		}
+    		else if(direction == 1){																		//left wall is 2
+    			if(mapCountWalk[position[0]+1][position[1]] == 0){
+    				checkFrontWall();
+    				turn90left();
+    				move_forward();
+    				degreeBlock = getGyroDegrees(gyroSensor);
+    				pushStack(2);
+    				canPop = 0;
+    			}
+    		}
+    	}
+	    // ====================================================================================================
+
+    	if(frontWall == 0){																			//========================= front
+	    	if(direction == 8){																					//front wall is 8
+    			if(mapCountWalk[position[0]-1][position[1]] == 0){
+    				move_forward();
+    				degreeBlock = getGyroDegrees(gyroSensor);
+    				pushStack(8)
+    				canPop = 0;
+    			}
+    		}
+    		else if(direction == 4){																		//front wall is 4
+    			if(mapCountWalk[position[0]][position[1]+1] == 0){
+    				move_forward();
+    				degreeBlock = getGyroDegrees(gyroSensor);
+    				pushStack(4);
+    				canPop = 0;
+    			}
+    		}
+    		else if(direction == 2){																		//front wall is 2
+    			if(mapCountWalk[position[0]+1][position[1]] == 0){
+    				move_forward();
+    				degreeBlock = getGyroDegrees(gyroSensor);
+    				pushStack(2);
+    				canPop = 0;
+    			}
+    		}
+    		else if(direction == 1){																		//front wall is 1
+    			if(mapCountWalk[position[0]][position[1]-1] == 0){
+    				move_forward();
+    				degreeBlock = getGyroDegrees(gyroSensor);
+    				pushStack(1);
+    				canPop = 0;
+    			}
+    		}
+	    }
+	    // ====================================================================================================
+
+	    if(rightWall == 0){
+	    	if(direction == 8){																					//right wall is 4
+    			if(mapCountWalk[position[0]][position[1]+1] == 0){
+    				checkFrontWall();
+    				turn90right();
+    				move_forward();
+   					degreeBlock = getGyroDegrees(gyroSensor);
+   					pushStack(4);
+   					canPop = 0;
+    			}
+    		}
+    		else if(direction == 4){																		//right wall is 2
+    			if(mapCountWalk[position[0]+1][position[1]] == 0){
+    				checkFrontWall();
+    				turn90right();
+    				move_forward();
+   					degreeBlock = getGyroDegrees(gyroSensor);
+   					pushStack(2);
+   					canPop = 0;
+    			}
+    		}
+    		else if(direction == 2){																		//right wall is 1
+    			if(mapCountWalk[position[0]][position[1]-1] == 0){
+    				checkFrontWall();
+    				turn90right();
+    				move_forward();
+   					degreeBlock = getGyroDegrees(gyroSensor);
+   					pushStack(1);
+   					canPop = 0;
+    			}
+    		}
+    		else if(direction == 1){																		//right wall is 8
+    			if(mapCountWalk[position[0]-1][position[1]] == 0){
+    				checkFrontWall();
+    				turn90right();
+    				move_forward();
+   					degreeBlock = getGyroDegrees(gyroSensor);
+   					pushStack(8);
+   					canPop = 0;
+    			}
+    		}
+	    }
+
+	    if(canPop)popStackAndRun();
+
+    }while(!isStackEmpty());
 }
