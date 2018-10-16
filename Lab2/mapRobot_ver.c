@@ -1,7 +1,8 @@
 
 #define wallDistance 20
 #define HeapSize 30
-
+#define routeSize 30
+#define stackSize 50
 
 /*
 bit 0000
@@ -61,7 +62,7 @@ typedef struct{
 
 Node heap[HeapSize];
 
-char direction=8,posRow = 8, posCol = 8,popRow=0,popCol=0,useHeap=0,createHeap=0,nextHeap=1,route[30];
+char direction=8,posRow = 8, posCol = 8,popRow=0,popCol=0,useHeap=0,createHeap=0,nextHeap=1,route[routeSize],stack[stackSize],topStack=0;
 
 char getMapWall(char row,char col){
     return map[row][col];
@@ -377,8 +378,35 @@ void runShortestRoute(){
         printf("M");
         //move_forward();
     }
-
+    //clear route
+    for(i = 0;i<strlen(route);i++)route[i]=0;
     //finish
+}
+
+void pushStack(char num){
+    stack[topStack++] = num;
+}
+
+char popStack(){
+    if(topStack == 0){
+        return 0;
+    }
+    char temp = stack[--topStack];
+    stack[topStack] = 0;
+    return temp;
+}
+
+char isStackEmpty(){
+    if(topStack == 0)return 1;
+    else return 0;
+}
+
+void printStack(){
+    int i =0;
+    for(i=0;i<strlen(stack);i++){
+        printf("%d ",stack[i]);
+    }
+    printf("\n");
 }
 
 
@@ -390,12 +418,33 @@ void main(){
     setMapWall(5,4,getWall(10,50,10,1));
     setMapWall(4,4,getWall(50,10,10,8));*/
     //printf("%d",map[8][8] & 8);
-
+/*
     shortestPath(8,8,7,7);
     runShortestRoute();
     shortestPath(7,7,4,4);
     runShortestRoute();
+    shortestPath(4,4,8,8);
+    runShortestRoute();
+*/
+    pushStack(8);
+    pushStack(8);
+    pushStack(8);
+    pushStack(4);
+    printStack();
+    direction = 4;
 
+    route[0] = popStack();
+    runShortestRoute();
+    route[0] = popStack();
+    runShortestRoute();
+    route[0] = popStack();
+    runShortestRoute();
+
+
+    while(isStackEmpty()){
+        route[0] = popStack();
+        runShortestRoute();
+    }
     //printf("______________\n");
     //printMap();
     //printMapV2();

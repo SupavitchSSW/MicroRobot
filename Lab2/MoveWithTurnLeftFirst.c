@@ -19,6 +19,8 @@ float  janeBoth = 0.11;
 #define baseFrontCollis 8
 #define wallDistance 18//field check wall
 #define routeSize 30
+#define HeapSize 30
+#define stackSize 50
 
 //Jane
 void checkWall();
@@ -50,16 +52,18 @@ void clearHeap();
 void printHeap();
 void shortestPath(char targetRow,char targetCol,char startRow,char startCol);
 void runShortestRoute();
+void pushStack(char num);
+char popStack();
+char isStackEmpty();
 
 // ======= Shortest Path
-#define HeapSize 30
 //heap
 typedef struct{
     signed char next,row,col;
 }Node;
 
 Node heap[HeapSize];
-char popRow=0,popCol=0,useHeap=0,createHeap=0,nextHeap=1,route[routeSize];
+char popRow=0,popCol=0,useHeap=0,createHeap=0,nextHeap=1,route[routeSize],stack[stackSize],topStack=0;
 
 // =======
 
@@ -554,18 +558,12 @@ void calPosition(){
 
 
 //====================================== Field code ======================
+
 void checkFrontWall(){
-	front_dis 	= getUSDistance(frontUltra);
-	if(front_dis<=baseFront){
-		moveUntilCollis();
-	}
-
-}
-
-
-
-void showMeDawae(){
-    checkWall();
+		front_dis 	= getUSDistance(frontUltra);
+		if(front_dis<=baseFront){
+			moveUntilCollis();
+		}
 }
 
 char getMapWall(char row,char col){
@@ -903,4 +901,30 @@ void runShortestRoute(){
     //clear route
     for(i = 0;i<routeSize;i++)route[i]=0;
     //finish
+}
+
+
+// ================ Search map by FIELD
+
+
+void pushStack(char num){
+    stack[topStack++] = num;
+}
+
+char popStack(){
+    if(topStack == 0){
+        return 0;
+    }
+    char temp = stack[--topStack];
+    stack[topStack] = 0;
+    return temp;
+}
+
+char isStackEmpty(){
+    if(topStack == 0)return 1;
+    else return 0;
+}
+
+void showMeDawae(){
+    checkWall();
 }
