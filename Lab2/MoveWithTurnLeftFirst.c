@@ -12,7 +12,6 @@
 float jane = 0.0738; //maybe work at 0.048 --> 0.058 --> 0.068 better work -->0.072 almost perfect -->0.0725 not ok -->0.0738 Perfect
                     //recent use 0.0894
 float  janeBoth = 0.11;
-#define Jay 0.14
 
 #define baseFront 	20//check wall in func check
 #define baseWall    18//check wall in func check
@@ -21,7 +20,7 @@ float  janeBoth = 0.11;
 #define wallDistance 18//field check wall
 #define routeSize 30
 #define HeapSize 30
-#define stackSize 40
+#define stackSize 50
 
 //Jane
 void checkWall();
@@ -372,14 +371,14 @@ void turn90left(){
 
 	motor[leftMotor] = -11;//-13;
 	motor[rightMotor] = 11;//13;
-	wait1Msec(200);
-	while(baseDegree != -88){
+	wait1Msec(180);
+	while(baseDegree != -87){
 		baseDegree = getGyroDegrees(gyroSensor);
-		if(baseDegree > -88){
+		if(baseDegree > -86){
 			 motor[leftMotor] = -10;
 		   motor[rightMotor] = 10;
 		}
-		else if(baseDegree <= -88){
+		else if(baseDegree <= -86){
 			 motor[leftMotor]  = 3;
 		   motor[rightMotor] = -3;
 	}
@@ -592,7 +591,8 @@ void setMapWall(char row,char col,char wall){
     	map[row][col+1] = map[row][col+1] | 1;
     }
     if((wall & 2) && (row+1 <= 8 )){      //add top wall to bottom box
-      map[row+1][col] = map[row+1][col] | 8;
+    	char a = row+1;
+      map[a][col] = map[a][col] | 8;
     }
     if((wall & 1) && (col-1 >= 0 )){      //add right wall to left box
     	char a = col-1;
