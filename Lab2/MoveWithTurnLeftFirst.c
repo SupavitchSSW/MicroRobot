@@ -155,7 +155,7 @@ task main()
      delay(2000);
 	   playSound(soundBeepBeep);
 	   delay(1000);
-	   shortestPath(8,8,4,4);
+	   shortestPath(8,8,8,6);
 	   runShortestRoute();
 	   motor[leftMotor]  = 0;
 	   motor[rightMotor] = 0;
@@ -738,7 +738,7 @@ void shortestPath(char targetRow,char targetCol,char startRow,char startCol){
         }while(route[index++] != 0);
 
 		//set shortest path count
-		countShortestPathBlock = strlen(route);
+		countShortestPathBlock = strlen(route)+1;
 
         //clear heap
         clearHeap();
