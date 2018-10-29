@@ -50,7 +50,6 @@ char map[10][10]={
 };
 
 char mapCountWalk[10][10]={
-
     1,1,1,1,1,1,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1,
@@ -61,7 +60,6 @@ char mapCountWalk[10][10]={
     1,1,1,1,1,1,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1
-
 };
 
 void main(){
@@ -109,7 +107,8 @@ int showMeDabox(){
                 if(!searchNext())return 0;
             }
             shortestPath(position[0],position[1],searchTarget[0],searchTarget[1]);
-        }while(runShortestRoute());
+
+        }while(!runShortestRoute());
     }while(searchNext());
     return 0;
 }
