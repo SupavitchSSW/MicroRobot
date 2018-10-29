@@ -31,7 +31,7 @@ typedef struct{
 }Node;
 
 Node heap[HeapSize];
-char popRow=0,popCol=0,useHeap=0,createHeap=0,nextHeap=1,route[routeSize],stack[stackSize],topStack=1,countShortestPathBlock=0,direction=8;
+char popRow=0,popCol=0,useHeap=0,createHeap=0,nextHeap=1,route[routeSize],stack[stackSize],topStack=1,countShortestPathBlock=0,direction=8,countBox=0;
 char position[2]={8,9},searchTarget[2]={8,9};
 
 // =======
@@ -107,8 +107,9 @@ int showMeDabox(){
                 if(!searchNext())return 0;
             }
             shortestPath(position[0],position[1],searchTarget[0],searchTarget[1]);
-
-        }while(!runShortestRoute());
+            a = runShortestRoute();
+            if(a == 2)return 0;
+        }while(a);
     }while(searchNext());
     return 0;
 }
@@ -302,7 +303,7 @@ void shortestPath(char targetRow,char targetCol,char startRow,char startCol){
         printf("\n");
     }*/
 
-    printMapCountWalk();
+    //printMapCountWalk();
 
     //return route
 }
@@ -375,23 +376,32 @@ int runShortestRoute(){
         }
         printf("M");
         // move with check front have a box ?
+        if(countBox == 8){
+            for(int j = 0;j<routeSize;j++)route[j]=0;
+            printf(" >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> BREAK ");
+            return 2;
+        }
         if(moveForward() == 0){
-            if(route[i] == 8){
+            if(route[i] == 8 && mapCountWalk[position[0]+1][position[1]] == 1){
                 mapCountWalk[position[0]+1][position[1]] = 0;
-            }else if(route[i] == 4){
+                countBox++;
+            }else if(route[i] == 4 && mapCountWalk[position[0]+1][position[1]] == 1){
                 mapCountWalk[position[0]][position[1]-1] = 0;
-            }else if(route[i] == 2){
+                countBox++;
+            }else if(route[i] == 2 && mapCountWalk[position[0]-1][position[1]] == 1){
                 mapCountWalk[position[0]-1][position[1]] = 0;
-            }else if(route[i] == 1){
+                countBox++;
+            }else if(route[i] == 1 &&  mapCountWalk[position[0]][position[1]+1] == 1){
                 mapCountWalk[position[0]][position[1]+1] = 0;
+                countBox++;
             }
-            return 0;
+            return 1;
         }
     }
     //clear route
     for(i = 0;i<routeSize;i++)route[i]=0;
     //finish
-    return 1;
+    return 0;
 }
 
 
