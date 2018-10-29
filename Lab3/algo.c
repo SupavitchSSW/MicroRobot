@@ -83,90 +83,92 @@ char mapCountWalk[10][10]={
 
 void main(){
     // showMeDabox();
-    printf("eiei");
-    mergeBox();
-    for(int i=0;i<10;i++){
-        for(int j=0;j<10;j++){
-            printf("%d",map[i][j]);
-        }
-    }
+    //generate 2box and mark
+    //mergeBox();
 }
 //====================================== Jane Code =======================
 void mergeBox(){
     for(int i=1;i<X;i++){
         for(int j=1;j<Y;j++){
-             printf("eiei");
             if(map[i][j]==orange){
                 //one Box check around Box
                 if(map[i-1][j]!=orange && map[i+1][j]!=orange && map[i][j-1]!=orange && map[i][j+1]!=orange){
                     //Top of Box
-                    if(map[i][j-1]!=orange && map[i][j-1]!=black){
-                        map[i][j-1]=grab1BoxDOWN;
+                    if(map[i-1][j]!=orange && map[i-1][j]!=black){
+                        map[i-1][j]=grab1BoxDOWN;
                     }
                     //Buttom of Box
-                    if(map[i][j+1]!=orange && map[i][j+1]!=black){
-                        map[i][j+1]=grab1BoxUP;
+                    if(map[i+1][j]!=orange && map[i+1][j]!=black){
+                        map[i+1][j]=grab1BoxUP;
                     }
                     //Left of Box
-                    if(map[i-1][j]!=orange && map[i-1][j]!=black){
-                        map[i-1][j]=grab1BoxRIGHT;
+                    if(map[i][j-1]!=orange && map[i][j-1]!=black){
+                        map[i][j-1]=grab1BoxRIGHT;
                     }
                     //Right of Box
-                    if(map[i+1][j]!=orange && map[i+1][j]!=black){
-                        map[i+1][j]=grab1BoxLEFT;
+                    if(map[i][j+1]!=orange && map[i][j+1]!=black){
+                        map[i][j+1]=grab1BoxLEFT;
                     }
                 }//End if check around 1 Box
 
                 //two Box check Box
                 else{
                     //Box in Column
-                    if((map[i][j-1]==orange)||(map[i][j+1]==orange)){
+                    if((map[i-1][j]==orange)||map[i+1][j]==orange){
                         //UP
-                        if(map[i][j-1]==orange){
-                            if(map[i][j-2]!=black){
-                                map[i][j-2]=grab2BoxDOWN;
+                        if(map[i-1][j]==orange){
+                            if(map[i-2][j]!=black){
+                                map[i-2][j]=grab2BoxDOWN;
                             }
-                            if(map[i][j+1]!=black){
-                                map[i][j+1]=grab2BoxUP;
+                            if(map[i+1][j]!=black){
+                                map[i+1][j]=grab2BoxUP;
                             }
                         }
                         //DOWN
-                        else if(map[i][j+1]==orange){
-                            if(map[i][j+2]!=black){
-                                map[i][j+2]=grab2BoxUP;
+                        else if(map[i+1][j]==orange){
+                            if(map[i+2][j]!=black){
+                                map[i+2][j]=grab2BoxUP;
                             }
-                            if(map[i][j-1]!=black){
-                                map[i][j-1]=grab2BoxDOWN;
+                            if(map[i-1][j]!=black){
+                                map[i-1][j]=grab2BoxDOWN;
                             }
                         }
-                        map[i][j-1]=grab1BoxDOWN;
+
                     }//End if Box in Column
 
                     //Box in Row
-                    if((map[i-1][j]==orange)||(map[i+1][j]==orange)){
+                    if((map[i][j-1]==orange)||(map[i][j+1]==orange)){
                         //LEFT
-                        if(map[i-1][j]==orange){
-                            if(map[i-2][j]!=black){
-                                map[i-2][j]=grab2BoxRIGHT;
+                        if(map[i][j-1]==orange){
+                            if(map[i][j-2]!=black){
+                                map[i][j-2]=grab2BoxRIGHT;
                             }
-                            if(map[i+1][j]!=black){
-                                map[i+1][j]=grab2BoxLEFT;
+                            if(map[i][j+1]!=black){
+                                map[i][j+1]=grab2BoxLEFT;
                             }
                         }
                         //RIGHT
-                        if(map[i+1][j]==orange){
-                            if(map[i-1][j]!=black){
-                                map[i-1][j]=grab2BoxRIGHT;
+                        if(map[i][j+1]==orange){
+                            if(map[i][j-1]!=black){
+                                map[i][j-1]=grab2BoxRIGHT;
                             }
-                            if(map[i+2][j]!=black){
-                                map[i+2][j]=grab2BoxLEFT;
+                            if(map[i][j+2]!=black){
+                                map[i][j+2]=grab2BoxLEFT;
                             }
                         }
                     }//End if Box in Row
                 }//End if check 2 Box
+            for(int i=0;i<10;i++){
+                for(int j=0;j<10;j++){
+                    printf("%d ",map[i][j]);
+                }
+                printf("\n");
+            }
+            printf("\n");
 
             }//End if check IS Box
 
+        
         }//End for J
     }//End for I
 
