@@ -1,6 +1,6 @@
 #pragma config(Sensor, S1,     frontSensor,    sensorEV3_Ultrasonic)
 #pragma config(Sensor, S2,     rightTrack,     sensorEV3_Color)
-#pragma config(Sensor, S3,     colorCheck,     sensorEV3_Color, modeEV3Color_Color)
+#pragma config(Sensor, S3,     colorCheck,     sensorLightActive)
 #pragma config(Sensor, S4,     leftTrack,      sensorEV3_Color)
 #pragma config(Motor,  motorA,          grabMotor,     tmotorEV3_Medium, PIDControl, encoder)
 #pragma config(Motor,  motorC,          rightMotor,    tmotorEV3_Large, PIDControl, driveRight, encoder)
@@ -12,102 +12,133 @@
 #define Kd 0.25
 #define Kc 0.001
 
-#define target 600
 #define baseSpeed 40
 #define turnSpeed 15
 #define orangeBox 7
-#define innerLineValue 10
-#define outerLineValue 5
-#define moveColorSensorDiff 2
-#define whiteTreshold 10
-#define blackTreshold 2
-#define baseDistance 15
+#define whiteTreshold 66
+#define blackTreshold 20
+
+#define baseDistance 20
+#define checkColorDistance 10
 
 
 // describe function
-static void turnleft(void);
-static void moveStright(void);
+static void turnLeft(void);
+static void turnRight(void);
 static void stopMoving(void);
-static void movereverse(int targetDistance);
-static char moveStrightTarget(int backward);
+static char moveStrightTarget();
 static void grab();
 static void releaseGrab(void);
 static void calDirection(char dirFunc);
 static void calPosition(void);
-static void moveAgain(void);
 static void moveAgainEncoder(void);
+static void moveReverse(void);
+static void moveAgainToCheckColor(void);
+
 
 //global variabal
-int frontColorSensor = 0;
 int direction = 8;
 int position[2] = {8,8};
-char resultAfterMove = 'x';
 bool isDone = false ;
+int rightSensor = getColorReflected(rightTrack);
+int leftSensor  = getColorReflected(leftTrack);
+int frontSensorValue = getUSDistance(frontSensor);
+float error = rightSensor - leftSensor;
+float motorSpeed = baseSpeed;
+float lastError = error;
+int boxColor = 2;
 
 task main()
 {
 	   while(1){
 
-	  /* frontColorSensor = SensorValue(colorCheck);
-	   moveStright();
-	   if(frontColorSensor >= orangeBox){
-	      stopMoving();
-	      releaseGrab();
-	      moveStrightTarget(80);
-	      grab(isGrab);
-	      movereverse(500);
-	   } */
-
-     moveStrightTarget(1);
+     moveStrightTarget();
      moveAgainEncoder();
-     //turnleft();
+     turnLeft();
 
    }
 }
 
-char moveStrightTarget(int backward){
+void justMove(int backward){
 
-    int rightSensor = getColorReflected(rightTrack);
-	  int leftSensor  = getColorReflected(leftTrack);
-	  int frontSensorValue = getUSDistance(frontSensor);
-	  float error = rightSensor - leftSensor;
-    float motorSpeed = baseSpeed;
-    float lastError = error;
-    char varRet = 'x';
-    isDone = false ;
-
-    while(!isDone){
 
        rightSensor = getColorReflected(rightTrack);
 	     leftSensor = getColorReflected(leftTrack);
 	     frontSensorValue = getUSDistance(frontSensor);
+
 	     error = (rightSensor - leftSensor)+Kc;
        lastError = error;
-       motorSpeed = Kp * error + Kd * (error - lastError);
 
-       motor[leftMotor]  = backward*baseSpeed - motorSpeed;
-       motor[rightMotor] = backward*baseSpeed + motorSpeed;
+       motorSpeed = Kp * error + Kd * (error - lastError);
+			 wait1Msec(10);
+       motor[leftMotor]  = backward*(baseSpeed - motorSpeed);
+       motor[rightMotor] = backward*(baseSpeed + motorSpeed);
+
+
+}
+
+int moveStrightTarget(){
+
+    rightSensor = getColorReflected(rightTrack);
+	  leftSensor  = getColorReflected(leftTrack);
+	  frontSensorValue = getUSDistance(frontSensor);
+	  error = rightSensor - leftSensor;
+    motorSpeed = baseSpeed;
+    lastError = error;
+
+    int box = 1;
+    isDone = false ;
+
+    // =========================  looping move and check if box ahead ==============================================
+    while(!isDone){
+
+       justMove(1);
 
        if(frontSensorValue <= baseDistance ){
-            int colorSensor = SensorValue(colorCheck);
-            if(colorSensor >= orangeBox ){
-            	varRet = 'o';
-            }
-            else {
-            	varRet = 'b';
-            }
+
+            moveAgainToCheckColor();
+            moveReverse();
+
             isDone = true;
+            box = 0;
        }
 
-       if(rightSensor <= 2 && leftSensor <= 2){
+       if(rightSensor <= 20 && leftSensor <= 20){
           isDone = true;
-          varRet = 'w';
+          calPosition();
+          box = 1;
        }
 
 
     }
+
     stopMoving();
-    return varRet;
+    return box;
+
+}
+void moveReverse(){
+
+    while(rightSensor >= 20 && leftSensor >= 20){
+
+       justMove(-1);
+
+    }
+    moveAgainEncoder();
+
+}
+void moveAgainToCheckColor(){
+
+    while(frontSensorValue <= checkColorDistance){
+    	 justMove(1);
+    }
+
+    int colorSensorValue = SensorValue(colorCheck);
+    if(colorSensorValue >= orangeBox){
+    	  boxColor = 1;
+    }
+    else{
+    	  boxColor = 0;
+    }
 
 }
 void stopMoving(){
@@ -116,33 +147,13 @@ void stopMoving(){
 	  motor[rightMotor] = 0 ;
 	  delay(200);
 }
-void moveAgain(){
 
-	  int rightSensor = getColorReflected(rightTrack);
-	  int leftSensor = getColorReflected(leftTrack);
-	  float error = rightSensor - leftSensor;
-    float motorSpeed = baseSpeed;
-    float lastError = error;
-	  while(rightSensor <= 10 && leftSensor <= 10){
-
-       rightSensor = getColorReflected(rightTrack);
-	     leftSensor = getColorReflected(leftTrack);
-	     error = rightSensor - leftSensor;
-       lastError = error;
-       motorSpeed = Kp * error + Kd * (error - lastError);
-       motor[leftMotor]  = baseSpeed - motorSpeed;
-       motor[rightMotor] = baseSpeed + motorSpeed;
-
-     }
-     stopMoving();
-
-}
 void moveAgainEncoder(){
 	   resetMotorEncoder(leftMotor);
 	   resetMotorEncoder(rightMotor);
 	   int leftdist = getMotorEncoder(leftMotor);
 	   int rightdist = getMotorEncoder(rightMotor);
-	   while(leftdist <= 100 && rightdist <= 100){
+	   while(leftdist <= 145 && rightdist <= 145){
 
 	     leftdist = getMotorEncoder(leftMotor);
 	     rightdist = getMotorEncoder(rightMotor);
@@ -152,30 +163,38 @@ void moveAgainEncoder(){
 	   }
 	   stopMoving();
 }
-void movereverse(int targetDistance){
 
 
-}
-
-void turnleft(){
+void turnRight(){
 
 	  int rightSensor = getColorReflected(rightTrack);
 	  int leftSensor = getColorReflected(leftTrack);
 
 	      rightSensor = getColorReflected(rightTrack);
 	      leftSensor  = getColorReflected(leftTrack);
-	  	  int diff = rightSensor - leftSensor;
 	  	  while(leftSensor >= blackTreshold ){
 
 	          leftSensor = getColorReflected(leftTrack);
+	          rightSensor = getColorReflected(rightTrack);
 
 	  	  	  motor[rightMotor] = -turnSpeed;
 	  	  	  motor[leftMotor] =  turnSpeed;
 
 	  	  }
-	  	  stopMoving();
 
-	  	  while(diff >= 2 || leftSensor <= 8 || rightSensor <= 8){
+
+	  	  while(rightSensor >= blackTreshold ){
+
+	  	  	  leftSensor = getColorReflected(leftTrack);
+	          rightSensor = getColorReflected(rightTrack);
+
+	  	  	  motor[rightMotor] = -turnSpeed;
+	  	  	  motor[leftMotor] =  turnSpeed;
+
+	  	  }
+
+
+	  	  while( rightSensor <= whiteTreshold){
 
 	  	      rightSensor = getColorReflected(rightTrack);
 	          leftSensor = getColorReflected(leftTrack);
@@ -185,9 +204,55 @@ void turnleft(){
 
 	  	  }
 
+	  calDirection('r');
+	  stopMoving();
+}
+
+void turnLeft(){
+
+	  int rightSensor = getColorReflected(rightTrack);
+	  int leftSensor = getColorReflected(leftTrack);
+
+	      rightSensor = getColorReflected(rightTrack);
+	      leftSensor  = getColorReflected(leftTrack);
+	  	  while(rightSensor >= blackTreshold ){
+
+	          leftSensor = getColorReflected(leftTrack);
+	          rightSensor = getColorReflected(rightTrack);
+
+	  	  	  motor[rightMotor] =   turnSpeed;
+	  	  	  motor[leftMotor]  =  -turnSpeed;
+
+	  	  }
+
+
+	  	  while(leftSensor >= blackTreshold ){
+
+	  	  	  leftSensor = getColorReflected(leftTrack);
+	          rightSensor = getColorReflected(rightTrack);
+
+	  	  	  motor[rightMotor] = turnSpeed;
+	  	  	  motor[leftMotor] =  -turnSpeed;
+
+	  	  }
+
+
+	  	  while( leftSensor <= whiteTreshold){
+
+	  	      rightSensor = getColorReflected(rightTrack);
+	          leftSensor = getColorReflected(leftTrack);
+
+	  	      motor[rightMotor] = turnSpeed;
+	  	  	  motor[leftMotor]  =  -turnSpeed;
+
+	  	  }
+
 	  calDirection('l');
 	  stopMoving();
 }
+
+
+
 
 void grab(){
 
