@@ -1,4 +1,6 @@
 #include <stdio.h>
+//Jane
+void mergeBox();
 
 //field
 #define wallDistance 18
@@ -32,39 +34,146 @@ typedef struct{
 
 Node heap[HeapSize];
 char popRow=0,popCol=0,useHeap=0,createHeap=0,nextHeap=1,route[routeSize],stack[stackSize],topStack=1,countShortestPathBlock=0,direction=8,countBox=0;
-char position[2]={8,9},searchTarget[2]={8,9};
+char position[2]={8,1},searchTarget[2]={8,9};
 
-// =======
-
+//Jane variable
+int X=9,Y=9;
+//*****************************************
+//color 
+//black=40 orange=41
+int black=40,orange=41;
+//grab1Box '^'=8 'v'=2 '>'= 4 '<' = 1
+int grab1BoxUP=8,grab1BoxDOWN=2,grab1BoxRIGHT=4,grab1BoxLEFT=1;
+//drop1Box '^'=18 'v'=12 '>'=14 '<' =11
+int drop1BoxUP=18,drop1BoxDOWN=12,drop1BoxRIGHT=14,drop1BoxLEFT=11;
+//grab2Box '^'=28 'v'=22 '>'=24 '<' =21
+int grab2BoxUP=28,grab2BoxDOWN=22,grab2BoxRIGHT=24,grab2BoxLEFT=21;
+//drop2Box '^'=38 'v'=32 '>'=34 '<' =31
+int drop2BoxUP=38,drop2BoxDOWN=32,drop2BoxRIGHT=34,drop2BoxLEFT=31;
+//***************************************** 
 char map[10][10]={
-    0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0
+  //0  1  2  3  4  5  6  7  8  9
+    0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,0 ,41,0 ,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,40,0 ,0 ,0 ,0 ,
+    0 ,40,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
+    0 ,0 ,0 ,0 ,40,0 ,0 ,0 ,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
+    0 ,0 ,0 ,41,41,0 ,40,0 ,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
+    0 ,0 ,41,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0
 };
 
+//serch canWalk=1 cant=0
 char mapCountWalk[10][10]={
+  //0 1 2 3 4 5 6 7 8 9
     1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,0,1,1,1,
+    1,1,1,1,1,0,1,1,1,1,
+    1,0,1,1,1,1,1,1,1,1,
+    1,1,1,1,0,1,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1,
+    1,1,1,0,0,1,0,1,1,1,
     1,1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,1,
+    1,1,0,1,1,1,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1
 };
 
 void main(){
-    showMeDabox();
+    // showMeDabox();
+    printf('eiei');
+    mergeBox();
+    for(int i=0;i<10;i++){
+        for(int j=0;j<10;j++){
+            printf('%d ',map[i][j]);
+        }
+    }
 }
+//====================================== Jane Code =======================
+void mergeBox(){
+    for(int i=1;i<X;i++){
+        for(int j=1;j<Y;j++){
+            printf('eiei');
+            if(map[i][j]==orange){
+                //one Box check around Box
+                if(map[i-1][j]!=orange && map[i+1][j]!=orange && map[i][j-1]!=orange && map[i][j+1]!=orange){
+                    //Top of Box
+                    if(map[i][j-1]!=orange && map[i][j-1]!=black){
+                        map[i][j-1]=grab1BoxDOWN;
+                    }
+                    //Buttom of Box
+                    if(map[i][j+1]!=orange && map[i][j+1]!=black){
+                        map[i][j+1]=grab1BoxUP;
+                    }
+                    //Left of Box
+                    if(map[i-1][j]!=orange && map[i-1][j]!=black){
+                        map[i-1][j]=grab1BoxRIGHT;
+                    }
+                    //Right of Box
+                    if(map[i+1][j]!=orange && map[i+1][j]!=black){
+                        map[i+1][j]=grab1BoxLEFT;
+                    }
+                }//End if check around 1 Box
+
+                //two Box check Box
+                else{
+                    //Box in Column
+                    if((map[i][j-1]==orange)||(map[i][j+1]==orange)){
+                        //UP
+                        if(map[i][j-1]==orange){
+                            if(map[i][j-2]!=black){
+                                map[i][j-2]=grab2BoxDOWN;
+                            }
+                            if(map[i][j+1]!=black){
+                                map[i][j+1]=grab2BoxUP;
+                            }
+                        }
+                        //DOWN
+                        else if(map[i][j+1]==orange){
+                            if(map[i][j+2]!=black){
+                                map[i][j+2]=grab2BoxUP;
+                            }
+                            if(map[i][j-1]!=black){
+                                map[i][j-1]=grab2BoxDOWN;
+                            }
+                        }
+                        map[i][j-1]=grab1BoxDOWN;
+                    }//End if Box in Column
+                    
+                    //Box in Row
+                    if((map[i-1][j]==orange)||(map[i+1][j]==orange)){
+                        //LEFT
+                        if(map[i-1][j]==orange){
+                            if(map[i-2][j]!=black){
+                                map[i-2][j]=grab2BoxRIGHT;
+                            }
+                            if(map[i+1][j]!=black){
+                                map[i+1][j]=grab2BoxLEFT;
+                            }
+                        }
+                        //RIGHT
+                        if(map[i+1][j]==orange){
+                            if(map[i-1][j]!=black){
+                                map[i-1][j]=grab2BoxRIGHT;
+                            }
+                            if(map[i+2][j]!=black){
+                                map[i+2][j]=grab2BoxLEFT;
+                            }
+                        }
+                    }//End if Box in Row
+                }//End if check 2 Box
+
+            }//End if check IS Box
+
+        }//End for J
+    }//End for I    
+
+}
+void findNearBox(){
+    
+}
+
 
 //====================================== Field code ======================
 void printMapCountWalk(){
