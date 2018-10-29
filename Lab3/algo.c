@@ -21,7 +21,7 @@ void runShortestRoute();
 void pushStack(char num);
 char popStack(void);
 char isStackEmpty(void);
-
+void showMeDabox();
 // ======= Shortest Path
 //heap
 typedef struct{
@@ -30,40 +30,56 @@ typedef struct{
 
 Node heap[HeapSize];
 char popRow=0,popCol=0,useHeap=0,createHeap=0,nextHeap=1,route[routeSize],stack[stackSize],topStack=1,countShortestPathBlock=0,direction=8;
+char position[2]={9,9};
 
 // =======
 
-char map[9][9]={
-	  0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0
+char map[10][10]={
+    0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0
 };
 
-char mapCountWalk[9][9]={
+char mapCountWalk[10][10]={
 
-    0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,1
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1
 
 };
 
 void main(){
 
+    showMeDabox();
+
+    printf("\n");
+    for(int i =0;i<10;i++){
+        for(int j = 0;j<10;j++){
+            printf("%d ",mapCountWalk[i][j]);
+        }
+        printf("\n");
+    }
 }
 
 //====================================== Field code ======================
+void showMeDabox(){
+    shortestPath(9,9,6,6);
+    runShortestRoute();
+}
+
 
 void appendHeap(char row,char col){
     heap[createHeap].next = nextHeap;
@@ -120,11 +136,11 @@ void shortestPath(char targetRow,char targetCol,char startRow,char startCol){
         char preRow,preCol,preDirection,isCheck;
     }Box;
 
-    Box mapBox[9][9];
+    Box mapBox[10][10];
 
     //init mapNode
-    for(i = 0;i<9;i++){
-        for(j=0;j<9;j++){
+    for(i = 0;i<10;i++){
+        for(j=0;j<10;j++){
             mapBox[i][j].isCheck = 0;
             mapBox[i][j].preRow = 0;
             mapBox[i][j].preCol = 0;
@@ -139,7 +155,7 @@ void shortestPath(char targetRow,char targetCol,char startRow,char startCol){
         do{
             //printf("search Row: %d Col: %d Wall: %d | \n",row,col,map[row][col]);
             //left
-            if(((map[row][col] & 1) == 0) && (mapCountWalk[row][col-1] == 1) &&(mapBox[row][col-1].isCheck == 0)){
+            if((col-1 >= 0) && (mapCountWalk[row][col-1] == 1) &&(mapBox[row][col-1].isCheck == 0)){
           //      printf("left  ");
                             //set value to next Box
                 mapBox[row][col-1].isCheck = 1;
@@ -153,7 +169,7 @@ void shortestPath(char targetRow,char targetCol,char startRow,char startCol){
                 appendHeap(row,col-1);
             }
             //top
-            if( ((map[row][col] & 8) == 0) && (mapCountWalk[row-1][col] == 1) && (mapBox[row-1][col].isCheck == 0)){
+            if((row-1 >= 0) &&(mapCountWalk[row-1][col] == 1) && (mapBox[row-1][col].isCheck == 0)){
           //      printf("Top  ");
                 //set value to next Box
                 mapBox[row-1][col].isCheck = 1;
@@ -167,7 +183,7 @@ void shortestPath(char targetRow,char targetCol,char startRow,char startCol){
                 appendHeap(row-1,col);
             }
             //right
-            if(((map[row][col] & 4) == 0 )&& (mapCountWalk[row][col+1] == 1 )&&( mapBox[row][col+1].isCheck == 0)){
+            if((col+1 <= 9) &&(mapCountWalk[row][col+1] == 1 )&&( mapBox[row][col+1].isCheck == 0)){
          //       printf("right  ");
                             //set value to next Box
                 mapBox[row][col+1].isCheck = 1;
@@ -181,7 +197,7 @@ void shortestPath(char targetRow,char targetCol,char startRow,char startCol){
                 appendHeap(row,col+1);
             }
             //bottom
-            if(((map[row][col] & 2) == 0) && (mapCountWalk[row+1][col] == 1) && (mapBox[row+1][col].isCheck == 0)){
+            if((row+1 <= 9) &&(mapCountWalk[row+1][col] == 1) && (mapBox[row+1][col].isCheck == 0)){
           //      printf("bottom  ");
                             //set value to next Box
                 mapBox[row+1][col].isCheck = 1;
@@ -223,11 +239,11 @@ void shortestPath(char targetRow,char targetCol,char startRow,char startCol){
         clearHeap();
 
         //print route
-				/*
+
         for(i=0;i<index-1;i++){
             printf("%d ",route[i]);
 
-        }*/
+        }
 
 
         index = 0;
@@ -236,9 +252,9 @@ void shortestPath(char targetRow,char targetCol,char startRow,char startCol){
 
     //print searched box
 
-    /*.
-    for(i = 0;i<9;i++){
-        for(j=0;j<9;j++){
+
+    for(i = 0;i<10;i++){
+        for(j=0;j<10;j++){
             printf("%d ",mapBox[i][j].isCheck);
         }
         printf("\n");
@@ -246,16 +262,28 @@ void shortestPath(char targetRow,char targetCol,char startRow,char startCol){
     printf("===================\n");
 
     //print mapBox direction
-    for(i = 0;i<9;i++){
-        for(j=0;j<9;j++){
+    for(i = 0;i<10;i++){
+        for(j=0;j<10;j++){
             printf("%d ",mapBox[i][j].preDirection);
         }
         printf("\n");
     }
 
-    */
+
 
     //return route
+}
+
+int moveForward(){
+    int a;
+    scanf("%d",&a);
+    if(a == 1){
+        if(direction == 8)position[0]--;
+        else if(direction == 4)position[1]++;
+        else if(direction == 2)position[0]++;
+        else if(direction == 1)position[1]--;
+    }
+    return (char)a;
 }
 
 void runShortestRoute(){
@@ -274,7 +302,6 @@ void runShortestRoute(){
             }
             //debug
             direction = 2;
-
             break;
         case 4:                             //4 revert to 1
             if(direction == 8){
@@ -296,6 +323,7 @@ void runShortestRoute(){
             }else if(direction == 1){
                 printf("R");
             }
+
             //debug
             direction = 8;
             break;
@@ -313,10 +341,24 @@ void runShortestRoute(){
         default:;
         }
         printf("M");
+        // move with check front have a box ?
+        if(moveForward() == 0){
+            if(route[i] == 8){
+                mapCountWalk[position[0]+1][position[1]] = 0;
+            }else if(route[i] == 4){
+                mapCountWalk[position[0]][position[1]-1] = 0;
+            }else if(route[i] == 2){
+                mapCountWalk[position[0]-1][position[1]] = 0;
+            }else if(route[i] == 1){
+                mapCountWalk[position[0]][position[1]+1] = 0;
+            }
+            return 0;
+        }
     }
     //clear route
     for(i = 0;i<routeSize;i++)route[i]=0;
     //finish
+    return 1;
 }
 
 
