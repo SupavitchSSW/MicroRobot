@@ -39,7 +39,7 @@ char position[2]={9,9},searchTarget[2]={8,9};
 //Jane variable
 int X=9,Y=9;
 //*****************************************
-//color 
+//color
 //black=40 orange=41
 int black=40,orange=41;
 //grab1Box '^'=8 'v'=2 '>'= 4 '<' = 1
@@ -50,7 +50,7 @@ int drop1BoxUP=18,drop1BoxDOWN=12,drop1BoxRIGHT=14,drop1BoxLEFT=11;
 int grab2BoxUP=28,grab2BoxDOWN=22,grab2BoxRIGHT=24,grab2BoxLEFT=21;
 //drop2Box '^'=38 'v'=32 '>'=34 '<' =31
 int drop2BoxUP=38,drop2BoxDOWN=32,drop2BoxRIGHT=34,drop2BoxLEFT=31;
-//***************************************** 
+//*****************************************
 char map[10][10]={
   //0  1  2  3  4  5  6  7  8  9
     0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
@@ -64,6 +64,7 @@ char map[10][10]={
     0 ,0 ,41,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
     0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0
 };
+
 
 //serch canWalk=1 cant=0
 char mapCountWalk[10][10]={
@@ -82,11 +83,11 @@ char mapCountWalk[10][10]={
 
 void main(){
     // showMeDabox();
-    printf('eiei');
+    printf("eiei");
     mergeBox();
     for(int i=0;i<10;i++){
         for(int j=0;j<10;j++){
-            printf('%d ',map[i][j]);
+            printf("%d",map[i][j]);
         }
     }
 }
@@ -94,7 +95,7 @@ void main(){
 void mergeBox(){
     for(int i=1;i<X;i++){
         for(int j=1;j<Y;j++){
-            printf('eiei');
+             printf("eiei");
             if(map[i][j]==orange){
                 //one Box check around Box
                 if(map[i-1][j]!=orange && map[i+1][j]!=orange && map[i][j-1]!=orange && map[i][j+1]!=orange){
@@ -140,7 +141,7 @@ void mergeBox(){
                         }
                         map[i][j-1]=grab1BoxDOWN;
                     }//End if Box in Column
-                    
+
                     //Box in Row
                     if((map[i-1][j]==orange)||(map[i+1][j]==orange)){
                         //LEFT
@@ -167,11 +168,11 @@ void mergeBox(){
             }//End if check IS Box
 
         }//End for J
-    }//End for I    
+    }//End for I
 
 }
 void findNearBox(){
-    
+
 }
 
 
