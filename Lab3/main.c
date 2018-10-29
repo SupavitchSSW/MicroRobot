@@ -14,12 +14,12 @@
 
 #define baseSpeed 50
 #define turnSpeed 15
-#define orangeBox 7
+#define BlackBox 11
 #define whiteTreshold 67
 #define blackTreshold 20
 
 #define baseDistance 17
-#define checkColorDistance 8
+#define checkColorDistance 8.5
 
 
 // =================================== FIELD ===================
@@ -94,6 +94,7 @@ static void moveReverse(void);
 static int moveAgainToCheckColor(void);
 static void justMove(void);
 static void justMoveBackward(void);
+static void displayMap(void);
 
 
 //global variabal
@@ -102,7 +103,7 @@ int leftSensor  = getColorReflected(leftTrack);
 int direction = 8;
 int position[2] = {9,9};
 bool isDone = false ;
-int frontSensorValue = getUSDistance(frontSensor);
+float frontSensorValue = getUSDistance(frontSensor);
 float error = rightSensor - leftSensor;
 float motorSpeed = baseSpeed;
 float lastError = error;
@@ -111,6 +112,7 @@ bool isGrab = true;
 task main()
 {
 	 showMeDabox();
+	 while(1){}
 
 }
 
@@ -176,7 +178,9 @@ int moveStrightTarget(){
     }
 
     stopMoving();
+    displayMap();
     return box;
+
 
 }
 int moveAgainToCheckColor(){
@@ -187,11 +191,11 @@ int moveAgainToCheckColor(){
     stopMoving();
 
     int colorSensorValue = SensorValue(colorCheck);
-    if(colorSensorValue >= orangeBox){
-    	  return 41;
+    if(colorSensorValue >= BlackBox){
+    	  return 40;
     }
     else{
-    	  return 40;
+    	  return 41;
     }
 
 
@@ -410,6 +414,22 @@ void calPosition(){
 	      position[0]--;
 	      break;
    }
+}
+void displayMap(){
+	long offsetyy = 0;
+	for(long i=0;i < 10;i++)
+	{
+		 long offsetxx = 0;
+		 for(long j=0;j < 10;j++)
+		 {
+		   string cat = "";
+		   sprintf(cat,"%d",map[i][j]);
+		   if(i == position[0] && j == position[1])displayStringAt(j+10+offsetxx,i+100-offsetyy ,"X" );
+		   else displayStringAt(j+10+offsetxx,i+100-offsetyy ,cat );
+		   offsetxx = offsetxx+14;
+		 }
+		 offsetyy = offsetyy+11;
+	}
 }
 
 
