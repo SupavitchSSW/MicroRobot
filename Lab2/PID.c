@@ -222,6 +222,7 @@ void move_forward(){
 		setMotorTarget(leftMotor,blockDistance,0);
 		setMotorTarget(rightMotor,blockDistance,0);
 		front_dis = getUSDistance(frontUltra);
+		int error ,last_error,sum_error = 0;
 
 while((getMotorEncoder(leftMotor) <= blockDistance) || (getMotorEncoder(rightMotor) <= blockDistance)) {
 
@@ -229,26 +230,8 @@ while((getMotorEncoder(leftMotor) <= blockDistance) || (getMotorEncoder(rightMot
 			right_dis 	= SensorValue(rightUltra);
 			front_dis 	= getUSDistance(frontUltra);
 
-      //when bot not on the right angle
-      //forceToStraight();
-
-			//when bot so close to the wall
-			if(left_dis <= 7 || right_dis <= 7) {
-           jane = 0.1;
-           janeBoth = 0.1;
-       }
-       else if(left_dis <= 5 || right_dis <= 5){
-           jane = 0.25;
-           janeBoth = 0.25;
-       }
-       else if(left_dis <= 250 || right_dis <= 250){
-           jane = 0.8;
-           janeBoth = 0.8;
-       }
-       else{
-           jane = 0.0783;
-           janeBoth = 0.08;
-       }
+			last_error = error;
+			sum_error += error;
 
 
 			//Only Right Wall
