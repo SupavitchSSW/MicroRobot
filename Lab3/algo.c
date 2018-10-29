@@ -1,6 +1,7 @@
 #include <stdio.h>
 //Jane
 void mergeBox();
+void findNearBox(int positionX,int positionY);
 
 //field
 #define wallDistance 18
@@ -38,6 +39,7 @@ char position[2]={9,9},searchTarget[2]={8,9};
 
 //Jane variable
 int X=9,Y=9;
+int min=100,minX=0,minY=0;
 //*****************************************
 //color
 //black=40 orange=41
@@ -84,7 +86,15 @@ char mapCountWalk[10][10]={
 void main(){
     // showMeDabox();
     //generate 2box and mark
-    //mergeBox();
+    mergeBox();
+    for(int i=0;i<10;i++){
+                for(int j=0;j<10;j++){
+                    printf("%d ",map[i][j]);
+                }
+                printf("\n");
+            }
+            printf("\n");
+    findNearBox(position[0],position[1]);
 }
 //====================================== Jane Code =======================
 void mergeBox(){
@@ -158,13 +168,13 @@ void mergeBox(){
                         }
                     }//End if Box in Row
                 }//End if check 2 Box
-            for(int i=0;i<10;i++){
-                for(int j=0;j<10;j++){
-                    printf("%d ",map[i][j]);
-                }
-                printf("\n");
-            }
-            printf("\n");
+            // for(int i=0;i<10;i++){
+            //     for(int j=0;j<10;j++){
+            //         printf("%d ",map[i][j]);
+            //     }
+            //     printf("\n");
+            // }
+            // printf("\n");
 
             }//End if check IS Box
 
@@ -173,10 +183,25 @@ void mergeBox(){
     }//End for I
 
 }
-void findNearBox(){
+
+void findNearBox(int positionX,int positionY){
+    //find NEAR box
+    for(int i=0;i<10;i++){
+        for(int j=0;j<10;j++){
+            if((map[i][j]<black) && (map[i][j]>0)){
+                if(((positionX-i)+(positionY-j))<=min){
+                    minX=i;
+                    minY=j;
+                    min=(positionX-i)+(positionY-j);
+                    // printf("%d \n",map[minX][minY]);
+                    // printf("minX=%d minY=%d",minX,minY);
+                    // printf(" min=%d\n",min);
+                }
+            }
+        }
+    }//END find NEAR box
 
 }
-
 
 //====================================== Field code ======================
 void printMapCountWalk(){
