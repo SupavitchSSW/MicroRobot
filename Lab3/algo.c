@@ -17,11 +17,13 @@ void popHeap();
 void clearHeap();
 void printHeap();
 void shortestPath(char targetRow,char targetCol,char startRow,char startCol);
-void runShortestRoute();
+int runShortestRoute();
 void pushStack(char num);
 char popStack(void);
 char isStackEmpty(void);
-void showMeDabox();
+int showMeDabox();
+void printMapCountWalk();
+int searchNext();
 // ======= Shortest Path
 //heap
 typedef struct{
@@ -30,11 +32,12 @@ typedef struct{
 
 Node heap[HeapSize];
 char popRow=0,popCol=0,useHeap=0,createHeap=0,nextHeap=1,route[routeSize],stack[stackSize],topStack=1,countShortestPathBlock=0,direction=8;
-char position[2]={9,9};
+char position[2]={8,9},searchTarget[2]={8,9};
 
 // =======
 
 char map[10][10]={
+    0,0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,0,
@@ -62,22 +65,53 @@ char mapCountWalk[10][10]={
 };
 
 void main(){
-
     showMeDabox();
+}
 
-    printf("\n");
+//====================================== Field code ======================
+void printMapCountWalk(){
+    printf("\n ======================== Map count walk\n");
     for(int i =0;i<10;i++){
         for(int j = 0;j<10;j++){
-            printf("%d ",mapCountWalk[i][j]);
+            if(position[0] == i && position[1] == j) printf("X ");
+            else printf("%d ",mapCountWalk[i][j]);
         }
         printf("\n");
     }
 }
 
-//====================================== Field code ======================
-void showMeDabox(){
-    shortestPath(9,9,6,6);
-    runShortestRoute();
+int searchNext(){
+    if(searchTarget[0] != 0 || searchTarget[1] != 8){
+        if(searchTarget[0]%2 == 0){ //8 6 4 2 0 search left
+            if(searchTarget[1] == 1){
+                searchTarget[0]--;  // row -1 (up)
+            }else{
+                searchTarget[1]--;  // col -1 (left)
+            }
+        }else{                      //9 7 5 3 1 search right
+            if(searchTarget[1] == 8){
+                searchTarget[0]--;  // row -1 (up)
+                if(searchTarget[0] == 0)return 0; //check case end point have box
+            }else{
+                searchTarget[1]++;  // col -1 (left)
+            }
+        }
+        return 1;
+    }else return 0;
+}
+
+int showMeDabox(){
+    char a;
+    do{
+        do{
+            printMapCountWalk();
+            while(mapCountWalk[searchTarget[0]][searchTarget[1]] == 0){
+                if(!searchNext())return 0;
+            }
+            shortestPath(position[0],position[1],searchTarget[0],searchTarget[1]);
+        }while(runShortestRoute());
+    }while(searchNext());
+    return 0;
 }
 
 
@@ -252,24 +286,24 @@ void shortestPath(char targetRow,char targetCol,char startRow,char startCol){
 
     //print searched box
 
-
+/*
     for(i = 0;i<10;i++){
         for(j=0;j<10;j++){
             printf("%d ",mapBox[i][j].isCheck);
         }
         printf("\n");
     }
-    printf("===================\n");
-
+    printf("===================\n");*/
+/*
     //print mapBox direction
     for(i = 0;i<10;i++){
         for(j=0;j<10;j++){
             printf("%d ",mapBox[i][j].preDirection);
         }
         printf("\n");
-    }
+    }*/
 
-
+    printMapCountWalk();
 
     //return route
 }
@@ -286,7 +320,7 @@ int moveForward(){
     return (char)a;
 }
 
-void runShortestRoute(){
+int runShortestRoute(){
     char i;
 
     for(i = 0;i<strlen(route);i++){
