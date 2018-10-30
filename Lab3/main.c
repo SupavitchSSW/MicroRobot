@@ -103,14 +103,20 @@ char popStack(void);
 char isStackEmpty(void);
 int showMeDabox();
 int searchNext();
-
+int dropYourBox(char t_row,char t_col,char size);
+int decodeRoute();
+int checkShortestRoute();
+void addRouteCode(char c,int n);
+int moveForwardTemp();
+int checkTurnRight(char row,char col,char d);
+int checkTurnLeft(char row,char col,char d);
 //heap
 typedef struct{
     signed char next,row,col;
 }Node;
 
 Node heap[HeapSize];
-char popRow=0,popCol=0,useHeap=0,createHeap=0,nextHeap=1,route[routeSize],stack[stackSize],topStack=1,countShortestPathBlock=0,countBox=0;
+char popRow=0,popCol=0,useHeap=0,createHeap=0,nextHeap=1,route[routeSize],routeCode[routeSize],routeCodeIndex=0,stack[stackSize],topStack=1,countShortestPathBlock=0,direction=8,countBox=0;
 char searchTarget[2]={8,9};
 
 char map[10][10]={
@@ -127,6 +133,19 @@ char map[10][10]={
 };
 
 char mapCountWalk[10][10]={
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1
+};
+
+char mapBlockTurn[10][10]={
     1,1,1,1,1,1,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1,
