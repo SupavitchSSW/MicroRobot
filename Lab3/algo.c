@@ -52,48 +52,79 @@ int min=100,minX=0,minY=0;
 //black=40 orange=41
 int black=40,orange=41;
 //grab1Box '^'=8 'v'=2 '>'= 4 '<' = 1
-int grab1BoxUP=8,grab1BoxDOWN=2,grab1BoxRIGHT=4,grab1BoxLEFT=1;
+int grab1BoxUP=8 ,grab1BoxDOWN=2 ,grab1BoxRIGHT=4 ,grab1BoxLEFT=1;
 //drop1Box '^'=18 'v'=12 '>'=14 '<' =11
-int drop1BoxUP=18,drop1BoxDOWN=12,drop1BoxRIGHT=14,drop1BoxLEFT=11;
+int grab2BoxUP=18,grab2BoxDOWN=12,grab2BoxRIGHT=14,grab2BoxLEFT=11;
 //grab2Box '^'=28 'v'=22 '>'=24 '<' =21
-int grab2BoxUP=28,grab2BoxDOWN=22,grab2BoxRIGHT=24,grab2BoxLEFT=21;
+int drop1BoxUP=28,drop1BoxDOWN=22,drop1BoxRIGHT=24,drop1BoxLEFT=21;
 //drop2Box '^'=38 'v'=32 '>'=34 '<' =31
 int drop2BoxUP=38,drop2BoxDOWN=32,drop2BoxRIGHT=34,drop2BoxLEFT=31;
 //*****************************************
+//Not have Box
+/*char map[10][10]={
+  //0  1  2  3  4  5  6  7  8  9
+    0 ,0 ,0 ,0 ,0 ,0 ,0 ,22,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,0 ,24,0 ,21,0 ,
+    0 ,0 ,0 ,0 ,0 ,0 ,0 ,28,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,0 ,32,0 ,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
+    0 ,0 ,22,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
+    0 ,24,0 ,21,0 ,0 ,38,0 ,0 ,0 ,
+    0 ,0 ,28,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0
+};*/
+
+//Have Box
 char map[10][10]={
   //0  1  2  3  4  5  6  7  8  9
-    0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
-    0 ,0 ,0 ,0 ,0 ,0 ,41,0 ,0 ,0 ,
-    0 ,0 ,0 ,0 ,0 ,40,0 ,0 ,0 ,0 ,
-    0 ,40,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
-    0 ,0 ,0 ,0 ,40,0 ,0 ,0 ,0 ,0 ,
-    0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
-    0 ,0 ,0 ,41,41,0 ,40,0 ,0 ,0 ,
-    0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
-    0 ,0 ,41,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,0 ,0 ,22,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,41,24,0 ,21,0 ,
+    0 ,0 ,0 ,0 ,0 ,0 ,0 ,28,0 ,0 ,
+    0 ,40,0 ,0 ,41,0 ,0 ,0 ,0 ,0 ,
+    0 ,0 ,0 ,0 ,41,0 ,40,0 ,0 ,0 ,
+    0 ,0 ,40,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
+    0 ,0 ,22,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
+    0 ,24,0 ,21,0 ,40,38,0 ,41,0 ,
+    0 ,0 ,28,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
     0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0
 };
 
 
 //serch canWalk=1 cant=0
+/*
 char mapCountWalk[10][10]={
   //0 1 2 3 4 5 6 7 8 9
     1,1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,0,1,1,1,
     1,1,1,1,1,0,1,1,1,1,
-    1,0,1,1,1,1,1,1,1,1,
-    1,1,1,1,0,1,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1,
-    1,1,1,0,0,1,0,1,1,1,
-    1,1,1,1,1,1,1,1,1,1,
+    1,0,1,1,0,1,1,1,1,1,
+    1,1,1,1,0,1,0,1,1,1,
     1,1,0,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,0,1,1,0,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1
+};*/
+
+char mapCountWalk[10][10]={
+  //0 1 2 3 4 5 6 7 8 9
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,0,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,0,1,1,0,1,1,1,1,1,
+    1,1,1,1,0,1,0,1,1,1,
+    1,1,0,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,0,1,1,0,1,
+    1,1,1,1,1,1,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1
 };
 
 void main(){
     // showMeDabox();
     //generate 2box and mark
-
+    printMap();
     mergeBox();
     printMap();
     printf("\n=====================\n FIELD code  INPUT number 1 for move each step \n======================\n");
@@ -111,19 +142,19 @@ void mergeBox(){
                 //one Box check around Box
                 if(map[i-1][j]!=orange && map[i+1][j]!=orange && map[i][j-1]!=orange && map[i][j+1]!=orange){
                     //Top of Box
-                    if(map[i-1][j]!=orange && map[i-1][j]!=black){
+                    if(map[i-1][j]!=orange && map[i-1][j]!=black && map[i-1][j]<20){
                         map[i-1][j]=grab1BoxDOWN;
                     }
                     //Buttom of Box
-                    if(map[i+1][j]!=orange && map[i+1][j]!=black){
+                    if(map[i+1][j]!=orange && map[i+1][j]!=black && map[i+1][j]<20){
                         map[i+1][j]=grab1BoxUP;
                     }
                     //Left of Box
-                    if(map[i][j-1]!=orange && map[i][j-1]!=black){
+                    if(map[i][j-1]!=orange && map[i][j-1]!=black && map[i][j-1]<20){
                         map[i][j-1]=grab1BoxRIGHT;
                     }
                     //Right of Box
-                    if(map[i][j+1]!=orange && map[i][j+1]!=black){
+                    if(map[i][j+1]!=orange && map[i][j+1]!=black && map[i][j+1]<20){
                         map[i][j+1]=grab1BoxLEFT;
                     }
                 }//End if check around 1 Box
@@ -134,19 +165,19 @@ void mergeBox(){
                     if((map[i-1][j]==orange)||map[i+1][j]==orange){
                         //UP
                         if(map[i-1][j]==orange){
-                            if(map[i-2][j]!=black){
+                            if(map[i-2][j]!=black && map[i-2][j]<20){
                                 map[i-2][j]=grab2BoxDOWN;
                             }
-                            if(map[i+1][j]!=black){
+                            if(map[i+1][j]!=black && map[i+1][j]<20){
                                 map[i+1][j]=grab2BoxUP;
                             }
                         }
                         //DOWN
                         else if(map[i+1][j]==orange){
-                            if(map[i+2][j]!=black){
+                            if(map[i+2][j]!=black && map[i+2][j]<20){
                                 map[i+2][j]=grab2BoxUP;
                             }
-                            if(map[i-1][j]!=black){
+                            if(map[i-1][j]!=black && map[i-1][j]<20){
                                 map[i-1][j]=grab2BoxDOWN;
                             }
                         }
@@ -157,19 +188,19 @@ void mergeBox(){
                     if((map[i][j-1]==orange)||(map[i][j+1]==orange)){
                         //LEFT
                         if(map[i][j-1]==orange){
-                            if(map[i][j-2]!=black){
+                            if(map[i][j-2]!=black && map[i][j-2]<20){
                                 map[i][j-2]=grab2BoxRIGHT;
                             }
-                            if(map[i][j+1]!=black){
+                            if(map[i][j+1]!=black && map[i][j+1]<20){
                                 map[i][j+1]=grab2BoxLEFT;
                             }
                         }
                         //RIGHT
                         if(map[i][j+1]==orange){
-                            if(map[i][j-1]!=black){
+                            if(map[i][j-1]!=black && map[i][j-1]<20){
                                 map[i][j-1]=grab2BoxRIGHT;
                             }
-                            if(map[i][j+2]!=black){
+                            if(map[i][j+2]!=black && map[i][j+2]<20){
                                 map[i][j+2]=grab2BoxLEFT;
                             }
                         }
@@ -195,29 +226,37 @@ void findNearBox(int positionX,int positionY){
     //find NEAR box
     for(int i=0;i<10;i++){
         for(int j=0;j<10;j++){
-            if((map[i][j]<black) && (map[i][j]>0)){
+            if((map[i][j]< drop1BoxLEFT ) && (map[i][j]>0)){
                 if(((positionX-i)+(positionY-j))<=min){
                     searchTarget[0]=i;
+                    searchTarget[1]=j;
                     minX=i;
                     minY=j;
-                    searchTarget[1]=j;
                     min=(positionX-i)+(positionY-j);
-                    printf("%d \n",map[minX][minY]);
-                    printf("minX=%d minY=%d",searchTarget[0],searchTarget[1]);
-                    printf(" min=%d\n",min);
+                    //printf("%d \n",map[minX][minY]);
+                    //printf("minX=%d minY=%d",searchTarget[0],searchTarget[1]);
+                    //printf(" min=%d\n",min);
                 }
             }
         }
     }//END find NEAR box
-    printf("near pos is (%d , %d)\n",minX,minY);
+
+    if(map[minX][minY]>=grab1BoxLEFT && map[minX][minY] < grab2BoxLEFT){
+        //return 41;
+    }
+    else if(map[minX][minY]>= grab2BoxLEFT && map[minX][minY] < drop1BoxLEFT){
+        //return 42;
+    }
+    //printf("near pos is (%d , %d)\n",minX,minY);
 }
+
 void grabNearBox(){
+    //while(1)
     shortestPath(position[0],position[1],searchTarget[0],searchTarget[1]);
     runShortestRoute();
-    //setPosition();
     turnRobotToBox();
     //test();
-    deleteMark();
+    //deleteMark();
 
 }
 void setPosition(){
@@ -339,9 +378,7 @@ void deleteMark(){
             map[position[0]][position[1]-1]=0;
             map[position[0]][position[1]]=0;
             map[position[0]+1][position[1]-1]=0;
-            // this -11 is bug?. i will put this for you to see
-            yahhh check this -11
-            >> map[position[0]-11][position[1]-1]=0;
+            map[position[0]-1][position[1]-1]=0;
 
             mapCountWalk[position[0]][position[1]-1]= 1;
         }
