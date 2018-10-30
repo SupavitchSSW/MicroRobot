@@ -82,7 +82,7 @@ char mapCountWalk[10][10]={
     1,1,1,0,1,1,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1,
     1,0,1,1,1,1,1,1,1,1,
-    0,1,1,1,0,1,1,0,1,1,
+    0,1,1,1,0,1,1,1,1,1,
     1,0,1,1,1,1,1,0,1,1,
     1,1,1,1,1,0,1,1,1,1,
     1,1,1,1,1,0,1,1,0,1,
@@ -120,7 +120,7 @@ void main(){
     printMapCountWalk();
 */
     printMapCountWalk();
-    dropYourBox(4,6,41);
+    dropYourBox(4,6,42);
 
 
 }
@@ -448,14 +448,14 @@ void test(){
     }
 }
 void turnLeft(){
-    printf("L");
+    //printf("L");
     if(direction == 8)direction = 1;
     else if(direction == 4)direction = 8;
     else if(direction == 2)direction = 4;
     else if(direction == 1)direction = 2;
 }
 void turnRight(){
-    printf("R");
+    //printf("R");
     if(direction == 8)direction = 4;
     else if(direction == 4)direction = 2;
     else if(direction == 2)direction = 1;
@@ -882,7 +882,7 @@ int moveForwardTemp(){
 void addRouteCode(char c,int n){
     for(int i =0;i<n;i++){
         routeCode[routeCodeIndex] = c;
-        printf("%c-%d",c,routeCodeIndex);
+        printf("%c",c,routeCodeIndex);
         routeCodeIndex++;
     }
 }
@@ -1014,8 +1014,23 @@ int checkShortestRoute(){
     return 1;
 }
 
+int decodeRoute(){
+    for(int i =0;i<routeCodeIndex;i++){
+        char code = routeCode[i];
+        printf("%c\n",code);
+        if(code == 'L'){
+            turnLeft();
+        }else if(code == 'R'){
+            turnRight();
+        }else if(code == 'M'){
+            moveForward();
+            printMapCountWalk();
+        }
+    }
+}
+
 int dropYourBox(char t_row,char t_col,char size){
-    if(size == 41){
+
         printf("Start %d,%d : Target %d,%d\n",position[0],position[1],t_row,t_col);
         char a;
 
@@ -1042,12 +1057,19 @@ int dropYourBox(char t_row,char t_col,char size){
         for(int i = 0;i<strlen(routeCode);i++){
             printf("%c",routeCode[i]);
         }
-    }
+        printf("\n");
+    //run code
+    decodeRoute();
 
     //clear route
     for(int i = 0;i<strlen(route);i++)route[i]=0;
     for(int i = 0;i<routeCodeIndex;i++)routeCode[i]=0;
     routeCodeIndex=0;
+
+    //clear map block turn
+    for(int i =0;i<10;i++)
+        for(int j=0;j<10;j++)
+            mapBlockTurn[i][j]=1;
 }
 
 
