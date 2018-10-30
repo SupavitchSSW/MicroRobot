@@ -952,8 +952,8 @@ void displayMap(){
 		 {
 		   string cat = "";
 		   sprintf(cat,"%d",map[i][j]);
-		   if(i == position[0] && j == position[1])displayStringAt(j+10+offsetxx,i+100-offsetyy ,"X" );
-		   else displayStringAt(j+10+offsetxx,i+100-offsetyy ,cat );
+		   if(i == position[0] && j == position[1])displayStringAt(j+10+offsetxx,i+125-offsetyy ,"X" );
+		   else displayStringAt(j+10+offsetxx,i+125-offsetyy ,cat );
 		   offsetxx = offsetxx+14;
 		 }
 		 offsetyy = offsetyy+11;
