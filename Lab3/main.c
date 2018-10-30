@@ -832,7 +832,7 @@ int runShortestRoute(){
                 mapCountWalk[position[0]+1][position[1]] = 0;
                 map[position[0]+1][position[1]] = re;
                 countBox++;
-            }else if(route[i] == 4 && mapCountWalk[position[0]+1][position[1]] == 1){
+            }else if(route[i] == 4 && mapCountWalk[position[0]][position[1]-1] == 1){
                 mapCountWalk[position[0]][position[1]-1] = 0;
                 map[position[0]][position[1]-1] = re;
                 countBox++;
