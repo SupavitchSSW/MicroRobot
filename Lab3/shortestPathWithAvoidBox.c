@@ -49,7 +49,7 @@ typedef struct{
 
 Node heap[HeapSize];
 char popRow=0,popCol=0,useHeap=0,createHeap=0,nextHeap=1,route[routeSize],routeCode[routeSize],routeCodeIndex=0,stack[stackSize],topStack=1,countShortestPathBlock=0,direction=8,countBox=0;
-char position[2]={2,2},searchTarget[2]={8,9};
+char position[2]={9,9},searchTarget[2]={8,9};
 
 //Jane variable
 int X=9,Y=9;
@@ -113,6 +113,7 @@ void main(){
     //clear route
     for(int i = 0;i<strlen(route);i++)route[i]=0;
     for(int i = 0;i<strlen(routeCode);i++)routeCode[i]=0;
+    showMeDabox();
     // showMeDabox();
     //generate 2box and mark
 /*
@@ -125,9 +126,10 @@ void main(){
     printMap();
     printMapCountWalk();
 */
+/*
     printMapCountWalk();
     dropYourBox(7,2,42);
-
+*/
 
 }
 //====================================== Jane Code =======================
@@ -807,7 +809,7 @@ int runShortestRoute(){
                 mapCountWalk[position[0]+1][position[1]] = 0;
                 map[position[0]+1][position[1]] = re;
                 countBox++;
-            }else if(route[i] == 4 && mapCountWalk[position[0]+1][position[1]] == 1){
+            }else if(route[i] == 4 && mapCountWalk[position[0]][position[1]-1] == 1){
                 mapCountWalk[position[0]][position[1]-1] = 0;
                 map[position[0]][position[1]-1] = re;
                 countBox++;
