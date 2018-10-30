@@ -12,7 +12,7 @@
 #define Kd 0.015
 #define Kc 0.001
 
-#define baseSpeed 50
+#define baseSpeed 60
 #define turnSpeed 15
 #define BlackBox 11
 #define whiteTreshold 67
@@ -92,9 +92,12 @@ static void calPosition(void);
 static void moveAgainEncoder(void);
 static void moveReverse(void);
 static int moveAgainToCheckColor(void);
-static void justMove(void);
+static void justMove(int speed);
 static void justMoveBackward(void);
 static void displayMap(void);
+static void moveForward(void);
+static void moveToRelease(void);
+static void moveToGrab(void);
 
 
 //global variabal
@@ -111,12 +114,12 @@ bool isGrab = true;
 
 task main()
 {
-	 showMeDabox();
-	 while(1){}
+	 moveForward();
+   moveToGrab();
 
 }
 
-void justMove(){
+void justMove(int speed){
 
 
        rightSensor = getColorReflected(rightTrack);
@@ -128,15 +131,15 @@ void justMove(){
 
        motorSpeed = Kp * error + Kd * (error - lastError);
 			 wait1Msec(10);
-       motor[leftMotor]  = (baseSpeed - motorSpeed);
-       motor[rightMotor] = (baseSpeed + motorSpeed);
+       motor[leftMotor]  = (speed - motorSpeed);
+       motor[rightMotor] = (speed + motorSpeed);
 
 
 }
 void justMoveBackward(){
 
-       motor[leftMotor]  = -baseSpeed ;
-       motor[rightMotor] = -baseSpeed ;
+       motor[leftMotor]  = -30 ;
+       motor[rightMotor] = -30 ;
 
 }
 
@@ -151,11 +154,13 @@ int moveStrightTarget(){
 
     int box = 1;
     isDone = false ;
+    playSound(soundUpwardTones);
+
 
     // =========================  looping move and check if box ahead ==============================================
     while(!isDone){
 
-       justMove();
+       justMove(baseSpeed);
 
        if(frontSensorValue <= baseDistance ){
             stopMoving();
@@ -183,10 +188,44 @@ int moveStrightTarget(){
 
 
 }
+void moveForward(){
+
+    rightSensor = getColorReflected(rightTrack);
+	  leftSensor  = getColorReflected(leftTrack);
+	  frontSensorValue = getUSDistance(frontSensor);
+	  error = rightSensor - leftSensor;
+    motorSpeed = baseSpeed;
+    lastError = error;
+
+    int box = 1;
+    isDone = false ;
+    playSound(soundUpwardTones);
+
+
+    // =========================  looping move and check if box ahead ==============================================
+    while(!isDone){
+
+       justMove(baseSpeed);
+
+
+       if(rightSensor <= 17 && leftSensor <= 17){
+          moveAgainEncoder();
+          isDone = true;
+          box = 1;
+       }
+
+
+    }
+
+    stopMoving();
+    displayMap();
+
+
+}
 int moveAgainToCheckColor(){
 
     while(frontSensorValue >= checkColorDistance){
-    	 justMove();
+    	 justMove(50);
     }
     stopMoving();
 
@@ -254,6 +293,49 @@ void moveAgainEncoder(){
 
 	   }
 	   stopMoving();
+}
+void moveToRelease(){
+
+     resetMotorEncoder(leftMotor);
+	   resetMotorEncoder(rightMotor);
+	   int leftdist = getMotorEncoder(leftMotor);
+	   int rightdist = getMotorEncoder(rightMotor);
+	   while(leftdist <= 180 && rightdist <= 180){
+
+	     leftdist = getMotorEncoder(leftMotor);
+	     rightdist = getMotorEncoder(rightMotor);
+
+	     rightSensor = getColorReflected(rightTrack);
+	     leftSensor = getColorReflected(leftTrack);
+	     frontSensorValue = getUSDistance(frontSensor);
+
+	     error = (rightSensor - leftSensor)+Kc;
+       lastError = error;
+
+       motorSpeed = Kp * error + Kd * (error - lastError);
+			 wait1Msec(10);
+       motor[leftMotor]  = (baseSpeed - motorSpeed);
+       motor[rightMotor] = (baseSpeed + motorSpeed);
+
+	   }
+	   stopMoving();
+	   releaseGrab();
+	   moveReverse();
+	   grab();
+
+}
+void moveToGrab(){
+
+	   releaseGrab();
+	   frontSensorValue = getUSDistance(frontSensor);
+	   while(frontSensorValue >= 6.5){
+    	 justMove(50);
+     }
+	   stopMoving();
+
+	   grab();
+	   moveReverse();
+
 }
 
 
