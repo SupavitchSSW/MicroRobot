@@ -13,7 +13,7 @@
 #define Kc 0.001
 
 #define baseSpeed 60
-#define turnSpeed 15
+#define turnSpeed 10
 #define BlackBox 11
 #define whiteTreshold 67
 #define blackTreshold 20
@@ -94,6 +94,7 @@ static void moveReverse(void);
 static int moveAgainToCheckColor(void);
 static void justMove(int speed);
 static void justMoveBackward(void);
+static void moveBackwardTarget(void);
 static void displayMap(void);
 static void moveForward(void);
 static void moveToRelease(void);
@@ -111,11 +112,20 @@ float error = rightSensor - leftSensor;
 float motorSpeed = baseSpeed;
 float lastError = error;
 bool isGrab = true;
+bool isGrabingBigBox = false;
 
 task main()
 {
 	 moveForward();
+	 turnLeft();
    moveToGrab();
+   moveForward();
+   moveForward();
+   moveForward();
+   moveBackwardTarget();
+   turnLeft();
+   moveForward();
+   moveToRelease();
 
 }
 
@@ -140,6 +150,21 @@ void justMoveBackward(){
 
        motor[leftMotor]  = -30 ;
        motor[rightMotor] = -30 ;
+
+}
+void moveBackwardTarget(){
+
+       resetMotorEncoder(leftMotor);
+	     resetMotorEncoder(rightMotor);
+	     int leftdist = getMotorEncoder(leftMotor);
+	     int rightdist = getMotorEncoder(rightMotor);
+	     while(leftdist >= -80 || rightdist >= -80){
+	        leftdist = getMotorEncoder(leftMotor);
+	        rightdist = getMotorEncoder(rightMotor);
+          motor[leftMotor]  = -30 ;
+          motor[rightMotor] = -30 ;
+       }
+       stopMoving();
 
 }
 
@@ -341,8 +366,12 @@ void moveToGrab(){
 
 void turnRight(){
 
-	  int rightSensor = getColorReflected(rightTrack);
-	  int leftSensor = getColorReflected(leftTrack);
+        if(isGrabingBigBox){
+        	 moveBackwardTarget();
+        }
+
+	      int rightSensor = getColorReflected(rightTrack);
+	      int leftSensor = getColorReflected(leftTrack);
 
 	      rightSensor = getColorReflected(rightTrack);
 	      leftSensor  = getColorReflected(leftTrack);
@@ -384,8 +413,12 @@ void turnRight(){
 
 void turnLeft(){
 
-	  int rightSensor = getColorReflected(rightTrack);
-	  int leftSensor = getColorReflected(leftTrack);
+        if(isGrabingBigBox){
+        	 moveBackwardTarget();
+        }
+
+	      int rightSensor = getColorReflected(rightTrack);
+	      int leftSensor = getColorReflected(leftTrack);
 
 	      rightSensor = getColorReflected(rightTrack);
 	      leftSensor  = getColorReflected(leftTrack);
@@ -433,6 +466,7 @@ void grab(){
        delay(1000);
        resetMotorEncoder(grabMotor);
        isGrab = false ;
+
 }
 
 void releaseGrab(){
