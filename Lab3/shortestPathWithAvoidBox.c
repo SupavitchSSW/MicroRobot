@@ -34,6 +34,7 @@ char isStackEmpty(void);
 int showMeDabox();
 void printMapCountWalk();
 int searchNext();
+int dropYourBox(char t_row,char t_col,char size);
 // ======= Shortest Path
 //heap
 typedef struct{
@@ -41,8 +42,8 @@ typedef struct{
 }Node;
 
 Node heap[HeapSize];
-char popRow=0,popCol=0,useHeap=0,createHeap=0,nextHeap=1,route[routeSize],stack[stackSize],topStack=1,countShortestPathBlock=0,direction=8,countBox=0;
-char position[2]={9,9},searchTarget[2]={8,9};
+char popRow=0,popCol=0,useHeap=0,createHeap=0,nextHeap=1,route[routeSize],routeCode[routeSize],routeCodeIndex=0,stack[stackSize],topStack=1,countShortestPathBlock=0,direction=8,countBox=0;
+char position[2]={1,5},searchTarget[2]={8,9};
 
 //Jane variable
 int X=9,Y=9;
@@ -62,15 +63,15 @@ int drop2BoxUP=38,drop2BoxDOWN=32,drop2BoxRIGHT=34,drop2BoxLEFT=31;
 //*****************************************
 char map[10][10]={
   //0  1  2  3  4  5  6  7  8  9
-    0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
-    0 ,0 ,0 ,0 ,0 ,0 ,41,0 ,0 ,0 ,
-    0 ,0 ,0 ,0 ,0 ,40,0 ,0 ,0 ,0 ,
-    0 ,40,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
-    0 ,0 ,0 ,0 ,40,0 ,0 ,0 ,0 ,0 ,
-    0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
-    0 ,0 ,0 ,41,41,0 ,40,0 ,0 ,0 ,
-    0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
-    0 ,0 ,41 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,0 ,0 ,22,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,41,24,0 ,21,0 ,
+    0 ,0 ,0 ,0 ,0 ,0 ,0 ,28,0 ,0 ,
+    0 ,40,0 ,0 ,41,0 ,0 ,0 ,0 ,0 ,
+    0 ,0 ,0 ,0 ,41,0 ,32,0 ,0 ,0 ,
+    0 ,0 ,40,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
+    0 ,0 ,22,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
+    0 ,24,0 ,21,0 ,40,38,0 ,41,0 ,
+    0 ,0 ,28,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
     0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0
 };
 
@@ -78,13 +79,13 @@ char map[10][10]={
 char mapCountWalk[10][10]={
   //0 1 2 3 4 5 6 7 8 9
     1,1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,0,1,1,1,
-    1,1,1,1,1,0,1,1,1,1,
-    1,0,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,0,1,
-    1,1,1,1,1,1,1,1,0,1,
-    1,1,1,0,0,1,1,1,1,1,
+    1,1,1,0,1,1,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1,
+    1,0,1,1,1,1,1,1,1,1,
+    0,1,1,1,0,1,1,0,1,1,
+    1,0,1,1,1,1,1,0,1,1,
+    1,1,1,1,1,0,1,1,1,1,
+    1,1,1,1,1,0,1,1,0,1,
     1,1,1,1,1,1,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1
 };
@@ -103,6 +104,9 @@ char mapBlockTurn[10][10]={
 };
 
 void main(){
+    //clear route
+    for(int i = 0;i<strlen(route);i++)route[i]=0;
+    for(int i = 0;i<strlen(routeCode);i++)routeCode[i]=0;
     // showMeDabox();
     //generate 2box and mark
 /*
@@ -116,17 +120,7 @@ void main(){
     printMapCountWalk();
 */
     printMapCountWalk();
-    //shortestPath(9,9,5,5);
-    //runShortestRoute();
-    shortestPath(9,9,6,5);
-    char a;
-    do{
-        for(int i = 0;i<strlen(route);i++)route[i]=0;
-        shortestPath(9,9,6,5);
-        a= checkShortestRoute();
-        printf("\nRun %d",a);
-    }while(!a);
-    //runShortestRoute();
+    dropYourBox(4,6,41);
 
 
 }
@@ -740,7 +734,6 @@ char isStackEmpty(){
     else return 0;
 }
 
-
 int runShortestRoute(){
     char i;
 
@@ -832,97 +825,6 @@ int runShortestRoute(){
 }
 
 // search map avoid box
-
-int runShortestRouteAvoidBox(){
-    char i;
-
-    for(i = 0;i<strlen(route);i++){
-        switch(route[i]){
-        case 8:                             //8 revert to 2
-            if(direction == 1){
-                printf("L");
-            }else if(direction == 8){
-                printf("LL");
-            }else if(direction == 4){
-                printf("R");
-
-            }
-            //debug
-            direction = 2;
-            break;
-        case 4:                             //4 revert to 1
-            if(direction == 8){
-                printf("L");
-
-            }else if(direction == 4){
-                printf("LL");
-            }else if(direction == 2){
-                printf("R");
-            }
-            //debug
-            direction = 1;
-            break;
-        case 2:                             //2 revert to 8
-            if(direction == 4){
-                printf("L");
-            }else if(direction == 2){
-                printf("LL");
-            }else if(direction == 1){
-                printf("R");
-            }
-
-            //debug
-            direction = 8;
-            break;
-        case 1:                             //1 revert to 4
-            if(direction == 2){
-                printf("L");
-            }else if(direction == 1){
-                printf("LL");
-            }else if(direction == 8){
-                printf("R");
-            }
-            //debug
-            direction = 4;
-            break;
-        default:;
-        }
-        printf("M");
-        // move with check front have a box ?
-        if(countBox == 8){
-            for(int j = 0;j<routeSize;j++)route[j]=0;
-            printf(" >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> BREAK ");
-            return 2;
-        }
-        char re = moveForward();
-        if(re != 1){
-            if(route[i] == 8 && mapCountWalk[position[0]+1][position[1]] == 1){
-                mapCountWalk[position[0]+1][position[1]] = 0;
-                map[position[0]+1][position[1]] = re;
-                countBox++;
-            }else if(route[i] == 4 && mapCountWalk[position[0]+1][position[1]] == 1){
-                mapCountWalk[position[0]][position[1]-1] = 0;
-                map[position[0]][position[1]-1] = re;
-                countBox++;
-            }else if(route[i] == 2 && mapCountWalk[position[0]-1][position[1]] == 1){
-                mapCountWalk[position[0]-1][position[1]] = 0;
-                map[position[0]-1][position[1]] = re;
-                countBox++;
-            }else if(route[i] == 1 &&  mapCountWalk[position[0]][position[1]+1] == 1){
-                mapCountWalk[position[0]][position[1]+1] = 0;
-                map[position[0]][position[1]+1] = re;
-                countBox++;
-            }
-            return 1;
-        }
-        printMapCountWalk();
-    }
-    //clear route
-    for(i = 0;i<routeSize;i++)route[i]=0;
-    //finish
-    return 0;
-}
-
 int checkTurnLeft(char row,char col,char d){
     if(d == 8){
         if(row>0 && mapCountWalk[row-1][col]==0)return 0;                   // TOP
@@ -977,63 +879,64 @@ int moveForwardTemp(){
     return (char)a;
 }
 
+void addRouteCode(char c,int n){
+    for(int i =0;i<n;i++){
+        routeCode[routeCodeIndex] = c;
+        printf("%c-%d",c,routeCodeIndex);
+        routeCodeIndex++;
+    }
+}
+
 int checkShortestRoute(){
     char positionTemp[2] ={position[0],position[1]},directionTemp = direction;
     char i;
-    printf("%s",route);
 
     for(i = 0;i<strlen(route);i++){
         switch(route[i]){
         case 8:                             //8 revert to 2
             if(directionTemp == 1){
-                if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp))printf("L");
-                else {
-                    mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
-                    return 0;
-                }
+                if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp))addRouteCode('L',1);
+                else if(checkTurnRight(positionTemp[0],positionTemp[1],1) && checkTurnRight(positionTemp[0],positionTemp[1],8) && checkTurnRight(positionTemp[0],positionTemp[1],4))addRouteCode('R',3);
+                    else{
+                        mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
+                        return 0;
+                    }
             }else if(directionTemp == 8){
-                if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp))printf("L");
-                else {
-                    mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
-                    return 0;
-                }
-                directionTemp = 4;
-                if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp))printf("L");
-                else {
-                    mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
-                    return 0;
-                }
+                if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp) && checkTurnLeft(positionTemp[0],positionTemp[1],1))addRouteCode('L',2);
+                else if(checkTurnRight(positionTemp[0],positionTemp[1],directionTemp) && checkTurnRight(positionTemp[0],positionTemp[1],4))addRouteCode('R',2);
+                    else {
+                        mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
+                        return 0;
+                    }
             }else if(directionTemp == 4){
-                if(checkTurnRight(positionTemp[0],positionTemp[1],directionTemp))printf("R");
-                else {
-                    mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
-                    return 0;
-                }
+                if(checkTurnRight(positionTemp[0],positionTemp[1],directionTemp))addRouteCode('R',1);
+                else if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp) && checkTurnLeft(positionTemp[0],positionTemp[1],8) && checkTurnLeft(positionTemp[0],positionTemp[1],1))addRouteCode('L',3);
+                    else {
+                        mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
+                        return 0;
+                    }
             }
             //debug
             directionTemp = 2;
             break;
         case 4:                             //4 revert to 1
             if(directionTemp == 8){
-                if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp))printf("L");
-                else {
-                    mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
-                    return 0;
-                }
+                if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp))addRouteCode('L',1);
+                else if(checkTurnRight(positionTemp[0],positionTemp[1],directionTemp) && checkTurnRight(positionTemp[0],positionTemp[1],4) && checkTurnRight(positionTemp[0],positionTemp[1],2))addRouteCode('R',3);
+                    else {
+                        mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
+                        return 0;
+                    }
             }else if(directionTemp == 4){
-                if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp))printf("L");
-                else {
-                    mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
-                    return 0;
-                }
-                directionTemp = 8;
-                if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp))printf("L");
-                else {
-                    mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
-                    return 0;
-                }
+                if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp) && checkTurnLeft(positionTemp[0],positionTemp[1],8))addRouteCode('L',2);
+                else if(checkTurnRight(positionTemp[0],positionTemp[1],directionTemp) && checkTurnRight(positionTemp[0],positionTemp[1],2))addRouteCode('R',2);
+                    else {
+                        mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
+                        return 0;
+                    }
             }else if(directionTemp == 2){
-                if(checkTurnRight(positionTemp[0],positionTemp[1],directionTemp))printf("R");
+                if(checkTurnRight(positionTemp[0],positionTemp[1],directionTemp))addRouteCode('R',1);
+                else if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp) && checkTurnLeft(positionTemp[0],positionTemp[1],4) && checkTurnLeft(positionTemp[0],positionTemp[1],8))addRouteCode('L',3);
                 else {
                     mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
                     return 0;
@@ -1044,29 +947,26 @@ int checkShortestRoute(){
             break;
         case 2:                             //2 revert to 8
             if(directionTemp == 4){
-                if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp))printf("L");
-                else {
-                    mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
-                    return 0;
-                }
+                if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp))addRouteCode('L',1);
+                else if(checkTurnRight(positionTemp[0],positionTemp[1],directionTemp) && checkTurnRight(positionTemp[0],positionTemp[1],2) && checkTurnRight(positionTemp[0],positionTemp[1],1))addRouteCode('R',3);
+                    else {
+                        mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
+                        return 0;
+                    }
             }else if(directionTemp == 2){
-                if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp))printf("L");
-                else {
-                    mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
-                    return 0;
-                }
-                directionTemp = 4;
-                if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp))printf("L");
-                else {
-                    mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
-                    return 0;
-                }
+                if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp) && checkTurnLeft(positionTemp[0],positionTemp[1],4))addRouteCode('L',2);
+                else if(checkTurnRight(positionTemp[0],positionTemp[1],directionTemp) && checkTurnRight(positionTemp[0],positionTemp[1],1))addRouteCode('R',2);
+                    else {
+                        mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
+                        return 0;
+                    }
             }else if(directionTemp == 1){
-                if(checkTurnRight(positionTemp[0],positionTemp[1],directionTemp))printf("R");
-                else {
-                    mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
-                    return 0;
-                }
+                if(checkTurnRight(positionTemp[0],positionTemp[1],directionTemp))addRouteCode('R',1);
+                else if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp) && checkTurnLeft(positionTemp[0],positionTemp[1],2) && checkTurnLeft(positionTemp[0],positionTemp[1],4))addRouteCode('L',3);
+                    else {
+                        mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
+                        return 0;
+                    }
             }
 
             //debug
@@ -1074,44 +974,80 @@ int checkShortestRoute(){
             break;
         case 1:                             //1 revert to 4
             if(directionTemp == 2){
-                if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp))printf("L");
-                else {
-                    mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
-                    return 0;
-                }
+                if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp))addRouteCode('L',1);
+                else if(checkTurnRight(positionTemp[0],positionTemp[1],directionTemp) && checkTurnRight(positionTemp[0],positionTemp[1],1) && checkTurnRight(positionTemp[0],positionTemp[1],8))addRouteCode('R',3);
+                    else {
+                        mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
+                        return 0;
+                    }
             }else if(directionTemp == 1){
-                if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp))printf("L");
-                else {
-                    mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
-                    return 0;
-                }
-                directionTemp = 2;
-                if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp))printf("L");
-                else {
-                    mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
-                    return 0;
-                }
+                if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp) && checkTurnLeft(positionTemp[0],positionTemp[1],2))addRouteCode('L',2);
+                else if(checkTurnRight(positionTemp[0],positionTemp[1],directionTemp) && checkTurnRight(positionTemp[0],positionTemp[1],8))addRouteCode('R',2);
+                    else {
+                        mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
+                        return 0;
+                    }
             }else if(directionTemp == 8){
-                if(checkTurnRight(positionTemp[0],positionTemp[1],directionTemp))printf("R");
-                else {
-                    mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
-                    return 0;
-                }
+                if(checkTurnRight(positionTemp[0],positionTemp[1],directionTemp))addRouteCode('R',1);
+                else if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp) && checkTurnLeft(positionTemp[0],positionTemp[1],1) && checkTurnLeft(positionTemp[0],positionTemp[1],2))addRouteCode('L',3);
+                    else {
+                        mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
+                        return 0;
+                    }
             }
             //debug
             directionTemp = 4;
             break;
         default:;
         }
-        printf("M");
+        addRouteCode('M',1);
         //move forward
         if(directionTemp == 8)positionTemp[0]--;
         else if(directionTemp == 4)positionTemp[1]++;
         else if(directionTemp == 2)positionTemp[0]++;
         else if(directionTemp == 1)positionTemp[1]--;
     }
+
     //clear route
-    for(i = 0;i<routeSize;i++)route[i]=0;
+    //for(i = 0;i<routeSize;i++)route[i]=0;
     //finish
     return 1;
 }
+
+int dropYourBox(char t_row,char t_col,char size){
+    if(size == 41){
+        printf("Start %d,%d : Target %d,%d\n",position[0],position[1],t_row,t_col);
+        char a;
+
+        // find the way
+        do{
+            //clear route
+            for(int i = 0;i<strlen(route);i++)route[i]=0;
+            for(int i = 0;i<routeCodeIndex;i++)routeCode[i]=0;
+            routeCodeIndex=0;
+
+            shortestPath(position[0],position[1],t_row,t_col);
+            if(size == 42 && t_row == 4 && t_col == 6)route[strlen(route)] = 8;
+            else if(size == 42 && t_row == 7 && t_col == 6)route[strlen(route)] = 2;
+            a= checkShortestRoute();
+            printf("\n");
+        }while(!a);
+
+        //delete last M
+        routeCode[--routeCodeIndex]=0;
+
+        //drop
+
+        //print
+        for(int i = 0;i<strlen(routeCode);i++){
+            printf("%c",routeCode[i]);
+        }
+    }
+
+    //clear route
+    for(int i = 0;i<strlen(route);i++)route[i]=0;
+    for(int i = 0;i<routeCodeIndex;i++)routeCode[i]=0;
+    routeCodeIndex=0;
+}
+
+
