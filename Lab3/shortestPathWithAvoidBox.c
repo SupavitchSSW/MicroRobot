@@ -42,8 +42,8 @@ typedef struct{
 }Node;
 
 Node heap[HeapSize];
-char popRow=0,popCol=0,useHeap=0,createHeap=0,nextHeap=1,route[routeSize],routeCode[routeSize],routeCodeIndex=0,stack[stackSize],topStack=1,countShortestPathBlock=0,direction=8,countBox=0;
-char position[2]={1,5},searchTarget[2]={8,9};
+char popRow=0,popCol=0,useHeap=0,createHeap=0,nextHeap=1,route[routeSize],routeCode[routeSize],routeCodeIndex=0,stack[stackSize],topStack=1,countShortestPathBlock=0,direction=8,countBox=7;
+char position[2]={2,1},searchTarget[2]={1,1};
 
 //Jane variable
 int X=9,Y=9;
@@ -62,31 +62,28 @@ int grab2BoxUP=28,grab2BoxDOWN=22,grab2BoxRIGHT=24,grab2BoxLEFT=21;
 int drop2BoxUP=38,drop2BoxDOWN=32,drop2BoxRIGHT=34,drop2BoxLEFT=31;
 //*****************************************
 char map[10][10]={
-  //0  1  2  3  4  5  6  7  8  9
-    0 ,0 ,0 ,0 ,0 ,0 ,0 ,22,0 ,0 ,
-    0 ,0 ,0 ,0 ,0 ,41,24,0 ,21,0 ,
-    0 ,0 ,0 ,0 ,0 ,0 ,0 ,28,0 ,0 ,
-    0 ,40,0 ,0 ,41,0 ,0 ,0 ,0 ,0 ,
-    0 ,0 ,0 ,0 ,41,0 ,32,0 ,0 ,0 ,
-    0 ,0 ,40,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
-    0 ,0 ,22,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
-    0 ,24,0 ,21,0 ,40,38,0 ,41,0 ,
-    0 ,0 ,28,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,0 ,0 ,21,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
+    0 ,40,0 ,41,0 ,0 ,40,0 ,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,0 ,32,0 ,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,0 ,0 ,41,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,0 ,0 ,41,0 ,0 ,
+    0 ,0 ,21,0 ,0 ,0 ,38,40,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,41,0 ,0 ,0 ,0 ,
     0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0
 };
 
-//serch canWalk=1 cant=0
 char mapCountWalk[10][10]={
-  //0 1 2 3 4 5 6 7 8 9
     1,1,1,1,1,1,1,1,1,1,
-    1,1,1,0,1,1,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1,
-    1,0,1,1,1,1,1,1,1,1,
-    0,1,1,1,0,1,1,1,1,1,
-    1,0,1,1,1,1,1,0,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,0,1,0,1,1,0,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,0,1,1,
+    1,1,1,1,1,1,1,0,1,1,
+    1,1,1,1,1,1,1,0,1,1,
     1,1,1,1,1,0,1,1,1,1,
-    1,1,1,1,1,0,1,1,0,1,
-    1,1,1,1,1,1,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1
 };
 
@@ -104,6 +101,7 @@ char mapBlockTurn[10][10]={
 };
 
 void main(){
+    showMeDabox();
     //clear route
     for(int i = 0;i<strlen(route);i++)route[i]=0;
     for(int i = 0;i<strlen(routeCode);i++)routeCode[i]=0;
