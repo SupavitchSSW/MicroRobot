@@ -2,6 +2,13 @@
 //Jane
 void mergeBox();
 void findNearBox(int positionX,int positionY);
+void grabNearBox();
+void deleteMark();
+void setPosition();
+void test();
+void turnLeft();
+void turnRight();
+void printMap();
 
 //field
 #define wallDistance 18
@@ -87,14 +94,9 @@ void main(){
     // showMeDabox();
     //generate 2box and mark
     mergeBox();
-    for(int i=0;i<10;i++){
-                for(int j=0;j<10;j++){
-                    printf("%d ",map[i][j]);
-                }
-                printf("\n");
-            }
-            printf("\n");
+    printMap();
     findNearBox(position[0],position[1]);
+    grabNearBox(searchTarget[minX],searchTarget[minY]);
 }
 //====================================== Jane Code =======================
 void mergeBox(){
@@ -178,7 +180,7 @@ void mergeBox(){
 
             }//End if check IS Box
 
-        
+
         }//End for J
     }//End for I
 
@@ -190,19 +192,242 @@ void findNearBox(int positionX,int positionY){
         for(int j=0;j<10;j++){
             if((map[i][j]<black) && (map[i][j]>0)){
                 if(((positionX-i)+(positionY-j))<=min){
+                    searchTarget[0]=i;
                     minX=i;
                     minY=j;
+                    searchTarget[1]=j;
                     min=(positionX-i)+(positionY-j);
-                    // printf("%d \n",map[minX][minY]);
-                    // printf("minX=%d minY=%d",minX,minY);
-                    // printf(" min=%d\n",min);
+                    printf("%d \n",map[minX][minY]);
+                    printf("minX=%d minY=%d",searchTarget[0],searchTarget[1]);
+                    printf(" min=%d\n",min);
                 }
             }
         }
     }//END find NEAR box
-
 }
 
+void grabNearBox(){
+    shortestPath(searchTarget[0],searchTarget[1],position[0],position[1]);
+    runShortestRoute();
+    setPosition();
+    turnRobotToBox();
+    test();
+    deleteMark();
+
+}
+void setPosition(){
+    position[0]=minX;
+    position[1]=minY;
+    map[position[0]][position[1]]=X;
+    printMap();
+}
+void turnRobotToBox(){
+    //direction Robot is UP
+    if(direction==8){
+        //TOP of box target
+        if((map[minX][minY]%10)==2){
+            turnLeft();
+            turnLeft();
+            //grap
+        }
+        //Buttom of box target
+        else if((map[minX][minY]%10)==8){
+            //grap
+        }
+        //Left of box target
+        else if((map[minX][minY]%10)==4){
+            turnRight();
+            //grap
+        }
+        //Right of box target
+        else if((map[minX][minY]%10)==1){
+            turnLeft();
+            //grap
+        }
+        direction=2;
+    }
+    //direction Robot is DOWN
+    else if(direction==2){
+        //TOP of box target
+        if((map[minX][minY]%10)==2){
+            //grap
+        }
+        //Buttom of box target
+        else if((map[minX][minY]%10)==8){
+            turnRight();
+            turnRight();
+            //grap
+        }
+        //Left of box target
+        else if((map[minX][minY]%10)==4){
+            turnLeft();
+            //grap
+        }
+        //Right of box target
+        else if((map[minX][minY]%10)==1){
+            turnRight();
+        }
+        direction=8;
+    }
+    //direction Robot is LEFT
+    else if(direction==1){
+        //TOP of box target
+        if((map[minX][minY]%10)==2){
+            turnLeft();
+            //grap
+        }
+        //Buttom of box target
+        else if((map[minX][minY]%10)==8){
+            turnRight();
+            //grap
+        }
+        //Left of box target
+        else if((map[minX][minY]%10)==4){
+            turnRight();
+            turnRight();
+            //grap
+        }
+        //Right of box target
+        else if((map[minX][minY]%10)==1){
+            //grap
+        }
+        direction=4;
+    }
+    //direction Robot is RIGHT
+    else if(direction==4){
+        //TOP of box target
+        if((map[minX][minY]%10)==2){
+            turnRight();
+            //grap
+        }
+        //Buttom of box target
+        else if((map[minX][minY]%10)==8){
+            turnLeft();
+            //grap
+        }
+        //Left of box target
+        else if((map[minX][minY]%10)==4){
+            //grap
+        }
+        //Right of box target
+        else if((map[minX][minY]%10)==1){
+            turnRight();
+            turnRight();
+            //grap
+        }
+        direction=1;
+    }
+}
+
+void deleteMark(){
+    //1 Box
+    if(map[position[0]][position[1]]>0&&map[position[0]][position[1]]<10){
+        //TOP
+        if(map[position[0]+1][position[1]]==orange){
+            map[position[0]][position[1]]=0;
+            map[position[0]+1][position[1]]=0;
+            map[position[0]+1][position[1]-1]=0;
+            map[position[0]+1][position[1]+1]=0;
+            map[position[0]+2][position[1]]=0;
+
+            mapCountWalk[position[0]+1][position[1]]= 1;
+        }
+        //RIGHT
+        else if(map[position[0]][position[1]-1]==orange){
+            map[position[0]][position[1]-2]=0;
+            map[position[0]][position[1]-1]=0;
+            map[position[0]][position[1]]=0;
+            map[position[0]+1][position[1]-1]=0;
+            map[position[0]-11][position[1]-1]=0;
+
+            mapCountWalk[position[0]][position[1]-1]= 1;
+        }
+        //LEFT
+        else if(map[position[0]][position[1]+1]==orange){
+            map[position[0]][position[1]]=0;
+            map[position[0]][position[1]+1]=0;
+            map[position[0]][position[1]+2]=0;
+            map[position[0]-1][position[1]+1]=0;
+            map[position[0]+1][position[1]+1]=0;
+
+            mapCountWalk[position[0]][position[1]+1]= 1;
+        }
+        //DOWN
+        else if(map[position[0]+1][position[1]]==orange){
+            map[position[0]][position[1]]=0;
+            map[position[0]+1][position[1]]=0;
+            map[position[0]+2][position[1]]=0;
+            map[position[0]+1][position[1]-1]=0;
+            map[position[0]+1][position[1]+1]=0;
+
+            mapCountWalk[position[0]+1][position[1]]= 1;
+        }
+
+    }
+
+    //2 Box
+    if(map[position[0]][position[1]]>30&&map[position[0]][position[1]]<40){
+        if(map[position[0]][position[1]] == grab2BoxDOWN){
+            map[position[0]][position[1]]=0;
+            map[position[0]-3][position[1]]=0;
+
+            mapCountWalk[position[0]-1][position[1]]=1;
+            mapCountWalk[position[0]-2][position[1]]=1;
+        }
+        else if(map[position[0]][position[1]] == grab2BoxUP){
+            map[position[0]][position[1]]=0;
+            map[position[0]+3][position[1]]=0;
+
+            mapCountWalk[position[0]+1][position[1]]=1;
+            mapCountWalk[position[0]+2][position[1]]=1;
+        }
+        else if(map[position[0]][position[1]] == grab1BoxRIGHT){
+            map[position[0]][position[1]]=0;
+            map[position[0]][position[1]+3]=0;
+
+            mapCountWalk[position[0]][position[1]+1]=1;
+            mapCountWalk[position[0]][position[1]+2]=1;
+        }
+        else if(map[position[0]][position[1]] == grab2BoxLEFT){
+            map[position[0]][position[1]]=0;
+            map[position[0]][position[1]-3]=0;
+
+            mapCountWalk[position[0]][position[1]-1]=1;
+            mapCountWalk[position[0]][position[1]-2]=1;
+        }
+    }
+}
+
+//=========================TEST==============
+void printMap(){
+    for(int i=0;i<10;i++){
+                for(int j=0;j<10;j++){
+                    printf("%d ",map[i][j]);
+                }
+                printf("\n");
+            }
+            printf("\n");
+}
+void test(){
+    if(direction==8){
+        map[minX][minY]="^";
+    }
+    else if(direction==2){
+        map[minX][minY]="v";
+    }
+    else if(direction==4){
+        map[minX][minY]=">";
+    }
+    else if(direction==1){
+        map[minX][minY]="<";
+    }
+}
+void turnLeft(){
+    printf("TL");
+}
+void turnRight(){
+    printf("TR");
+}
 //====================================== Field code ======================
 void printMapCountWalk(){
     printf("\n ======================== Map count walk\n");
