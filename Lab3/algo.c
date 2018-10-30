@@ -104,7 +104,7 @@ int drop2BoxUP=38,drop2BoxDOWN=32,drop2BoxRIGHT=34,drop2BoxLEFT=31;
 char map[10][10]={
   //0  1  2  3  4  5  6  7  8  9
     0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
-    0 ,0 ,41,0 ,0 ,0 ,0 ,21,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,41,0 ,21,0 ,0 ,
     0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
     0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
     0 ,0 ,0 ,0 ,0 ,0 ,32,0 ,0 ,0 ,
@@ -166,6 +166,7 @@ void main(){
         findIndex(position[0],position[1]);
         //dropNearBox();
         dropYourBox(minX,minY,41);
+        setBox();
         printf("\n=====================\n finish run find Index \n======================\n");
         printMap();
         printMapCountWalk();
@@ -341,8 +342,8 @@ void dropNearBox(){
 }
 void setBox(){
     if(littleBox!=0){
-        mapCountWalk[position[0]][position[1]]=0;
-        map[position[0]][position[1]]=40;
+        mapCountWalk[minX][minY]=0;
+        map[minX][minY]=40;
     }
 }
 void setPosition(){

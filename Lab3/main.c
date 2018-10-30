@@ -116,19 +116,19 @@ typedef struct{
 }Node;
 
 Node heap[HeapSize];
-char popRow=0,popCol=0,useHeap=0,createHeap=0,nextHeap=1,route[routeSize],routeCode[routeSize],routeCodeIndex=0,stack[stackSize],topStack=1,countShortestPathBlock=0,direction=8,countBox=0;
-char searchTarget[2]={8,9};
+char popRow=0,popCol=0,useHeap=0,createHeap=0,nextHeap=1,route[routeSize],routeCode[routeSize],routeCodeIndex=0,stack[stackSize],topStack=1,countShortestPathBlock=0,countBox=7;
+char searchTarget[2]={1,1};
 
 char map[10][10]={
     0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
-    0 ,0 ,0 ,0 ,0 ,0 ,0 ,21,0 ,0 ,
+    0 ,0 ,0 ,0 ,0,0 ,0 ,21,0 ,0 ,
     0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
-    0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
+    0 ,40 ,0 ,41 ,0 ,0 ,40 ,0 ,0 ,0 ,
     0 ,0 ,0 ,0 ,0 ,0 ,32,0 ,0 ,0 ,
-    0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
-    0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
-    0 ,0 ,21,0 ,0 ,0 ,38,0 ,0 ,0 ,
-    0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,0 ,0 ,41 ,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,0 ,0 ,41 ,0 ,0 ,
+    0 ,0 ,21,0 ,0 ,0 ,38,40 ,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,41 ,0 ,0 ,0 ,0 ,
     0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0
 };
 
@@ -136,12 +136,12 @@ char mapCountWalk[10][10]={
     1,1,1,1,1,1,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1,
+    1,0,1,0,1,1,0,1,1,1,
     1,1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,0,1,1,
+    1,1,1,1,1,1,1,0,1,1,
+    1,1,1,1,1,1,1,0,1,1,
+    1,1,1,1,1,0,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1
 };
 
@@ -184,7 +184,7 @@ static void moveToGrab(void);
 int rightSensor = getColorReflected(rightTrack);
 int leftSensor  = getColorReflected(leftTrack);
 int direction = 8;
-int position[2] = {9,9};
+int position[2] = {2,1};
 bool isDone = false ;
 float frontSensorValue = getUSDistance(frontSensor);
 float error = rightSensor - leftSensor;
@@ -205,13 +205,16 @@ task main()
 
 //====================================== Jane Code =======================
 void startASM(){
-    //generate 2box and mark
-    mergeBox();
-    findNearBox(position[0],position[1]);
-    grabNearBox();
+   for(int i =0;i<2;i++){
+        mergeBox();
+        findNearBox(position[0],position[1]);
+        grabNearBox();
 
-    findIndex(position[0],position[1]);
-    dropNearBox();
+        findIndex(position[0],position[1]);
+        //dropNearBox();
+        dropYourBox(minX,minY,41);
+        setBox();
+    }
 }
 
 
@@ -1310,6 +1313,11 @@ int runShortestRoute(){
                 map[position[0]][position[1]+1] = re;
                 countBox++;
             }
+            if(countBox == 8){
+		            for(int j = 0;j<routeSize;j++)route[j]=0;
+		            //printf(" >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> BREAK ");
+		            return 2;
+		        }
             return 1;
         }
     }
@@ -1339,4 +1347,243 @@ char popStack(){
 char isStackEmpty(){
     if(topStack == 0)return 1;
     else return 0;
+}
+
+// search map avoid box
+int checkTurnLeft(char row,char col,char d){
+    if(d == 8){
+        if(row>0 && mapCountWalk[row-1][col]==0)return 0;                   // TOP
+        if(row>0 && col>0 && mapCountWalk[row-1][col-1]==0)return 0;        // LEFT TOP
+        if(col>0 && mapCountWalk[row][col-1]==0)return 0;                   // LEFT
+    }else if(d == 4){
+        if(col<9 && mapCountWalk[row][col+1]==0)return 0;                   // RIGHT
+        if(row>0 && col<9 && mapCountWalk[row-1][col+1]==0)return 0;        // RIGHT TOP
+        if(row>0 && mapCountWalk[row-1][col]==0)return 0;                   // TOP
+    }else if(d == 2){
+        if(row<9 && mapCountWalk[row+1][col]==0)return 0;                   // BOTTOM
+        if(row<9 && col<9 && mapCountWalk[row+1][col+1]==0)return 0;        // BOTTOM RIGHT
+        if(col<9 && mapCountWalk[row][col+1]==0)return 0;                   // RIGHT
+    }else if(d == 1){
+        if(col>0 && mapCountWalk[row][col-1]==0)return 0;                   // LEFT
+        if(row<9 && col>0 && mapCountWalk[row+1][col-1]==0)return 0;        // BOTTOM LEFT
+        if(row<9 && mapCountWalk[row+1][col]==0)return 0;                   // BOTTOM
+    }
+    return 1;
+}
+
+int checkTurnRight(char row,char col,char d){
+    if(d == 8){
+        if(row>0 && mapCountWalk[row-1][col]==0)return 0;                   // TOP
+        if(row>0 && col<9 && mapCountWalk[row-1][col+1]==0)return 0;        // RIGHT TOP
+        if(col<9 && mapCountWalk[row][col+1]==0)return 0;                   // RIGHT
+    }else if(d == 4){
+        if(col<9 && mapCountWalk[row][col+1]==0)return 0;                   // RIGHT
+        if(row<9 && col<9 && mapCountWalk[row+1][col+1]==0)return 0;        // BOTTOM RIGHT
+        if(row<9 && mapCountWalk[row+1][col]==0)return 0;                   // BOTTOM
+    }else if(d == 2){
+        if(row<9 && mapCountWalk[row+1][col]==0)return 0;                   // BOTTOM
+        if(row<9 && col>0 && mapCountWalk[row+1][col-1]==0)return 0;        // BOTTOM LEFT
+        if(col>0 && mapCountWalk[row][col-1]==0)return 0;                   // LEFT
+    }else if(d == 1){
+        if(col>0 && mapCountWalk[row][col-1]==0)return 0;                   // LEFT
+        if(row>0 && col>0 && mapCountWalk[row-1][col-1]==0)return 0;        // LEFT TOP
+        if(row>0 && mapCountWalk[row-1][col]==0)return 0;                   // TOP
+    }
+    return 1;
+}
+
+int moveForwardTemp(){
+    int a;
+    if(a == 1){
+        if(direction == 8)position[0]--;
+        else if(direction == 4)position[1]++;
+        else if(direction == 2)position[0]++;
+        else if(direction == 1)position[1]--;
+    }
+    return (char)a;
+}
+
+void addRouteCode(char c,int n){
+    for(int i =0;i<n;i++){
+        routeCode[routeCodeIndex] = c;
+        routeCodeIndex++;
+    }
+}
+
+int checkShortestRoute(){
+    char positionTemp[2] ={position[0],position[1]},directionTemp = direction;
+    char i;
+
+    for(i = 0;i<strlen(route);i++){
+        switch(route[i]){
+        case 8:                             //8 revert to 2
+            if(directionTemp == 1){
+                if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp))addRouteCode('L',1);
+                else if(checkTurnRight(positionTemp[0],positionTemp[1],1) && checkTurnRight(positionTemp[0],positionTemp[1],8) && checkTurnRight(positionTemp[0],positionTemp[1],4))addRouteCode('R',3);
+                    else{
+                        mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
+                        return 0;
+                    }
+            }else if(directionTemp == 8){
+                if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp) && checkTurnLeft(positionTemp[0],positionTemp[1],1))addRouteCode('L',2);
+                else if(checkTurnRight(positionTemp[0],positionTemp[1],directionTemp) && checkTurnRight(positionTemp[0],positionTemp[1],4))addRouteCode('R',2);
+                    else {
+                        mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
+                        return 0;
+                    }
+            }else if(directionTemp == 4){
+                if(checkTurnRight(positionTemp[0],positionTemp[1],directionTemp))addRouteCode('R',1);
+                else if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp) && checkTurnLeft(positionTemp[0],positionTemp[1],8) && checkTurnLeft(positionTemp[0],positionTemp[1],1))addRouteCode('L',3);
+                    else {
+                        mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
+                        return 0;
+                    }
+            }
+            //debug
+            directionTemp = 2;
+            break;
+        case 4:                             //4 revert to 1
+            if(directionTemp == 8){
+                if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp))addRouteCode('L',1);
+                else if(checkTurnRight(positionTemp[0],positionTemp[1],directionTemp) && checkTurnRight(positionTemp[0],positionTemp[1],4) && checkTurnRight(positionTemp[0],positionTemp[1],2))addRouteCode('R',3);
+                    else {
+                        mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
+                        return 0;
+                    }
+            }else if(directionTemp == 4){
+                if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp) && checkTurnLeft(positionTemp[0],positionTemp[1],8))addRouteCode('L',2);
+                else if(checkTurnRight(positionTemp[0],positionTemp[1],directionTemp) && checkTurnRight(positionTemp[0],positionTemp[1],2))addRouteCode('R',2);
+                    else {
+                        mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
+                        return 0;
+                    }
+            }else if(directionTemp == 2){
+                if(checkTurnRight(positionTemp[0],positionTemp[1],directionTemp))addRouteCode('R',1);
+                else if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp) && checkTurnLeft(positionTemp[0],positionTemp[1],4) && checkTurnLeft(positionTemp[0],positionTemp[1],8))addRouteCode('L',3);
+                else {
+                    mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
+                    return 0;
+                }
+            }
+            //debug
+            directionTemp = 1;
+            break;
+        case 2:                             //2 revert to 8
+            if(directionTemp == 4){
+                if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp))addRouteCode('L',1);
+                else if(checkTurnRight(positionTemp[0],positionTemp[1],directionTemp) && checkTurnRight(positionTemp[0],positionTemp[1],2) && checkTurnRight(positionTemp[0],positionTemp[1],1))addRouteCode('R',3);
+                    else {
+                        mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
+                        return 0;
+                    }
+            }else if(directionTemp == 2){
+                if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp) && checkTurnLeft(positionTemp[0],positionTemp[1],4))addRouteCode('L',2);
+                else if(checkTurnRight(positionTemp[0],positionTemp[1],directionTemp) && checkTurnRight(positionTemp[0],positionTemp[1],1))addRouteCode('R',2);
+                    else {
+                        mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
+                        return 0;
+                    }
+            }else if(directionTemp == 1){
+                if(checkTurnRight(positionTemp[0],positionTemp[1],directionTemp))addRouteCode('R',1);
+                else if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp) && checkTurnLeft(positionTemp[0],positionTemp[1],2) && checkTurnLeft(positionTemp[0],positionTemp[1],4))addRouteCode('L',3);
+                    else {
+                        mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
+                        return 0;
+                    }
+            }
+
+            //debug
+            directionTemp = 8;
+            break;
+        case 1:                             //1 revert to 4
+            if(directionTemp == 2){
+                if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp))addRouteCode('L',1);
+                else if(checkTurnRight(positionTemp[0],positionTemp[1],directionTemp) && checkTurnRight(positionTemp[0],positionTemp[1],1) && checkTurnRight(positionTemp[0],positionTemp[1],8))addRouteCode('R',3);
+                    else {
+                        mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
+                        return 0;
+                    }
+            }else if(directionTemp == 1){
+                if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp) && checkTurnLeft(positionTemp[0],positionTemp[1],2))addRouteCode('L',2);
+                else if(checkTurnRight(positionTemp[0],positionTemp[1],directionTemp) && checkTurnRight(positionTemp[0],positionTemp[1],8))addRouteCode('R',2);
+                    else {
+                        mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
+                        return 0;
+                    }
+            }else if(directionTemp == 8){
+                if(checkTurnRight(positionTemp[0],positionTemp[1],directionTemp))addRouteCode('R',1);
+                else if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp) && checkTurnLeft(positionTemp[0],positionTemp[1],1) && checkTurnLeft(positionTemp[0],positionTemp[1],2))addRouteCode('L',3);
+                    else {
+                        mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
+                        return 0;
+                    }
+            }
+            //debug
+            directionTemp = 4;
+            break;
+        default:;
+        }
+        addRouteCode('M',1);
+        //move forward
+        if(directionTemp == 8)positionTemp[0]--;
+        else if(directionTemp == 4)positionTemp[1]++;
+        else if(directionTemp == 2)positionTemp[0]++;
+        else if(directionTemp == 1)positionTemp[1]--;
+    }
+
+    //clear route
+    //for(i = 0;i<routeSize;i++)route[i]=0;
+    //finish
+    return 1;
+}
+
+int decodeRoute(){
+    for(int i =0;i<routeCodeIndex;i++){
+        char code = routeCode[i];
+        if(code == 'L'){
+            turnLeft();
+        }else if(code == 'R'){
+            turnRight();
+        }else if(code == 'M'){
+            moveForward();
+            printMapCountWalk();
+        }
+    }
+}
+
+int dropYourBox(char t_row,char t_col,char size){
+        char a;
+
+        // find the way
+        do{
+            //clear route
+            for(int i = 0;i<strlen(route);i++)route[i]=0;
+            for(int i = 0;i<routeCodeIndex;i++)routeCode[i]=0;
+            routeCodeIndex=0;
+
+            shortestPath(position[0],position[1],t_row,t_col);
+            if(size == 42 && t_row == 4 && t_col == 6)route[strlen(route)] = 8;
+            else if(size == 42 && t_row == 7 && t_col == 6)route[strlen(route)] = 2;
+            a= checkShortestRoute();
+        }while(!a);
+
+        //delete last M
+        routeCode[--routeCodeIndex]=0;
+
+    //drop
+    //run code
+    decodeRoute();
+
+    //drop
+    moveToRelease();
+
+    //clear route
+    for(int i = 0;i<strlen(route);i++)route[i]=0;
+    for(int i = 0;i<routeCodeIndex;i++)routeCode[i]=0;
+    routeCodeIndex=0;
+
+    //clear map block turn
+    for(int i =0;i<10;i++)
+        for(int j=0;j<10;j++)
+            mapBlockTurn[i][j]=1;
 }
