@@ -43,7 +43,7 @@ typedef struct{
 
 Node heap[HeapSize];
 char popRow=0,popCol=0,useHeap=0,createHeap=0,nextHeap=1,route[routeSize],routeCode[routeSize],routeCodeIndex=0,stack[stackSize],topStack=1,countShortestPathBlock=0,direction=8,countBox=0;
-char position[2]={1,4},searchTarget[2]={8,9};
+char position[2]={1,5},searchTarget[2]={8,9};
 
 //Jane variable
 int X=9,Y=9;
@@ -82,9 +82,9 @@ char mapCountWalk[10][10]={
     1,1,1,0,1,1,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1,
     1,0,1,1,1,1,1,1,1,1,
-    0,1,1,1,0,1,0,1,1,1,
-    1,0,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,1,
+    0,1,1,1,0,1,1,0,1,1,
+    1,0,1,1,1,1,1,0,1,1,
+    1,1,1,1,1,0,1,1,1,1,
     1,1,1,1,1,0,1,1,0,1,
     1,1,1,1,1,1,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1
@@ -120,7 +120,7 @@ void main(){
     printMapCountWalk();
 */
     printMapCountWalk();
-    dropYourBox(4,1,41);
+    dropYourBox(4,6,41);
 
 
 }
@@ -1027,7 +1027,8 @@ int dropYourBox(char t_row,char t_col,char size){
             routeCodeIndex=0;
 
             shortestPath(position[0],position[1],t_row,t_col);
-
+            if(size == 42 && t_row == 4 && t_col == 6)route[strlen(route)] = 8;
+            else if(size == 42 && t_row == 7 && t_col == 6)route[strlen(route)] = 2;
             a= checkShortestRoute();
             printf("\n");
         }while(!a);
@@ -1042,6 +1043,11 @@ int dropYourBox(char t_row,char t_col,char size){
             printf("%c",routeCode[i]);
         }
     }
+
+    //clear route
+    for(int i = 0;i<strlen(route);i++)route[i]=0;
+    for(int i = 0;i<routeCodeIndex;i++)routeCode[i]=0;
+    routeCodeIndex=0;
 }
 
 
