@@ -15,11 +15,11 @@
 #define baseSpeed 60
 #define turnSpeed 10
 #define BlackBox 11
-#define whiteTreshold 31.5
+#define whiteTreshold 34.3
 #define blackTreshold 7
 
 #define baseDistance 17
-#define checkColorDistance 8.5
+#define checkColorDistance 6.8
 // ============ Jane ====================
 //Jane
 void mergeBox();
@@ -116,7 +116,7 @@ typedef struct{
 }Node;
 
 Node heap[HeapSize];
-char popRow=0,popCol=0,useHeap=0,createHeap=0,nextHeap=1,route[routeSize],routeCode[routeSize],routeCodeIndex=0,stack[stackSize],topStack=1,countShortestPathBlock=0,direction=8,countBox=0;
+char popRow=0,popCol=0,useHeap=0,createHeap=0,nextHeap=1,route[routeSize],routeCode[routeSize],routeCodeIndex=0,stack[stackSize],topStack=1,countShortestPathBlock=0,countBox=0;
 char searchTarget[2]={8,9};
 
 char map[10][10]={
@@ -681,7 +681,7 @@ void moveForward(){
 int moveAgainToCheckColor(){
 
     while(frontSensorValue >= checkColorDistance){
-    	 justMove(50);
+    	 justMove(30);
     }
     stopMoving();
 
