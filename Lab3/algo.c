@@ -79,21 +79,21 @@ char map[10][10]={
 char mapCountWalk[10][10]={
   //0 1 2 3 4 5 6 7 8 9
     1,1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,0,1,1,1,
-    1,1,1,1,1,0,1,1,1,1,
-    1,0,1,1,1,1,1,1,1,1,
-    1,1,1,1,0,1,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1,
-    1,1,1,0,0,1,0,1,1,1,
     1,1,1,1,1,1,1,1,1,1,
-    1,1,0,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1
 };
 
 void main(){
-    // showMeDabox();
+     showMeDabox();
     //generate 2box and mark
-
+/*
     mergeBox();
     printMap();
     printf("\n=====================\n FIELD code  INPUT number 1 for move each step \n======================\n");
@@ -101,7 +101,9 @@ void main(){
     grabNearBox(searchTarget[minX],searchTarget[minY]);
     printf("\n=====================\n finish run grab NearBox \n======================\n");
     printMap();
-    printMapCountWalk();
+    printMapCountWalk();*/
+
+
 }
 //====================================== Jane Code =======================
 void mergeBox(){
@@ -340,8 +342,7 @@ void deleteMark(){
             map[position[0]][position[1]]=0;
             map[position[0]+1][position[1]-1]=0;
             // this -11 is bug?. i will put this for you to see
-            yahhh check this -11
-            >> map[position[0]-11][position[1]-1]=0;
+            map[position[0]-11][position[1]-1]=0;
 
             mapCountWalk[position[0]][position[1]-1]= 1;
         }
@@ -761,7 +762,7 @@ int runShortestRoute(){
                 mapCountWalk[position[0]+1][position[1]] = 0;
                 map[position[0]+1][position[1]] = re;
                 countBox++;
-            }else if(route[i] == 4 && mapCountWalk[position[0]+1][position[1]] == 1){
+            }else if(route[i] == 4 && mapCountWalk[position[0]][position[1]-1] == 1){
                 mapCountWalk[position[0]][position[1]-1] = 0;
                 map[position[0]][position[1]-1] = re;
                 countBox++;
