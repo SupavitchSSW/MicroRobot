@@ -15,11 +15,11 @@
 #define baseSpeed 60
 #define turnSpeed 10
 #define BlackBox 11
-#define whiteTreshold 31.5
+#define whiteTreshold 34.3
 #define blackTreshold 7
 
 #define baseDistance 17
-#define checkColorDistance 8.5
+#define checkColorDistance 6.8
 // ============ Jane ====================
 //Jane
 void mergeBox();
@@ -684,7 +684,7 @@ void moveForward(){
 int moveAgainToCheckColor(){
 
     while(frontSensorValue >= checkColorDistance){
-    	 justMove(50);
+    	 justMove(30);
     }
     stopMoving();
 
