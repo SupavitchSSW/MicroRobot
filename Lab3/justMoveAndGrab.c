@@ -106,7 +106,8 @@ int moveStrightTarget(){
 
        justMove();
 
-       if(frontSensorValue <= baseDistance && isGrab ){
+       if(frontSensorValue <= baseDistance  ){
+
             stopMoving();
             releaseGrab();
             box = moveAgainToCheckColor();

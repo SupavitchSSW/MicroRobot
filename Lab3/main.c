@@ -9,17 +9,17 @@
 
 //constant area
 #define Kp 0.15
-#define Kd 0.05
+#define Kd 0.015
 #define Kc 0.001
 
-#define baseSpeed 60
+#define baseSpeed 50
 #define turnSpeed 15
-#define orangeBox 7
+#define BlackBox 11
 #define whiteTreshold 67
 #define blackTreshold 20
 
-#define baseDistance 15
-#define checkColorDistance 6
+#define baseDistance 17
+#define checkColorDistance 8.5
 
 
 // =================================== FIELD ===================
@@ -94,15 +94,16 @@ static void moveReverse(void);
 static int moveAgainToCheckColor(void);
 static void justMove(void);
 static void justMoveBackward(void);
+static void displayMap(void);
 
 
 //global variabal
+int rightSensor = getColorReflected(rightTrack);
+int leftSensor  = getColorReflected(leftTrack);
 int direction = 8;
 int position[2] = {9,9};
 bool isDone = false ;
-int rightSensor = getColorReflected(rightTrack);
-int leftSensor  = getColorReflected(leftTrack);
-int frontSensorValue = getUSDistance(frontSensor);
+float frontSensorValue = getUSDistance(frontSensor);
 float error = rightSensor - leftSensor;
 float motorSpeed = baseSpeed;
 float lastError = error;
@@ -110,9 +111,9 @@ bool isGrab = true;
 
 task main()
 {
-	 while(1){
-	   moveStrightTarget();
-   }
+	 showMeDabox();
+	 while(1){}
+
 }
 
 void justMove(){
@@ -133,9 +134,6 @@ void justMove(){
 
 }
 void justMoveBackward(){
-
-       rightSensor = getColorReflected(rightTrack);
-	     leftSensor = getColorReflected(leftTrack);
 
        motor[leftMotor]  = -baseSpeed ;
        motor[rightMotor] = -baseSpeed ;
@@ -163,14 +161,13 @@ int moveStrightTarget(){
             stopMoving();
             releaseGrab();
             box = moveAgainToCheckColor();
-            stopMoving();
             moveReverse();
             grab();
             isDone = true;
 
        }
 
-       else if(rightSensor <= 20 && leftSensor <= 20){
+       else if(rightSensor <= 17 && leftSensor <= 17){
           moveAgainEncoder();
           isDone = true;
           calPosition();
@@ -181,17 +178,9 @@ int moveStrightTarget(){
     }
 
     stopMoving();
+    displayMap();
     return box;
 
-}
-void moveReverse(){
-
-    while(rightSensor >= 20 && leftSensor >= 20){
-
-       justMoveBackward();
-
-    }
-    moveAgainEncoder();
 
 }
 int moveAgainToCheckColor(){
@@ -199,21 +188,45 @@ int moveAgainToCheckColor(){
     while(frontSensorValue >= checkColorDistance){
     	 justMove();
     }
+    stopMoving();
 
     int colorSensorValue = SensorValue(colorCheck);
-    if(colorSensorValue >= orangeBox){
-    	  return 41;
-    }
-    else{
+    if(colorSensorValue >= BlackBox){
     	  return 40;
     }
+    else{
+    	  return 41;
+    }
+
 
 }
+void moveReverse(){
+
+    rightSensor = getColorReflected(rightTrack);
+	  leftSensor = getColorReflected(leftTrack);
+
+       justMoveBackward();
+       resetMotorEncoder(leftMotor);
+	     resetMotorEncoder(rightMotor);
+	     int leftdist = getMotorEncoder(leftMotor);
+	     int rightdist = getMotorEncoder(rightMotor);
+	     while(leftdist >= -200 || rightdist >= -200){
+
+	     leftdist = getMotorEncoder(leftMotor);
+	     rightdist = getMotorEncoder(rightMotor);
+	     justMoveBackward();
+
+       }
+       stopMoving();
+
+
+}
+
 void stopMoving(){
 
 	  motor[leftMotor] = 0 ;
 	  motor[rightMotor] = 0 ;
-	  delay(50);
+	  delay(110);
 
 }
 
@@ -226,8 +239,18 @@ void moveAgainEncoder(){
 
 	     leftdist = getMotorEncoder(leftMotor);
 	     rightdist = getMotorEncoder(rightMotor);
-	     motor[leftMotor]  = baseSpeed ;
-       motor[rightMotor] = baseSpeed ;
+
+	     rightSensor = getColorReflected(rightTrack);
+	     leftSensor = getColorReflected(leftTrack);
+	     frontSensorValue = getUSDistance(frontSensor);
+
+	     error = (rightSensor - leftSensor)+Kc;
+       lastError = error;
+
+       motorSpeed = Kp * error + Kd * (error - lastError);
+			 wait1Msec(10);
+       motor[leftMotor]  = (baseSpeed - motorSpeed);
+       motor[rightMotor] = (baseSpeed + motorSpeed);
 
 	   }
 	   stopMoving();
@@ -391,6 +414,22 @@ void calPosition(){
 	      position[0]--;
 	      break;
    }
+}
+void displayMap(){
+	long offsetyy = 0;
+	for(long i=0;i < 10;i++)
+	{
+		 long offsetxx = 0;
+		 for(long j=0;j < 10;j++)
+		 {
+		   string cat = "";
+		   sprintf(cat,"%d",map[i][j]);
+		   if(i == position[0] && j == position[1])displayStringAt(j+10+offsetxx,i+100-offsetyy ,"X" );
+		   else displayStringAt(j+10+offsetxx,i+100-offsetyy ,cat );
+		   offsetxx = offsetxx+14;
+		 }
+		 offsetyy = offsetyy+11;
+	}
 }
 
 
