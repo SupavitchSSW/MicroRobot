@@ -39,6 +39,13 @@ char isStackEmpty(void);
 int showMeDabox();
 void printMapCountWalk();
 int searchNext();
+int dropYourBox(char t_row,char t_col,char size);
+int decodeRoute();
+int checkShortestRoute();
+void addRouteCode(char c,int n);
+int moveForwardTemp();
+int checkTurnRight(char row,char col,char d);
+int checkTurnLeft(char row,char col,char d);
 // ======= Shortest Path
 //heap
 typedef struct{
@@ -46,8 +53,8 @@ typedef struct{
 }Node;
 
 Node heap[HeapSize];
-char popRow=0,popCol=0,useHeap=0,createHeap=0,nextHeap=1,route[routeSize],stack[stackSize],topStack=1,countShortestPathBlock=0,direction=8,countBox=0;
-char position[2]={9,9},searchTarget[2]={8,9};
+char popRow=0,popCol=0,useHeap=0,createHeap=0,nextHeap=1,route[routeSize],routeCode[routeSize],routeCodeIndex=0,stack[stackSize],topStack=1,countShortestPathBlock=0,direction=8,countBox=7;
+char position[2]={9,9},searchTarget[2]={8,8};
 
 //Jane variable
 int X=9,Y=9;
@@ -97,85 +104,75 @@ int drop2BoxUP=38,drop2BoxDOWN=32,drop2BoxRIGHT=34,drop2BoxLEFT=31;
 char map[10][10]={
   //0  1  2  3  4  5  6  7  8  9
     0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
-    0 ,0 ,41,0 ,0 ,0 ,0 ,21,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,0 ,0 ,21,0 ,0 ,
     0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
     0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
     0 ,0 ,0 ,0 ,0 ,0 ,32,0 ,0 ,0 ,
     0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
     0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
     0 ,0 ,21,0 ,0 ,0 ,38,0 ,0 ,0 ,
-    0 ,0 ,0 ,0 ,0 ,0 ,40,0 ,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,0 ,0,0 ,0 ,0 ,
     0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0
 };
 
-
-//serch canWalk=1 cant=0
-/*
 char mapCountWalk[10][10]={
   //0 1 2 3 4 5 6 7 8 9
     1,1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,0,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1,
-    1,0,1,1,0,1,1,1,1,1,
-    1,1,1,1,0,1,0,1,1,1,
-    1,1,0,1,1,1,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,0,1,1,0,1,
     1,1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,1
-};*/
-
-/*char mapCountWalk[10][10]={
-  //0 1 2 3 4 5 6 7 8 9
     1,1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,0,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1,
-    1,0,1,1,0,1,1,1,1,1,
-    1,1,1,1,0,1,0,1,1,1,
-    1,1,0,1,1,1,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,0,1,1,0,1,
+    1,1,1,1,1,1,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1
-};*/
+};
 
-char mapCountWalk[10][10]={
-  //0 1 2 3 4 5 6 7 8 9
+char mapBlockTurn[10][10]={
     1,1,1,1,1,1,1,1,1,1,
-    1,1,0,1,1,0,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1,
-    1,0,1,1,0,1,1,1,1,1,
-    1,1,1,1,0,1,0,1,1,1,
-    1,1,0,1,1,1,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,0,1,
-    1,1,1,1,0,0,0,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1
 };
 
 
+
 void main(){
-    //showMeDabox();
+    showMeDabox();
+    printMap();
     //generate 2box and mark
-    printMap();
-    mergeBox();
-    printMap();
-    printf("%d %d",position[0],position[1]);
-    printf("\n=====================\n FIELD code  INPUT number 1 for move each step \n======================\n");
-    findNearBox(position[0],position[1]);
-    grabNearBox();
+    /*
+    for(int i =0;i<2;i++){
 
-    printf("%d %d",position[0],position[1]);
-    printf("\n=====================\n finish run grab NearBox \n======================\n");
-    printMap();
-    printMapCountWalk();
+        printMap();
+        mergeBox();
+        printMap();
+        printf("%d %d",position[0],position[1]);
+        printf("\n=====================\n FIELD code  INPUT number 1 for move each step \n======================\n");
+        findNearBox(position[0],position[1]);
+        grabNearBox();
 
-    printf("\n=====================\n run find Index \n======================\n");
-    findIndex(position[0],position[1]);
-    dropNearBox();
-    printf("\n=====================\n finish run find Index \n======================\n");
-    printMap();
-    printMapCountWalk();
+        printf("%d %d",position[0],position[1]);
+        printf("\n=====================\n finish run grab NearBox \n======================\n");
+        printMap();
+        printMapCountWalk();
+
+        printf("\n=====================\n run find Index \n======================\n");
+        findIndex(position[0],position[1]);
+        //dropNearBox();
+        dropYourBox(minX,minY,41);
+        setBox();
+        printf("\n=====================\n finish run find Index \n======================\n");
+        printMap();
+        printMapCountWalk();
+    }*/
 }
 //====================================== Jane Code =======================
 //Perfect!!
@@ -347,8 +344,8 @@ void dropNearBox(){
 }
 void setBox(){
     if(littleBox!=0){
-        mapCountWalk[position[0]][position[1]]=0;
-        map[position[0]][position[1]]=40;
+        mapCountWalk[minX][minY]=0;
+        map[minX][minY]=40;
     }
 }
 void setPosition(){
@@ -700,7 +697,7 @@ void shortestPath(char targetRow,char targetCol,char startRow,char startCol){
         do{
             //printf("search Row: %d Col: %d Wall: %d | \n",row,col,map[row][col]);
             //left
-            if((col-1 >= 0) && (mapCountWalk[row][col-1] == 1) &&(mapBox[row][col-1].isCheck == 0)){
+            if((col-1 >= 0) && (mapCountWalk[row][col-1] == 1) &&(mapBox[row][col-1].isCheck == 0) && (mapBlockTurn[row][col-1] == 1)){
           //      printf("left  ");
                             //set value to next Box
                 mapBox[row][col-1].isCheck = 1;
@@ -713,36 +710,8 @@ void shortestPath(char targetRow,char targetCol,char startRow,char startCol){
                 }
                 appendHeap(row,col-1);
             }
-            //top
-            if((row-1 >= 0) &&(mapCountWalk[row-1][col] == 1) && (mapBox[row-1][col].isCheck == 0)){
-          //      printf("Top  ");
-                //set value to next Box
-                mapBox[row-1][col].isCheck = 1;
-                mapBox[row-1][col].preRow = row;
-                mapBox[row-1][col].preCol = col;
-                mapBox[row-1][col].preDirection = 8;
-                if(row-1 == targetRow && col == targetCol){
-           //         printf("Found !!!\n");
-                    break;
-                }
-                appendHeap(row-1,col);
-            }
-            //right
-            if((col+1 <= 9) &&(mapCountWalk[row][col+1] == 1 )&&( mapBox[row][col+1].isCheck == 0)){
-         //       printf("right  ");
-                            //set value to next Box
-                mapBox[row][col+1].isCheck = 1;
-                mapBox[row][col+1].preRow = row;
-                mapBox[row][col+1].preCol = col;
-                mapBox[row][col+1].preDirection = 4;
-                if(row == targetRow && col+1 == targetCol){
-           //             printf("Found !!!\n");
-                    break;
-                }
-                appendHeap(row,col+1);
-            }
             //bottom
-            if((row+1 <= 9) &&(mapCountWalk[row+1][col] == 1) && (mapBox[row+1][col].isCheck == 0)){
+            if((row+1 <= 9) &&(mapCountWalk[row+1][col] == 1) && (mapBox[row+1][col].isCheck == 0) && (mapBlockTurn[row+1][col] == 1)){
           //      printf("bottom  ");
                             //set value to next Box
                 mapBox[row+1][col].isCheck = 1;
@@ -759,6 +728,34 @@ void shortestPath(char targetRow,char targetCol,char startRow,char startCol){
                 popHeap();
                 row = popRow;
                 col = popCol;
+            }
+            //right
+            if((col+1 <= 9) &&(mapCountWalk[row][col+1] == 1 )&&( mapBox[row][col+1].isCheck == 0) && (mapBlockTurn[row][col+1] == 1)){
+         //       printf("right  ");
+                            //set value to next Box
+                mapBox[row][col+1].isCheck = 1;
+                mapBox[row][col+1].preRow = row;
+                mapBox[row][col+1].preCol = col;
+                mapBox[row][col+1].preDirection = 4;
+                if(row == targetRow && col+1 == targetCol){
+           //             printf("Found !!!\n");
+                    break;
+                }
+                appendHeap(row,col+1);
+            }
+            //top
+            if((row-1 >= 0) &&(mapCountWalk[row-1][col] == 1) && (mapBox[row-1][col].isCheck == 0) && (mapBlockTurn[row-1][col] == 1)){
+          //      printf("Top  ");
+                //set value to next Box
+                mapBox[row-1][col].isCheck = 1;
+                mapBox[row-1][col].preRow = row;
+                mapBox[row-1][col].preCol = col;
+                mapBox[row-1][col].preDirection = 8;
+                if(row-1 == targetRow && col == targetCol){
+           //         printf("Found !!!\n");
+                    break;
+                }
+                appendHeap(row-1,col);
             }
 
        //     printf("\n");
@@ -898,7 +895,7 @@ int runShortestRoute(){
                 mapCountWalk[position[0]+1][position[1]] = 0;
                 map[position[0]+1][position[1]] = re;
                 countBox++;
-            }else if(route[i] == 4 && mapCountWalk[position[0]+1][position[1]] == 1){
+            }else if(route[i] == 4 && mapCountWalk[position[0]][position[1]-1] == 1){
                 mapCountWalk[position[0]][position[1]-1] = 0;
                 map[position[0]][position[1]-1] = re;
                 countBox++;
@@ -943,158 +940,250 @@ char isStackEmpty(){
     else return 0;
 }
 
-
-
-
-
-
-
-/*
-void popStackAndRun(){
-		delay(500);
-		route[0] = popStack();
-		if(route[0] != 99)runShortestRoute();
+// search map avoid box
+int checkTurnLeft(char row,char col,char d){
+    if(d == 8){
+        if(row>0 && mapCountWalk[row-1][col]==0)return 0;                   // TOP
+        if(row>0 && col>0 && mapCountWalk[row-1][col-1]==0)return 0;        // LEFT TOP
+        if(col>0 && mapCountWalk[row][col-1]==0)return 0;                   // LEFT
+    }else if(d == 4){
+        if(col<9 && mapCountWalk[row][col+1]==0)return 0;                   // RIGHT
+        if(row>0 && col<9 && mapCountWalk[row-1][col+1]==0)return 0;        // RIGHT TOP
+        if(row>0 && mapCountWalk[row-1][col]==0)return 0;                   // TOP
+    }else if(d == 2){
+        if(row<9 && mapCountWalk[row+1][col]==0)return 0;                   // BOTTOM
+        if(row<9 && col<9 && mapCountWalk[row+1][col+1]==0)return 0;        // BOTTOM RIGHT
+        if(col<9 && mapCountWalk[row][col+1]==0)return 0;                   // RIGHT
+    }else if(d == 1){
+        if(col>0 && mapCountWalk[row][col-1]==0)return 0;                   // LEFT
+        if(row<9 && col>0 && mapCountWalk[row+1][col-1]==0)return 0;        // BOTTOM LEFT
+        if(row<9 && mapCountWalk[row+1][col]==0)return 0;                   // BOTTOM
+    }
+    return 1;
 }
 
-
-void showMeDawae(){
-    //init stack
-    stack[0] = 99;
-    char canPop = 0;
-
-    do{
-    	checkWall();
-    	delay(500);
-    	displayMap();
-    	canPop = 1;
-
-
-    	if(leftWall == 0){																						// ==================== left
-    		if(direction == 8){																					//left wall is 1
-    			if(mapCountWalk[position[0]][position[1]-1] == 0){
-    				checkFrontWall();
-    				turn90left();
-    				move_forward();
-    				pushStack(1);
-    				canPop = 0;
-    				continue;
-    			}
-    		}
-    		else if(direction == 4){																		//left wall is 8
-    			if(mapCountWalk[position[0]-1][position[1]] == 0){
-    				checkFrontWall();
-    				turn90left();
-    				move_forward();
-   					pushStack(8);
-   					canPop = 0;
-   					continue;
-    			}
-    		}
-    		else if(direction == 2){																		//left wall is 4
-    			if(mapCountWalk[position[0]][position[1]+1] == 0){
-    				checkFrontWall();
-    				turn90left();
-    				move_forward();
-    				pushStack(4);
-    				canPop = 0;
-    				continue;
-    			}
-    		}
-    		else if(direction == 1){																		//left wall is 2
-    			if(mapCountWalk[position[0]+1][position[1]] == 0){
-    				checkFrontWall();
-    				turn90left();
-    				move_forward();
-    				pushStack(2);
-    				canPop = 0;
-    				continue;
-    			}
-    		}
-    	}
-	    // ====================================================================================================
-
-    	if(frontWall == 0){																			//========================= front
-	    	if(direction == 8){																					//front wall is 8
-    			if(mapCountWalk[position[0]-1][position[1]] == 0){
-    				move_forward();
-    				pushStack(8);
-    				canPop = 0;
-    				continue;
-    			}
-    		}
-    		else if(direction == 4){																		//front wall is 4
-    			if(mapCountWalk[position[0]][position[1]+1] == 0){
-    				move_forward();
-    				pushStack(4);
-    				canPop = 0;
-    				continue;
-    			}
-    		}
-    		else if(direction == 2){																		//front wall is 2
-    			if(mapCountWalk[position[0]+1][position[1]] == 0){
-    				move_forward();
-    				pushStack(2);
-    				canPop = 0;
-    				continue;
-    			}
-    		}
-    		else if(direction == 1){																		//front wall is 1
-    			if(mapCountWalk[position[0]][position[1]-1] == 0){
-    				move_forward();
-    				pushStack(1);
-    				canPop = 0;
-    				continue;
-    			}
-    		}
-	    }
-	    // ====================================================================================================
-
-	    if(rightWall == 0){
-	    	if(direction == 8){																					//right wall is 4
-    			if(mapCountWalk[position[0]][position[1]+1] == 0){
-    				checkFrontWall();
-    				turn90right();
-    				move_forward();
-   					pushStack(4);
-   					canPop = 0;
-   					continue;
-    			}
-    		}
-    		else if(direction == 4){																		//right wall is 2
-    			if(mapCountWalk[position[0]+1][position[1]] == 0){
-    				checkFrontWall();
-    				turn90right();
-    				move_forward();
-   					pushStack(2);
-   					canPop = 0;
-   					continue;
-    			}
-    		}
-    		else if(direction == 2){																		//right wall is 1
-    			if(mapCountWalk[position[0]][position[1]-1] == 0){
-    				checkFrontWall();
-    				turn90right();
-    				move_forward();
-   					pushStack(1);
-   					canPop = 0;
-   					continue;
-    			}
-    		}
-    		else if(direction == 1){																		//right wall is 8
-    			if(mapCountWalk[position[0]-1][position[1]] == 0){
-    				checkFrontWall();
-    				turn90right();
-    				move_forward();
-   					pushStack(8);
-   					canPop = 0;
-   					continue;
-    			}
-    		}
-	    }
-
-	    if(canPop)popStackAndRun();
-
-    }while(!isStackEmpty());
+int checkTurnRight(char row,char col,char d){
+    if(d == 8){
+        if(row>0 && mapCountWalk[row-1][col]==0)return 0;                   // TOP
+        if(row>0 && col<9 && mapCountWalk[row-1][col+1]==0)return 0;        // RIGHT TOP
+        if(col<9 && mapCountWalk[row][col+1]==0)return 0;                   // RIGHT
+    }else if(d == 4){
+        if(col<9 && mapCountWalk[row][col+1]==0)return 0;                   // RIGHT
+        if(row<9 && col<9 && mapCountWalk[row+1][col+1]==0)return 0;        // BOTTOM RIGHT
+        if(row<9 && mapCountWalk[row+1][col]==0)return 0;                   // BOTTOM
+    }else if(d == 2){
+        if(row<9 && mapCountWalk[row+1][col]==0)return 0;                   // BOTTOM
+        if(row<9 && col>0 && mapCountWalk[row+1][col-1]==0)return 0;        // BOTTOM LEFT
+        if(col>0 && mapCountWalk[row][col-1]==0)return 0;                   // LEFT
+    }else if(d == 1){
+        if(col>0 && mapCountWalk[row][col-1]==0)return 0;                   // LEFT
+        if(row>0 && col>0 && mapCountWalk[row-1][col-1]==0)return 0;        // LEFT TOP
+        if(row>0 && mapCountWalk[row-1][col]==0)return 0;                   // TOP
+    }
+    return 1;
 }
 
-*/
+int moveForwardTemp(){
+    int a;
+    scanf("%d",&a);
+    if(a == 1){
+        if(direction == 8)position[0]--;
+        else if(direction == 4)position[1]++;
+        else if(direction == 2)position[0]++;
+        else if(direction == 1)position[1]--;
+    }
+    return (char)a;
+}
+
+void addRouteCode(char c,int n){
+    for(int i =0;i<n;i++){
+        routeCode[routeCodeIndex] = c;
+        printf("%c",c,routeCodeIndex);
+        routeCodeIndex++;
+    }
+}
+
+int checkShortestRoute(){
+    char positionTemp[2] ={position[0],position[1]},directionTemp = direction;
+    char i;
+
+    for(i = 0;i<strlen(route);i++){
+        switch(route[i]){
+        case 8:                             //8 revert to 2
+            if(directionTemp == 1){
+                if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp))addRouteCode('L',1);
+                else if(checkTurnRight(positionTemp[0],positionTemp[1],1) && checkTurnRight(positionTemp[0],positionTemp[1],8) && checkTurnRight(positionTemp[0],positionTemp[1],4))addRouteCode('R',3);
+                    else{
+                        mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
+                        return 0;
+                    }
+            }else if(directionTemp == 8){
+                if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp) && checkTurnLeft(positionTemp[0],positionTemp[1],1))addRouteCode('L',2);
+                else if(checkTurnRight(positionTemp[0],positionTemp[1],directionTemp) && checkTurnRight(positionTemp[0],positionTemp[1],4))addRouteCode('R',2);
+                    else {
+                        mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
+                        return 0;
+                    }
+            }else if(directionTemp == 4){
+                if(checkTurnRight(positionTemp[0],positionTemp[1],directionTemp))addRouteCode('R',1);
+                else if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp) && checkTurnLeft(positionTemp[0],positionTemp[1],8) && checkTurnLeft(positionTemp[0],positionTemp[1],1))addRouteCode('L',3);
+                    else {
+                        mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
+                        return 0;
+                    }
+            }
+            //debug
+            directionTemp = 2;
+            break;
+        case 4:                             //4 revert to 1
+            if(directionTemp == 8){
+                if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp))addRouteCode('L',1);
+                else if(checkTurnRight(positionTemp[0],positionTemp[1],directionTemp) && checkTurnRight(positionTemp[0],positionTemp[1],4) && checkTurnRight(positionTemp[0],positionTemp[1],2))addRouteCode('R',3);
+                    else {
+                        mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
+                        return 0;
+                    }
+            }else if(directionTemp == 4){
+                if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp) && checkTurnLeft(positionTemp[0],positionTemp[1],8))addRouteCode('L',2);
+                else if(checkTurnRight(positionTemp[0],positionTemp[1],directionTemp) && checkTurnRight(positionTemp[0],positionTemp[1],2))addRouteCode('R',2);
+                    else {
+                        mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
+                        return 0;
+                    }
+            }else if(directionTemp == 2){
+                if(checkTurnRight(positionTemp[0],positionTemp[1],directionTemp))addRouteCode('R',1);
+                else if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp) && checkTurnLeft(positionTemp[0],positionTemp[1],4) && checkTurnLeft(positionTemp[0],positionTemp[1],8))addRouteCode('L',3);
+                else {
+                    mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
+                    return 0;
+                }
+            }
+            //debug
+            directionTemp = 1;
+            break;
+        case 2:                             //2 revert to 8
+            if(directionTemp == 4){
+                if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp))addRouteCode('L',1);
+                else if(checkTurnRight(positionTemp[0],positionTemp[1],directionTemp) && checkTurnRight(positionTemp[0],positionTemp[1],2) && checkTurnRight(positionTemp[0],positionTemp[1],1))addRouteCode('R',3);
+                    else {
+                        mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
+                        return 0;
+                    }
+            }else if(directionTemp == 2){
+                if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp) && checkTurnLeft(positionTemp[0],positionTemp[1],4))addRouteCode('L',2);
+                else if(checkTurnRight(positionTemp[0],positionTemp[1],directionTemp) && checkTurnRight(positionTemp[0],positionTemp[1],1))addRouteCode('R',2);
+                    else {
+                        mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
+                        return 0;
+                    }
+            }else if(directionTemp == 1){
+                if(checkTurnRight(positionTemp[0],positionTemp[1],directionTemp))addRouteCode('R',1);
+                else if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp) && checkTurnLeft(positionTemp[0],positionTemp[1],2) && checkTurnLeft(positionTemp[0],positionTemp[1],4))addRouteCode('L',3);
+                    else {
+                        mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
+                        return 0;
+                    }
+            }
+
+            //debug
+            directionTemp = 8;
+            break;
+        case 1:                             //1 revert to 4
+            if(directionTemp == 2){
+                if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp))addRouteCode('L',1);
+                else if(checkTurnRight(positionTemp[0],positionTemp[1],directionTemp) && checkTurnRight(positionTemp[0],positionTemp[1],1) && checkTurnRight(positionTemp[0],positionTemp[1],8))addRouteCode('R',3);
+                    else {
+                        mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
+                        return 0;
+                    }
+            }else if(directionTemp == 1){
+                if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp) && checkTurnLeft(positionTemp[0],positionTemp[1],2))addRouteCode('L',2);
+                else if(checkTurnRight(positionTemp[0],positionTemp[1],directionTemp) && checkTurnRight(positionTemp[0],positionTemp[1],8))addRouteCode('R',2);
+                    else {
+                        mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
+                        return 0;
+                    }
+            }else if(directionTemp == 8){
+                if(checkTurnRight(positionTemp[0],positionTemp[1],directionTemp))addRouteCode('R',1);
+                else if(checkTurnLeft(positionTemp[0],positionTemp[1],directionTemp) && checkTurnLeft(positionTemp[0],positionTemp[1],1) && checkTurnLeft(positionTemp[0],positionTemp[1],2))addRouteCode('L',3);
+                    else {
+                        mapBlockTurn[positionTemp[0]][positionTemp[1]] = 0;
+                        return 0;
+                    }
+            }
+            //debug
+            directionTemp = 4;
+            break;
+        default:;
+        }
+        addRouteCode('M',1);
+        //move forward
+        if(directionTemp == 8)positionTemp[0]--;
+        else if(directionTemp == 4)positionTemp[1]++;
+        else if(directionTemp == 2)positionTemp[0]++;
+        else if(directionTemp == 1)positionTemp[1]--;
+    }
+
+    //clear route
+    //for(i = 0;i<routeSize;i++)route[i]=0;
+    //finish
+    return 1;
+}
+
+int decodeRoute(){
+    for(int i =0;i<routeCodeIndex;i++){
+        char code = routeCode[i];
+        printf("%c\n",code);
+        if(code == 'L'){
+            turnLeft();
+        }else if(code == 'R'){
+            turnRight();
+        }else if(code == 'M'){
+            moveForward();
+            printMapCountWalk();
+        }
+    }
+}
+
+int dropYourBox(char t_row,char t_col,char size){
+
+        printf("Start %d,%d : Target %d,%d\n",position[0],position[1],t_row,t_col);
+        char a;
+
+        // find the way
+        do{
+            //clear route
+            for(int i = 0;i<strlen(route);i++)route[i]=0;
+            for(int i = 0;i<routeCodeIndex;i++)routeCode[i]=0;
+            routeCodeIndex=0;
+
+            shortestPath(position[0],position[1],t_row,t_col);
+            if(size == 42 && t_row == 4 && t_col == 6)route[strlen(route)] = 8;
+            else if(size == 42 && t_row == 7 && t_col == 6)route[strlen(route)] = 2;
+            a= checkShortestRoute();
+            printf("\n");
+        }while(!a);
+
+        //delete last M
+        routeCode[--routeCodeIndex]=0;
+
+        //drop
+
+        //print
+        for(int i = 0;i<strlen(routeCode);i++){
+            printf("%c",routeCode[i]);
+        }
+        printf("\n");
+    //run code
+    decodeRoute();
+
+    //clear route
+    for(int i = 0;i<strlen(route);i++)route[i]=0;
+    for(int i = 0;i<routeCodeIndex;i++)routeCode[i]=0;
+    routeCodeIndex=0;
+
+    //clear map block turn
+    for(int i =0;i<10;i++)
+        for(int j=0;j<10;j++)
+            mapBlockTurn[i][j]=1;
+}
