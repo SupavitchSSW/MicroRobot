@@ -35,12 +35,6 @@ int showMeDabox();
 void printMapCountWalk();
 int searchNext();
 int dropYourBox(char t_row,char t_col,char size);
-int decodeRoute();
-int checkShortestRoute();
-void addRouteCode(char c,int n);
-int moveForwardTemp();
-int checkTurnRight(char row,char col,char d);
-int checkTurnLeft(char row,char col,char d);
 // ======= Shortest Path
 //heap
 typedef struct{
@@ -48,8 +42,8 @@ typedef struct{
 }Node;
 
 Node heap[HeapSize];
-char popRow=0,popCol=0,useHeap=0,createHeap=0,nextHeap=1,route[routeSize],routeCode[routeSize],routeCodeIndex=0,stack[stackSize],topStack=1,countShortestPathBlock=0,direction=8,countBox=0;
-char position[2]={9,9},searchTarget[2]={8,9};
+char popRow=0,popCol=0,useHeap=0,createHeap=0,nextHeap=1,route[routeSize],routeCode[routeSize],routeCodeIndex=0,stack[stackSize],topStack=1,countShortestPathBlock=0,direction=8,countBox=8;
+char position[2]={1,4},searchTarget[2]={8,9};
 
 //Jane variable
 int X=9,Y=9;
@@ -67,9 +61,10 @@ int grab2BoxUP=28,grab2BoxDOWN=22,grab2BoxRIGHT=24,grab2BoxLEFT=21;
 //drop2Box '^'=38 'v'=32 '>'=34 '<' =31
 int drop2BoxUP=38,drop2BoxDOWN=32,drop2BoxRIGHT=34,drop2BoxLEFT=31;
 //*****************************************
+
 char map[10][10]={
     0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
-    0 ,0 ,0 ,0 ,0 ,0 ,0 ,21,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,41 ,0 ,21,0 ,0 ,
     0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
     0 ,40,0 ,41,0 ,0 ,40,0 ,0 ,0 ,
     0 ,0 ,0 ,0 ,0 ,0 ,32,0 ,0 ,0 ,
@@ -84,12 +79,12 @@ char mapCountWalk[10][10]={
     1,1,1,1,1,1,1,1,1,1,
     1,1,1,1,1,0,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1,
-    1,0,1,1,0,1,1,1,1,1,
-    1,1,1,1,0,1,0,1,1,1,
-    1,1,0,1,1,1,1,1,1,1,
+    1,0,1,0,1,1,0,1,1,1,
     1,1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,0,1,
-    1,1,1,1,0,0,0,1,1,1,
+    1,1,1,1,1,1,1,0,1,1,
+    1,1,1,1,1,1,1,0,1,1,
+    1,1,1,1,1,1,1,0,1,1,
+    1,1,1,1,1,0,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1
 };
 
@@ -111,7 +106,6 @@ void main(){
     //clear route
     for(int i = 0;i<strlen(route);i++)route[i]=0;
     for(int i = 0;i<strlen(routeCode);i++)routeCode[i]=0;
-    showMeDabox();
     // showMeDabox();
     //generate 2box and mark
 /*
@@ -124,11 +118,8 @@ void main(){
     printMap();
     printMapCountWalk();
 */
-/*
     printMapCountWalk();
-    dropYourBox(7,2,42);
-*/
-
+    dropYourBox(7,2,41);
 }
 //====================================== Jane Code =======================
 void mergeBox(){
@@ -604,6 +595,34 @@ void shortestPath(char targetRow,char targetCol,char startRow,char startCol){
                 }
                 appendHeap(row,col-1);
             }
+            //top
+            if((row-1 >= 0) &&(mapCountWalk[row-1][col] == 1) && (mapBox[row-1][col].isCheck == 0) && (mapBlockTurn[row-1][col] == 1)){
+          //      printf("Top  ");
+                //set value to next Box
+                mapBox[row-1][col].isCheck = 1;
+                mapBox[row-1][col].preRow = row;
+                mapBox[row-1][col].preCol = col;
+                mapBox[row-1][col].preDirection = 8;
+                if(row-1 == targetRow && col == targetCol){
+           //         printf("Found !!!\n");
+                    break;
+                }
+                appendHeap(row-1,col);
+            }
+            //right
+            if((col+1 <= 9) &&(mapCountWalk[row][col+1] == 1 )&&( mapBox[row][col+1].isCheck == 0) && (mapBlockTurn[row][col+1] == 1)){
+         //       printf("right  ");
+                            //set value to next Box
+                mapBox[row][col+1].isCheck = 1;
+                mapBox[row][col+1].preRow = row;
+                mapBox[row][col+1].preCol = col;
+                mapBox[row][col+1].preDirection = 4;
+                if(row == targetRow && col+1 == targetCol){
+           //             printf("Found !!!\n");
+                    break;
+                }
+                appendHeap(row,col+1);
+            }
             //bottom
             if((row+1 <= 9) &&(mapCountWalk[row+1][col] == 1) && (mapBox[row+1][col].isCheck == 0) && (mapBlockTurn[row+1][col] == 1)){
           //      printf("bottom  ");
@@ -622,34 +641,6 @@ void shortestPath(char targetRow,char targetCol,char startRow,char startCol){
                 popHeap();
                 row = popRow;
                 col = popCol;
-            }
-            //right
-            if((col+1 <= 9) &&(mapCountWalk[row][col+1] == 1 )&&( mapBox[row][col+1].isCheck == 0) && (mapBlockTurn[row][col+1] == 1)){
-         //       printf("right  ");
-                            //set value to next Box
-                mapBox[row][col+1].isCheck = 1;
-                mapBox[row][col+1].preRow = row;
-                mapBox[row][col+1].preCol = col;
-                mapBox[row][col+1].preDirection = 4;
-                if(row == targetRow && col+1 == targetCol){
-           //             printf("Found !!!\n");
-                    break;
-                }
-                appendHeap(row,col+1);
-            }
-            //top
-            if((row-1 >= 0) &&(mapCountWalk[row-1][col] == 1) && (mapBox[row-1][col].isCheck == 0) && (mapBlockTurn[row-1][col] == 1)){
-          //      printf("Top  ");
-                //set value to next Box
-                mapBox[row-1][col].isCheck = 1;
-                mapBox[row-1][col].preRow = row;
-                mapBox[row-1][col].preCol = col;
-                mapBox[row-1][col].preDirection = 8;
-                if(row-1 == targetRow && col == targetCol){
-           //         printf("Found !!!\n");
-                    break;
-                }
-                appendHeap(row-1,col);
             }
 
        //     printf("\n");
@@ -807,7 +798,7 @@ int runShortestRoute(){
                 mapCountWalk[position[0]+1][position[1]] = 0;
                 map[position[0]+1][position[1]] = re;
                 countBox++;
-            }else if(route[i] == 4 && mapCountWalk[position[0]][position[1]-1] == 1){
+            }else if(route[i] == 4 && mapCountWalk[position[0]+1][position[1]] == 1){
                 mapCountWalk[position[0]][position[1]-1] = 0;
                 map[position[0]][position[1]-1] = re;
                 countBox++;
@@ -1077,5 +1068,6 @@ int dropYourBox(char t_row,char t_col,char size){
         for(int j=0;j<10;j++)
             mapBlockTurn[i][j]=1;
 }
+
 
 
