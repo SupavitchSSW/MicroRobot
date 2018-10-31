@@ -164,10 +164,12 @@ void main(){
             box=42;
         }
         printf("\n=====================\n finish run grab NearBox \n======================\n");
+        printf("\n position of ROBOT: %d %d",position[0],position[1]);
         //printMap();
         //printMapCountWalk();
         printf("\n=====================\n run find Index \n======================\n");
         findIndex(position[0],position[1]);
+        printf("\n position of ROBOT: %d %d",position[0],position[1]);
         //dropNearBox();
 
         dropYourBox(minX,minY,box);
