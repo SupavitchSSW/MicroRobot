@@ -60,7 +60,7 @@ char position[2]={9,9},searchTarget[2]={8,9},positionTemp[2],directionTemp=8;
 //Jane variable
 int X=9,Y=9;
 int min=100,minX=0,minY=0,minBox=0,checkMinBox=0;
-int mark[4][2];
+int mark[5][2];
 //*****************************************
 //color
 //black=40 orange=41
