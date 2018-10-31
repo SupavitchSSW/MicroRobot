@@ -12,7 +12,7 @@ void printMap();
 void dropNearBox();
 void setBox();
 void findIndex(int positionX,int positionY);
-
+int box=41;
 int littleBox=2;
 
 //field
@@ -59,7 +59,7 @@ char position[2]={9,9},searchTarget[2]={8,9};
 
 //Jane variable
 int X=9,Y=9;
-int min=100,minX=0,minY=0,box=0;
+int min=100,minX=0,minY=0;
 //*****************************************
 //color
 //black=40 orange=41
@@ -165,7 +165,10 @@ void main(){
         printf("\n=====================\n run find Index \n======================\n");
         findIndex(position[0],position[1]);
         //dropNearBox();
-        dropYourBox(minX,minY,41);
+        if (littleBox==0){
+            box=42;
+        }
+        dropYourBox(minX,minY,box);
         setBox();
         printf("\n=====================\n finish run find Index \n======================\n");
         printMap();
@@ -204,6 +207,8 @@ void mergeBox(){
                     if((map[i-1][j]==orange)||map[i+1][j]==orange){
                         //UP
                         if(map[i-1][j]==orange){
+                            map[i][j]=42;
+                            map[i-1][j]=42;
                             if(map[i-2][j]!=black && map[i-2][j]<20){
                                 map[i-2][j]=grab2BoxDOWN;
                             }
@@ -213,6 +218,8 @@ void mergeBox(){
                         }
                         //DOWN
                         else if(map[i+1][j]==orange){
+                            map[i][j]=42;
+                            map[i+1][j]=42;
                             if(map[i+2][j]!=black && map[i+2][j]<20){
                                 map[i+2][j]=grab2BoxUP;
                             }
@@ -227,6 +234,8 @@ void mergeBox(){
                     if((map[i][j-1]==orange)||(map[i][j+1]==orange)){
                         //LEFT
                         if(map[i][j-1]==orange){
+                            map[i][j]=42;
+                            map[i][j-1]=42;
                             if(map[i][j-2]!=black && map[i][j-2]<20){
                                 map[i][j-2]=grab2BoxRIGHT;
                             }
@@ -236,6 +245,8 @@ void mergeBox(){
                         }
                         //RIGHT
                         if(map[i][j+1]==orange){
+                            map[i][j]=42;
+                            map[i][j+1]=42;
                             if(map[i][j-1]!=black && map[i][j-1]<20){
                                 map[i][j-1]=grab2BoxRIGHT;
                             }
@@ -263,29 +274,28 @@ void mergeBox(){
 //Little Box OK
 int findNearBox(int positionX,int positionY){
     //find NEAR box
-    min=100;
+    min=1000;
 
     //little box first
     if(littleBox!=0){
         for(int i=0;i<10;i++){
             for(int j=0;j<10;j++){
-                if((map[i][j] <= grab1BoxLEFT ) && (map[i][j]>grab2BoxLEFT)){
+                if((map[i][j] >= grab1BoxLEFT ) && (map[i][j]<grab2BoxLEFT)){
                     if((((positionX-i)*(positionX-i))+((positionY-j)*(positionY-j)))<=min){
                         searchTarget[0]=i;
                         searchTarget[1]=j;
                         minX=i;
                         minY=j;
                         min=(((positionX-i)*(positionX-i))+((positionY-j)*(positionY-j)));
-                        printf("%d \n",map[minX][minY]);
-                        printf("minX=%d minY=%d",searchTarget[0],searchTarget[1]);
-                        printf(" min=%d\n",min);
+                        printf("== FIND Little Box ==\ndirection:%d .\nlittle box in map : minX=%d minY=%d. \nDistance is: %d\n",map[minX][minY],searchTarget[0],searchTarget[1],min);
                     }
                 }
             }
         }//END find NEAR box
     }
     // create for big box
-    else if(0){
+    else if(littleBox==0){
+
 
     }
     //printf("near pos is (%d , %d)\n",minX,minY);
@@ -306,9 +316,8 @@ void findIndex(int positionX,int positionY){
                         minX=i;
                         minY=j;
                         min=(((positionX-i)*(positionX-i))+((positionY-j)*(positionY-j)));
-                        printf("%d \n",map[minX][minY]);
-                        printf("minX=%d minY=%d",searchTarget[0],searchTarget[1]);
-                        printf(" min=%d\n",min);
+                        printf("== FIND Little INDEX ==\ndirection:%d .\nlittle box in map : minX=%d minY=%d. \nDistance is: %d\n",map[minX][minY],searchTarget[0],searchTarget[1],min);
+
                     }
                 }
             }
@@ -346,6 +355,7 @@ void setBox(){
     if(littleBox!=0){
         mapCountWalk[minX][minY]=0;
         map[minX][minY]=40;
+        littleBox=littleBox-1;
     }
 }
 void setPosition(){
