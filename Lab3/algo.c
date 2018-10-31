@@ -17,9 +17,9 @@ int littleBox=2;
 
 //field
 #define wallDistance 18
-#define routeSize 30
-#define HeapSize 30
-#define stackSize 50
+#define routeSize 50
+#define HeapSize 50
+#define stackSize 70
 
 void checkFrontWall();
 char getMapWall(char row,char col);
@@ -31,7 +31,7 @@ char isHeapEmpty();
 void popHeap();
 void clearHeap();
 void printHeap();
-void shortestPath(char targetRow,char targetCol,char startRow,char startCol);
+int shortestPath(char targetRow,char targetCol,char startRow,char startCol);
 int runShortestRoute();
 void pushStack(char num);
 char popStack(void);
@@ -46,6 +46,7 @@ void addRouteCode(char c,int n);
 int moveForwardTemp();
 int checkTurnRight(char row,char col,char d);
 int checkTurnLeft(char row,char col,char d);
+int shortestPathV2(char targetRow,char targetCol,char startRow,char startCol);
 // ======= Shortest Path
 //heap
 typedef struct{
@@ -143,7 +144,8 @@ char mapBlockTurn[10][10]={
 
 void main(){
     showMeDabox();
-    printMap();
+    //printMap();
+    //shortestPath(1,7,7,2);
     //generate 2box and mark
 
     for(int i =0;i<2;i++){
@@ -670,8 +672,9 @@ void printHeap(){
     }
 }
 
-void shortestPath(char targetRow,char targetCol,char startRow,char startCol){
+int shortestPath(char targetRow,char targetCol,char startRow,char startCol){
     char i,j,row=startRow,col=startCol;
+    int count=0;
     //printf("Start searching shortestPath \n From: %d,%d  -> %d,%d\n",startRow,startCol,targetRow,targetCol);
 
     typedef struct{
@@ -692,62 +695,67 @@ void shortestPath(char targetRow,char targetCol,char startRow,char startCol){
     mapBox[startRow][startCol].isCheck = 1;
 
     if(startRow == targetRow && startCol == targetCol){
-        //printf("\n========= route count: %d ===========\n",strlen(route));
+        printf("\n========= route count: %d ===========\n",strlen(route));
     }else{
         do{
-            //printf("search Row: %d Col: %d Wall: %d | \n",row,col,map[row][col]);
+
+            printf("search Row: %d Col: %d Wall: %d | \n",row,col,map[row][col]);
             //left
             if((col-1 >= 0) && (mapCountWalk[row][col-1] == 1) &&(mapBox[row][col-1].isCheck == 0) && (mapBlockTurn[row][col-1] == 1)){
-          //      printf("left  ");
+                    printf("l");
+                printf("left  ");
                             //set value to next Box
                 mapBox[row][col-1].isCheck = 1;
                 mapBox[row][col-1].preRow = row;
                 mapBox[row][col-1].preCol = col;
                 mapBox[row][col-1].preDirection = 1;
                 if(row == targetRow && col-1 == targetCol){
-           //             printf("Found !!!\n");
+                        printf("Found !!!\n");
                     break;
                 }
                 appendHeap(row,col-1);
             }
             //top
             if((row-1 >= 0) &&(mapCountWalk[row-1][col] == 1) && (mapBox[row-1][col].isCheck == 0) && (mapBlockTurn[row-1][col] == 1)){
-          //      printf("Top  ");
+                    printf("t");
+                printf("Top  ");
                 //set value to next Box
                 mapBox[row-1][col].isCheck = 1;
                 mapBox[row-1][col].preRow = row;
                 mapBox[row-1][col].preCol = col;
                 mapBox[row-1][col].preDirection = 8;
                 if(row-1 == targetRow && col == targetCol){
-           //         printf("Found !!!\n");
+                    printf("Found !!!\n");
                     break;
                 }
                 appendHeap(row-1,col);
             }
             //right
             if((col+1 <= 9) &&(mapCountWalk[row][col+1] == 1 )&&( mapBox[row][col+1].isCheck == 0) && (mapBlockTurn[row][col+1] == 1)){
-         //       printf("right  ");
+                    printf("r");
+                printf("right  ");
                             //set value to next Box
                 mapBox[row][col+1].isCheck = 1;
                 mapBox[row][col+1].preRow = row;
                 mapBox[row][col+1].preCol = col;
                 mapBox[row][col+1].preDirection = 4;
                 if(row == targetRow && col+1 == targetCol){
-           //             printf("Found !!!\n");
+                        printf("Found !!!\n");
                     break;
                 }
                 appendHeap(row,col+1);
             }
             //bottom
             if((row+1 <= 9) &&(mapCountWalk[row+1][col] == 1) && (mapBox[row+1][col].isCheck == 0) && (mapBlockTurn[row+1][col] == 1)){
-          //      printf("bottom  ");
+                    printf("b");
+                printf("bottom  ");
                             //set value to next Box
                 mapBox[row+1][col].isCheck = 1;
                 mapBox[row+1][col].preRow = row;
                 mapBox[row+1][col].preCol = col;
                 mapBox[row+1][col].preDirection = 2;
                 if(row+1 == targetRow && col == targetCol){
-        //                printf("Found !!!\n");
+                    printf("Found !!!\n");
                     break;
                 }
                 appendHeap(row+1,col);
@@ -758,11 +766,9 @@ void shortestPath(char targetRow,char targetCol,char startRow,char startCol){
                 col = popCol;
             }
 
-       //     printf("\n");
         }while(1);
-
-
-            //generate route
+        //generate route
+        //for(int i= 0;i<routeSize;i++)route[i]=0;
         row = targetRow;
         col = targetCol;
         char index = 0,temp;
@@ -801,6 +807,157 @@ void shortestPath(char targetRow,char targetCol,char startRow,char startCol){
         }
         printf("\n");
     }
+    printf("===================\n");
+
+    //print mapBox direction
+    for(i = 0;i<10;i++){
+        for(j=0;j<10;j++){
+            printf("%d ",mapBox[i][j].preDirection);
+        }
+        printf("\n");
+    }*/
+
+    //printMapCountWalk();
+
+    //return route
+}
+
+
+int shortestPathV2(char targetRow,char targetCol,char startRow,char startCol){
+    char i,j,row=startRow,col=startCol;
+    int count=0;
+    //printf("Start searching shortestPath \n From: %d,%d  -> %d,%d\n",startRow,startCol,targetRow,targetCol);
+
+    typedef struct{
+        char preRow,preCol,preDirection,isCheck;
+    }Box;
+
+    Box mapBox[10][10];
+
+    //init mapNode
+    for(i = 0;i<10;i++){
+        for(j=0;j<10;j++){
+            mapBox[i][j].isCheck = 0;
+            mapBox[i][j].preRow = 0;
+            mapBox[i][j].preCol = 0;
+            mapBox[i][j].preDirection = 0;
+        }
+    }
+    mapBox[startRow][startCol].isCheck = 1;
+
+    if(startRow == targetRow && startCol == targetCol){
+        //printf("\n========= route count: %d ===========\n",strlen(route));
+    }else{
+        do{
+            //printf("search Row: %d Col: %d Wall: %d | \n",row,col,map[row][col]);
+
+
+            //bottom
+            if((row+1 <= 9) &&(mapCountWalk[row+1][col] == 1) && (mapBox[row+1][col].isCheck == 0) && (mapBlockTurn[row+1][col] == 1)){
+                printf("bottom  ");
+                            //set value to next Box
+                mapBox[row+1][col].isCheck = 1;
+                mapBox[row+1][col].preRow = row;
+                mapBox[row+1][col].preCol = col;
+                mapBox[row+1][col].preDirection = 2;
+                if(row+1 == targetRow && col == targetCol){
+                        printf("Found !!!\n");
+                    break;
+                }
+                appendHeap(row+1,col);
+            }
+            if(isHeapEmpty() == 0){
+                popHeap();
+                row = popRow;
+                col = popCol;
+            }
+            //left
+            if((col-1 >= 0) && (mapCountWalk[row][col-1] == 1) &&(mapBox[row][col-1].isCheck == 0) && (mapBlockTurn[row][col-1] == 1)){
+                printf("left  ");
+                            //set value to next Box
+                mapBox[row][col-1].isCheck = 1;
+                mapBox[row][col-1].preRow = row;
+                mapBox[row][col-1].preCol = col;
+                mapBox[row][col-1].preDirection = 1;
+                if(row == targetRow && col-1 == targetCol){
+                        printf("Found !!!\n");
+                    break;
+                }
+                appendHeap(row,col-1);
+            }
+            //top
+            if((row-1 >= 0) &&(mapCountWalk[row-1][col] == 1) && (mapBox[row-1][col].isCheck == 0) && (mapBlockTurn[row-1][col] == 1)){
+                printf("Top  ");
+                //set value to next Box
+                mapBox[row-1][col].isCheck = 1;
+                mapBox[row-1][col].preRow = row;
+                mapBox[row-1][col].preCol = col;
+                mapBox[row-1][col].preDirection = 8;
+                if(row-1 == targetRow && col == targetCol){
+                    printf("Found !!!\n");
+                    break;
+                }
+                appendHeap(row-1,col);
+            }
+            //right
+            if((col+1 <= 9) &&(mapCountWalk[row][col+1] == 1 )&&( mapBox[row][col+1].isCheck == 0) && (mapBlockTurn[row][col+1] == 1)){
+                printf("right  ");
+                            //set value to next Box
+                mapBox[row][col+1].isCheck = 1;
+                mapBox[row][col+1].preRow = row;
+                mapBox[row][col+1].preCol = col;
+                mapBox[row][col+1].preDirection = 4;
+                if(row == targetRow && col+1 == targetCol){
+                        printf("Found !!!\n");
+                    break;
+                }
+                appendHeap(row,col+1);
+            }
+            printf("%d",count++);
+            if(count > 100)return 0;
+        }while(1);
+
+
+            //generate route
+        row = targetRow;
+        col = targetCol;
+        char index = 0,temp;
+
+        do{
+        route[index] = mapBox[row][col].preDirection;
+        temp = row;
+        row = mapBox[row][col].preRow;
+        col = mapBox[temp][col].preCol;
+        }while(route[index++] != 0);
+
+		//set shortest path count
+		countShortestPathBlock = strlen(route)+1;
+
+        //clear heap
+        clearHeap();
+
+        //print route
+
+        for(i=0;i<index-1;i++){
+            printf("%d ",route[i]);
+
+        }
+
+
+        index = 0;
+    }
+    return 1;
+
+
+    //print searched box
+
+/*
+    for(i = 0;i<10;i++){
+        for(j=0;j<10;j++){
+            printf("%d ",mapBox[i][j].isCheck);
+        }
+        printf("\n");
+    }
     printf("===================\n");*/
 /*
     //print mapBox direction
@@ -815,7 +972,6 @@ void shortestPath(char targetRow,char targetCol,char startRow,char startCol){
 
     //return route
 }
-
 
 
 int moveForward(){
@@ -1148,19 +1304,25 @@ int decodeRoute(){
     }
 }
 
-int dropYourBox(char t_row,char t_col,char size){
 
-        printf("Start %d,%d : Target %d,%d\n",position[0],position[1],t_row,t_col);
-        char a;
+int moveAvoidBox(char t_row,char t_col,char size){
+    printf("Start %d,%d : Target %d,%d\n",position[0],position[1],t_row,t_col);
+        char a,count=0;
 
         // find the way
         do{
+            printf("%d ",count++);
             //clear route
             for(int i = 0;i<strlen(route);i++)route[i]=0;
             for(int i = 0;i<routeCodeIndex;i++)routeCode[i]=0;
             routeCodeIndex=0;
 
-            shortestPath(position[0],position[1],t_row,t_col);
+            if(!shortestPathV2(position[0],position[1],t_row,t_col)){
+                return 0;
+            }
+
+            printf("%s %d",route,strlen(route));
+
             if(size == 42 && t_row == 4 && t_col == 6)route[strlen(route)] = 8;
             else if(size == 42 && t_row == 7 && t_col == 6)route[strlen(route)] = 2;
             a= checkShortestRoute();
@@ -1189,4 +1351,13 @@ int dropYourBox(char t_row,char t_col,char size){
     for(int i =0;i<10;i++)
         for(int j=0;j<10;j++)
             mapBlockTurn[i][j]=1;
+}
+
+int dropYourBox(char t_row,char t_col,char size){
+
+    if(!moveAvoidBox(t_row,t_col,size)){
+        printf("BOOM!!!");
+    }
+    //drop item here
+
 }
