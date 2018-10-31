@@ -59,7 +59,7 @@ char position[2]={9,9},searchTarget[2]={8,9};
 
 //Jane variable
 int X=9,Y=9;
-int min=100,minX=0,minY=0;
+int min=100,minX=0,minY=0,minBox=0,checkMinBox=0;
 //*****************************************
 //color
 //black=40 orange=41
@@ -148,26 +148,28 @@ void main(){
     //shortestPath(1,7,7,2);
     //generate 2box and mark
 
-    for(int i =0;i<2;i++){
+    for(int i =0;i<3;i++){
         printMap();
         mergeBox();
         printMap();
-        printf("%d %d",position[0],position[1]);
+        printf("Position of ROBOT: %d %d",position[0],position[1]);
         printf("\n=====================\n FIELD code  INPUT number 1 for move each step \n======================\n");
+        printf("\n=====================\n Find Near Box \n======================\n");
         findNearBox(position[0],position[1]);
+        printf("\n=====================\n Start GRAP \n======================\n");
         grabNearBox();
-
-        printf("\n position : %d %d",position[0],position[1]);
-        printf("\n=====================\n finish run grab NearBox \n======================\n");
-        printMap();
-        printMapCountWalk();
-
-        printf("\n=====================\n run find Index \n======================\n");
-        findIndex(position[0],position[1]);
-        //dropNearBox();
+        printf("\n position of ROBOT: %d %d",position[0],position[1]);
+        //whit Box is?
         if (littleBox==0){
             box=42;
         }
+        printf("\n=====================\n finish run grab NearBox \n======================\n");
+        //printMap();
+        //printMapCountWalk();
+        printf("\n=====================\n run find Index \n======================\n");
+        findIndex(position[0],position[1]);
+        //dropNearBox();
+
         dropYourBox(minX,minY,box);
         setBox();
         printf("\n=====================\n finish run find Index \n======================\n");
@@ -294,11 +296,22 @@ int findNearBox(int positionX,int positionY){
         }//END find NEAR box
     }
     // create for big box
-    else if(littleBox==0){
-
-
-    }
-    //printf("near pos is (%d , %d)\n",minX,minY);
+    if(littleBox==0){
+        for(int i=0;i<10;i++){
+            for(int j=0;j<10;j++){
+                if((map[i][j] >= grab2BoxLEFT ) && (map[i][j]<drop1BoxLEFT)){
+                    if((((positionX-i)*(positionX-i))+((positionY-j)*(positionY-j)))<=min){
+                        searchTarget[0]=i;
+                        searchTarget[1]=j;
+                        minX=i;
+                        minY=j;
+                        min=(((positionX-i)*(positionX-i))+((positionY-j)*(positionY-j)));
+                        printf("== FIND Big Box ==\ndirection:%d .\nlittle box in map : minX=%d minY=%d. \nDistance is: %d\n",map[minX][minY],searchTarget[0],searchTarget[1],min);
+                    }
+                }
+            }
+        }//END find NEAR box
+    }    //printf("near pos is (%d , %d)\n",minX,minY);
 }
 //Insert GRAB
 void findIndex(int positionX,int positionY){
@@ -324,7 +337,148 @@ void findIndex(int positionX,int positionY){
         }//END find NEAR box
     }
     // create for big box
-    else if(0){
+    else if(littleBox==0){
+        checkMinBox=100;
+        minBox=0;
+        for(int i=0;i<10;i++){
+            for(int j=0;j<10;j++){
+                if(map[i][j]>=drop2BoxLEFT && map[i][j]<= drop2BoxUP){
+                        //TOP
+                        if(map[i][j]==orange && map[i][j]!=orange){
+                            if(map[i][j]==drop2BoxDOWN){
+
+                                if(mapCountWalk[i][j-1]==0){
+                                    minBox=minBox+3;
+                                }
+                                else if(mapCountWalk[i][j+1]==0){
+                                    minBox=minBox+3;
+                                }
+                                else if(mapCountWalk[i+1][j-1]==0){
+                                    minBox=minBox+2;
+                                }
+                                else if(mapCountWalk[i+1][j+1]==0){
+                                    minBox=minBox+2;
+                                }
+                                else if(mapCountWalk[i-1][j-1]==0){
+                                    minBox=minBox+1;
+                                }
+                                else if(mapCountWalk[i-1][j]==0){
+                                    minBox=minBox+1;
+                                }
+                                else if(mapCountWalk[i-1][j+1]==0){
+                                    minBox=minBox+1;
+                                }
+                                //============================
+                                if(minBox<=checkMinBox){
+                                    minX=i;
+                                    minY=j;
+                                    searchTarget[0]=i;
+                                    searchTarget[1]=j;
+
+                                }
+                            }
+                            //BUTTOM
+                            else if(map[i][j]==drop2BoxUP){
+                                if(mapCountWalk[i][j+1]==0){
+                                    minBox=minBox+3;
+                                }
+                                else if(mapCountWalk[i][j-1]==0){
+                                    minBox=minBox+3;
+                                }
+                                else if(mapCountWalk[i-1][j-1]==0){
+                                    minBox=minBox+2;
+                                }
+                                else if(mapCountWalk[i-1][j+1]==0){
+                                    minBox=minBox+2;
+                                }
+                                else if(mapCountWalk[i+1][j-1]==0){
+                                    minBox=minBox+1;
+                                }
+                                else if(mapCountWalk[i+1][j]==0){
+                                    minBox=minBox+1;
+                                }
+                                else if(mapCountWalk[i+1][j+1]==0){
+                                    minBox=minBox+1;
+                                }
+                                //============================
+                                if(minBox<=checkMinBox){
+                                    minX=i;
+                                    minY=j;
+                                    searchTarget[0]=i;
+                                    searchTarget[1]=j;
+
+                                }
+                            }
+                            //RIGHT
+                            else if(map[i][j]==drop2BoxLEFT){
+                                if(mapCountWalk[i-1][j]==0){
+                                    minBox=minBox+3;
+                                }
+                                else if(mapCountWalk[i+1][j]==0){
+                                    minBox=minBox+3;
+                                }
+                                else if(mapCountWalk[i-1][j-1]==0){
+                                    minBox=minBox+2;
+                                }
+                                else if(mapCountWalk[i+1][j-1]==0){
+                                    minBox=minBox+2;
+                                }
+                                else if(mapCountWalk[i-1][j+1]==0){
+                                    minBox=minBox+1;
+                                }
+                                else if(mapCountWalk[i][j+1]==0){
+                                    minBox=minBox+1;
+                                }
+                                else if(mapCountWalk[i+1][j+1]==0){
+                                    minBox=minBox+1;
+                                }
+                                //============================
+                                if(minBox<=checkMinBox){
+                                    minX=i;
+                                    minY=j;
+                                    searchTarget[0]=i;
+                                    searchTarget[1]=j;
+
+                                }
+                            }
+                            //LEFT
+                            else if(map[i][j]==drop2BoxRIGHT){
+                                if(mapCountWalk[i-1][j]==0){
+                                    minBox=minBox+3;
+                                }
+                                else if(mapCountWalk[i+1][j]==0){
+                                    minBox=minBox+3;
+                                }
+                                else if(mapCountWalk[i-1][j+1]==0){
+                                    minBox=minBox+2;
+                                }
+                                else if(mapCountWalk[i+1][j+1]==0){
+                                    minBox=minBox+2;
+                                }
+                                else if(mapCountWalk[i-1][j-1]==0){
+                                    minBox=minBox+1;
+                                }
+                                else if(mapCountWalk[i][j-1]==0){
+                                    minBox=minBox+1;
+                                }
+                                else if(mapCountWalk[i+1][j-1]==0){
+                                    minBox=minBox+1;
+                                }
+
+                                //============================
+                                if(minBox<=checkMinBox){
+                                    minX=i;
+                                    minY=j;
+                                    searchTarget[0]=i;
+                                    searchTarget[1]=j;
+
+                                }
+                            }
+                        }
+
+                }
+            }
+        }
 
     }
     //printf("near pos is (%d , %d)\n",minX,minY);
