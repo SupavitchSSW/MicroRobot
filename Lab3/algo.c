@@ -55,7 +55,7 @@ typedef struct{
 
 Node heap[HeapSize];
 char popRow=0,popCol=0,useHeap=0,createHeap=0,nextHeap=1,route[routeSize],routeCode[routeSize],routeCodeIndex=0,stack[stackSize],topStack=1,countShortestPathBlock=0,direction=8,countBox=0;
-char position[2]={9,9},searchTarget[2]={8,9};
+char position[2]={9,9},searchTarget[2]={8,9},positionTemp[2],directionTemp=8;
 
 //Jane variable
 int X=9,Y=9;
@@ -169,7 +169,7 @@ void main(){
         //printMapCountWalk();
         printf("\n=====================\n run find Index \n======================\n");
         findIndex(position[0],position[1]);
-        printf("\n position of ROBOT: %d %d",position[0],position[1]);
+        printf("\n position of ROBOT: %d %d\n",position[0],position[1]);
         //dropNearBox();
 
         dropYourBox(minX,minY,box);
@@ -726,14 +726,14 @@ void test(){
     }
 }
 void turnLeft(){
-    printf("L");
+    printf("L*");
     if(direction == 8)direction = 1;
     else if(direction == 4)direction = 8;
     else if(direction == 2)direction = 4;
     else if(direction == 1)direction = 2;
 }
 void turnRight(){
-    printf("R");
+    printf("R*");
     if(direction == 8)direction = 4;
     else if(direction == 4)direction = 2;
     else if(direction == 2)direction = 1;
@@ -1158,11 +1158,11 @@ int runShortestRoute(){
         switch(route[i]){
         case 8:                             //8 revert to 2
             if(direction == 1){
-                printf("L");
+                printf("L+");
             }else if(direction == 8){
-                printf("LL");
+                printf("LL+");
             }else if(direction == 4){
-                printf("R");
+                printf("R+");
 
             }
             //debug
@@ -1170,23 +1170,23 @@ int runShortestRoute(){
             break;
         case 4:                             //4 revert to 1
             if(direction == 8){
-                printf("L");
+                printf("L+");
 
             }else if(direction == 4){
-                printf("LL");
+                printf("LL+");
             }else if(direction == 2){
-                printf("R");
+                printf("R+");
             }
             //debug
             direction = 1;
             break;
         case 2:                             //2 revert to 8
             if(direction == 4){
-                printf("L");
+                printf("L+");
             }else if(direction == 2){
-                printf("LL");
+                printf("LL+");
             }else if(direction == 1){
-                printf("R");
+                printf("R+");
             }
 
             //debug
@@ -1194,18 +1194,18 @@ int runShortestRoute(){
             break;
         case 1:                             //1 revert to 4
             if(direction == 2){
-                printf("L");
+                printf("L+");
             }else if(direction == 1){
-                printf("LL");
+                printf("LL+");
             }else if(direction == 8){
-                printf("R");
+                printf("R+");
             }
             //debug
             direction = 4;
             break;
         default:;
         }
-        printf("M");
+        printf("M+");
 
         // move with check front have a box ?
         char re = moveForward();
@@ -1310,10 +1310,10 @@ int checkTurnRight(char row,char col,char d){
 }
 
 int moveForwardTemp(){
-        if(direction == 8)position[0]--;
-        else if(direction == 4)position[1]++;
-        else if(direction == 2)position[0]++;
-        else if(direction == 1)position[1]--;
+        if(directionTemp == 8)positionTemp[0]--;
+        else if(directionTemp == 4)positionTemp[1]++;
+        else if(directionTemp == 2)positionTemp[0]++;
+        else if(directionTemp == 1)positionTemp[1]--;
 }
 
 void addRouteCode(char c,int n){
@@ -1325,8 +1325,11 @@ void addRouteCode(char c,int n){
 }
 
 int checkShortestRoute(){
-    char positionTemp[2] ={position[0],position[1]},directionTemp = direction;
+    positionTemp[0] = position[0];
+    positionTemp[1] = position[1];
+    directionTemp = direction;
     char i;
+    printf("\nCheckShortestRoute from : %d,%d\n",positionTemp[0],positionTemp[1]);
 
     for(i = 0;i<strlen(route);i++){
         switch(route[i]){
@@ -1464,7 +1467,7 @@ int decodeRoute(){
 }
 
 int moveAvoidBox(char t_row,char t_col,char size){
-    printf("Start %d,%d : Target %d,%d\n",position[0],position[1],t_row,t_col);
+    printf("moveAvoidBox -> Start %d,%d : Target %d,%d\n",position[0],position[1],t_row,t_col);
         char a,count=0;
 
         // find the way
@@ -1480,7 +1483,7 @@ int moveAvoidBox(char t_row,char t_col,char size){
                 return 0;
             }
 
-            printf("%s %d",route,strlen(route));
+            printf("route size :  %d ",strlen(route));
 
             if(size == 42 && t_row == 4 && t_col == 6)route[strlen(route)] = 8;
             else if(size == 42 && t_row == 7 && t_col == 6)route[strlen(route)] = 2;
@@ -1492,10 +1495,11 @@ int moveAvoidBox(char t_row,char t_col,char size){
         routeCode[--routeCodeIndex]=0;
 
         //print
+        printf("\nshortest route Code : ");
         for(int i = 0;i<strlen(routeCode);i++){
             printf("%c",routeCode[i]);
         }
-        printf("\n");
+        printf("\nStarting DECODE ROUTE \n");
     //run code
     decodeRoute();
 
