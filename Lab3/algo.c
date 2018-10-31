@@ -291,7 +291,7 @@ int findNearBox(int positionX,int positionY){
                         minX=i;
                         minY=j;
                         min=(((positionX-i)*(positionX-i))+((positionY-j)*(positionY-j)));
-                        printf("== FIND Little Box ==\ndirection:%d .\nlittle box in map : minX=%d minY=%d. \nDistance is: %d\n",map[minX][minY],searchTarget[0],searchTarget[1],min);
+                        printf("== FIND Little Box ==\ndirection:%d .\nlittle box in map : minX=%d minY=%d. \nDistance is: %d\nRobot position[%d,%d] , Robot direction %d\n",map[minX][minY],searchTarget[0],searchTarget[1],min,position[0],position[1],direction);
                     }
                 }
             }
@@ -861,67 +861,66 @@ int shortestPath(char targetRow,char targetCol,char startRow,char startCol){
     mapBox[startRow][startCol].isCheck = 1;
 
     if(startRow == targetRow && startCol == targetCol){
-        printf("\n========= route count: %d ===========\n",strlen(route));
+        //printf("\n========= route count: %d ===========\n",strlen(route));
     }else{
         do{
 
-            printf("search Row: %d Col: %d Wall: %d | \n",row,col,map[row][col]);
+            //printf("search Row: %d Col: %d Wall: %d | \n",row,col,map[row][col]);
             //left
             if((col-1 >= 0) && (mapCountWalk[row][col-1] == 1) &&(mapBox[row][col-1].isCheck == 0) && (mapBlockTurn[row][col-1] == 1)){
-                    printf("l");
-                printf("left  ");
+                //printf("left  ");
                             //set value to next Box
                 mapBox[row][col-1].isCheck = 1;
                 mapBox[row][col-1].preRow = row;
                 mapBox[row][col-1].preCol = col;
                 mapBox[row][col-1].preDirection = 1;
                 if(row == targetRow && col-1 == targetCol){
-                        printf("Found !!!\n");
+                        //printf("Found !!!\n");
                     break;
                 }
                 appendHeap(row,col-1);
             }
             //top
             if((row-1 >= 0) &&(mapCountWalk[row-1][col] == 1) && (mapBox[row-1][col].isCheck == 0) && (mapBlockTurn[row-1][col] == 1)){
-                    printf("t");
-                printf("Top  ");
+
+                //printf("Top  ");
                 //set value to next Box
                 mapBox[row-1][col].isCheck = 1;
                 mapBox[row-1][col].preRow = row;
                 mapBox[row-1][col].preCol = col;
                 mapBox[row-1][col].preDirection = 8;
                 if(row-1 == targetRow && col == targetCol){
-                    printf("Found !!!\n");
+                    //printf("Found !!!\n");
                     break;
                 }
                 appendHeap(row-1,col);
             }
             //right
             if((col+1 <= 9) &&(mapCountWalk[row][col+1] == 1 )&&( mapBox[row][col+1].isCheck == 0) && (mapBlockTurn[row][col+1] == 1)){
-                    printf("r");
-                printf("right  ");
+
+                //printf("right  ");
                             //set value to next Box
                 mapBox[row][col+1].isCheck = 1;
                 mapBox[row][col+1].preRow = row;
                 mapBox[row][col+1].preCol = col;
                 mapBox[row][col+1].preDirection = 4;
                 if(row == targetRow && col+1 == targetCol){
-                        printf("Found !!!\n");
+                        //printf("Found !!!\n");
                     break;
                 }
                 appendHeap(row,col+1);
             }
             //bottom
             if((row+1 <= 9) &&(mapCountWalk[row+1][col] == 1) && (mapBox[row+1][col].isCheck == 0) && (mapBlockTurn[row+1][col] == 1)){
-                    printf("b");
-                printf("bottom  ");
+
+                //printf("bottom  ");
                             //set value to next Box
                 mapBox[row+1][col].isCheck = 1;
                 mapBox[row+1][col].preRow = row;
                 mapBox[row+1][col].preCol = col;
                 mapBox[row+1][col].preDirection = 2;
                 if(row+1 == targetRow && col == targetCol){
-                    printf("Found !!!\n");
+                    //printf("Found !!!\n");
                     break;
                 }
                 appendHeap(row+1,col);
@@ -940,10 +939,10 @@ int shortestPath(char targetRow,char targetCol,char startRow,char startCol){
         char index = 0,temp;
 
         do{
-        route[index] = mapBox[row][col].preDirection;
-        temp = row;
-        row = mapBox[row][col].preRow;
-        col = mapBox[temp][col].preCol;
+            route[index] = mapBox[row][col].preDirection;
+            temp = row;
+            row = mapBox[row][col].preRow;
+            col = mapBox[temp][col].preCol;
         }while(route[index++] != 0);
 
 		//set shortest path count
@@ -955,8 +954,7 @@ int shortestPath(char targetRow,char targetCol,char startRow,char startCol){
         //print route
 
         for(i=0;i<index-1;i++){
-            printf("%d ",route[i]);
-
+            //printf("%d ",route[i]);
         }
 
 
@@ -1153,8 +1151,9 @@ int moveForward(){
 }
 
 int runShortestRoute(){
-    char i;
 
+    char i;
+    printf("\nrunShortestRoute : ");
     for(i = 0;i<strlen(route);i++){
         switch(route[i]){
         case 8:                             //8 revert to 2
@@ -1207,13 +1206,8 @@ int runShortestRoute(){
         default:;
         }
         printf("M");
+
         // move with check front have a box ?
-        if(countBox == 8){
-            for(int j = 0;j<routeSize;j++)route[j]=0;
-            printf(" >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> BREAK count = 8");
-            countBox = 0;
-            return 2;
-        }
         char re = moveForward();
         if(re != 1){
             if(route[i] == 8 && mapCountWalk[position[0]+1][position[1]] == 1){
@@ -1232,6 +1226,13 @@ int runShortestRoute(){
                 mapCountWalk[position[0]][position[1]+1] = 0;
                 map[position[0]][position[1]+1] = re;
                 countBox++;
+            }
+            //check search 8 box
+            if(countBox == 8){
+                for(int j = 0;j<routeSize;j++)route[j]=0;
+                printf(" >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> BREAK count = 8\n");
+                countBox = 0;
+                return 2;
             }
             return 1;
         }
@@ -1309,21 +1310,16 @@ int checkTurnRight(char row,char col,char d){
 }
 
 int moveForwardTemp(){
-    int a;
-    scanf("%d",&a);
-    if(a == 1){
         if(direction == 8)position[0]--;
         else if(direction == 4)position[1]++;
         else if(direction == 2)position[0]++;
         else if(direction == 1)position[1]--;
-    }
-    return (char)a;
 }
 
 void addRouteCode(char c,int n){
     for(int i =0;i<n;i++){
         routeCode[routeCodeIndex] = c;
-        printf("%c",c,routeCodeIndex);
+        printf("%c-",c);
         routeCodeIndex++;
     }
 }
@@ -1443,10 +1439,7 @@ int checkShortestRoute(){
         }
         addRouteCode('M',1);
         //move forward
-        if(directionTemp == 8)positionTemp[0]--;
-        else if(directionTemp == 4)positionTemp[1]++;
-        else if(directionTemp == 2)positionTemp[0]++;
-        else if(directionTemp == 1)positionTemp[1]--;
+        moveForwardTemp();
     }
 
     //clear route
@@ -1470,20 +1463,20 @@ int decodeRoute(){
     }
 }
 
-
 int moveAvoidBox(char t_row,char t_col,char size){
     printf("Start %d,%d : Target %d,%d\n",position[0],position[1],t_row,t_col);
         char a,count=0;
 
         // find the way
         do{
-            printf("%d ",count++);
+            //printf("%d ",count++);
             //clear route
             for(int i = 0;i<strlen(route);i++)route[i]=0;
             for(int i = 0;i<routeCodeIndex;i++)routeCode[i]=0;
             routeCodeIndex=0;
 
-            if(!shortestPathV2(position[0],position[1],t_row,t_col)){
+            //check infinity loop
+            if(!shortestPath(position[0],position[1],t_row,t_col)){
                 return 0;
             }
 
@@ -1498,8 +1491,6 @@ int moveAvoidBox(char t_row,char t_col,char size){
         //delete last M
         routeCode[--routeCodeIndex]=0;
 
-        //drop
-
         //print
         for(int i = 0;i<strlen(routeCode);i++){
             printf("%c",routeCode[i]);
@@ -1507,6 +1498,9 @@ int moveAvoidBox(char t_row,char t_col,char size){
         printf("\n");
     //run code
     decodeRoute();
+
+    // DROP !!!
+    printf("!! DROP ITEM !!");
 
     //clear route
     for(int i = 0;i<strlen(route);i++)route[i]=0;
