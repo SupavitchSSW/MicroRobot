@@ -60,6 +60,7 @@ char position[2]={9,9},searchTarget[2]={8,9},positionTemp[2],directionTemp=8;
 //Jane variable
 int X=9,Y=9;
 int min=100,minX=0,minY=0,minBox=0,checkMinBox=0;
+int mark[4][2];
 //*****************************************
 //color
 //black=40 orange=41
@@ -150,14 +151,18 @@ void main(){
 
     for(int i =0;i<3;i++){
         printMap();
+        printMapCountWalk();
         mergeBox();
         printMap();
+        printMapCountWalk();
         printf("Position of ROBOT: %d %d",position[0],position[1]);
         printf("\n=====================\n FIELD code  INPUT number 1 for move each step \n======================\n");
         printf("\n=====================\n Find Near Box \n======================\n");
         findNearBox(position[0],position[1]);
+        printMapCountWalk();
         printf("\n=====================\n Start GRAP \n======================\n");
         grabNearBox();
+        printMapCountWalk();
         printf("\n position of ROBOT: %d %d",position[0],position[1]);
         //whit Box is?
         if (littleBox==0){
@@ -165,11 +170,11 @@ void main(){
         }
         printf("\n=====================\n finish run grab NearBox \n======================\n");
         printf("\n position of ROBOT: %d %d",position[0],position[1]);
-        //printMap();
-        //printMapCountWalk();
+        printMap();
+        printMapCountWalk();
         printf("\n=====================\n run find Index \n======================\n");
         findIndex(position[0],position[1]);
-        printf("\n position of ROBOT: %d %d\n",position[0],position[1]);
+        printf("\n<3 position of ROBOT: %d %d\n",position[0],position[1]);
         //dropNearBox();
 
         dropYourBox(minX,minY,box);
@@ -308,7 +313,7 @@ int findNearBox(int positionX,int positionY){
                         minX=i;
                         minY=j;
                         min=(((positionX-i)*(positionX-i))+((positionY-j)*(positionY-j)));
-                        printf("== FIND Big Box ==\ndirection:%d .\nlittle box in map : minX=%d minY=%d. \nDistance is: %d\n",map[minX][minY],searchTarget[0],searchTarget[1],min);
+                        printf("== FIND Big Box ==\ndirection:%d .\nBIG box in map : minX=%d minY=%d. \nDistance is: %d\n",map[minX][minY],searchTarget[0],searchTarget[1],min);
                     }
                 }
             }
@@ -318,20 +323,23 @@ int findNearBox(int positionX,int positionY){
 //Insert GRAB
 void findIndex(int positionX,int positionY){
 //find Index
-    min=100;
+    min=10000;
 
     //little box first
     if(littleBox!=0){
+        printf("EIEI %d",littleBox);
         for(int i=0;i<10;i++){
             for(int j=0;j<10;j++){
                 if(map[i][j]==drop1BoxLEFT ){
+                    printf("dropBOX");
                     if((((positionX-i)*(positionX-i))+((positionY-j)*(positionY-j)))<=min){
+                       printf("FoundDropBOX");
                         searchTarget[0]=i;
                         searchTarget[1]=j;
                         minX=i;
                         minY=j;
                         min=(((positionX-i)*(positionX-i))+((positionY-j)*(positionY-j)));
-                        printf("== FIND Little INDEX ==\ndirection:%d .\nlittle box in map : minX=%d minY=%d. \nDistance is: %d\n",map[minX][minY],searchTarget[0],searchTarget[1],min);
+                        printf("== FIND Little INDEX ==\ndirection:%d .\nlittle INDEX in map : minX=%d minY=%d. \nDistance is: %d\n",map[minX][minY],searchTarget[0],searchTarget[1],min);
 
                     }
                 }
@@ -340,13 +348,13 @@ void findIndex(int positionX,int positionY){
     }
     // create for big box
     else if(littleBox==0){
-        checkMinBox=100;
+        checkMinBox=1000;
         minBox=0;
         for(int i=0;i<10;i++){
             for(int j=0;j<10;j++){
                 if(map[i][j]>=drop2BoxLEFT && map[i][j]<= drop2BoxUP){
                         //TOP
-                        if(map[i][j]==orange && map[i][j]!=orange){
+                        if(map[i][j]!=black && map[i][j]!=orange){
                             if(map[i][j]==drop2BoxDOWN){
 
                                 if(mapCountWalk[i][j-1]==0){
@@ -481,6 +489,8 @@ void findIndex(int positionX,int positionY){
                 }
             }
         }
+        printf("== FIND BIG INDEX ==\ndirection:%d .\nBIG INDEX in map : minX=%d minY=%d. \nDistance is: %d\n",map[minX][minY],searchTarget[0],searchTarget[1],min);
+
 
     }
     //printf("near pos is (%d , %d)\n",minX,minY);
@@ -616,46 +626,59 @@ void turnRobotToBox(){
 
 void deleteMark(){
     //1 Box
-    if(map[position[0]][position[1]]>=grab1BoxLEFT&&map[position[0]][position[1]]<grab2BoxLEFT){
+    if(map[position[0]][position[1]]>=grab1BoxLEFT && map[position[0]][position[1]]<grab2BoxLEFT){
         //TOP
         if(map[position[0]+1][position[1]]==orange){
-            map[position[0]][position[1]]=0;
-            map[position[0]+1][position[1]]=0;
-            map[position[0]+1][position[1]-1]=0;
-            map[position[0]+1][position[1]+1]=0;
-            map[position[0]+2][position[1]]=0;
+
+            mark[0][0]= position[0]+1; mark[0][1]= position[1]   ;
+            mark[1][0]= position[0]+1; mark[1][1]= position[1]-1 ;
+            mark[2][0]= position[0]+1; mark[2][1]= position[1]+1 ;
+            mark[3][0]= position[0]+2; mark[3][1]= position[1]   ;
+            mark[4][0]= position[0]  ; mark[4][1]= position[1]   ;
 
             mapCountWalk[position[0]+1][position[1]]= 1;
+            map[position[0]+1][position[1]]=0;
         }
         //RIGHT
         else if(map[position[0]][position[1]-1]==orange){
-            map[position[0]][position[1]-2]=0;
-            map[position[0]][position[1]-1]=0;
-            map[position[0]][position[1]]=0;
-            map[position[0]+1][position[1]-1]=0;
-            map[position[0]-1][position[1]-1]=0;
+
+            mark[0][0]= position[0]; mark[0][1]= position[1]-2 ;
+            mark[1][0]= position[0]; mark[1][1]= position[1] -1;
+            mark[2][0]= position[0]; mark[2][1]= position[1] ;
+            mark[3][0]= position[0]+1; mark[3][1]= position[1]-1 ;
+            mark[4][0]= position[0]-1; mark[4][1]= position[1]-1;
 
             mapCountWalk[position[0]][position[1]-1]= 1;
+            map[position[0]][position[1]-1]=0;
         }
         //LEFT
         else if(map[position[0]][position[1]+1]==orange){
-            map[position[0]][position[1]]=0;
-            map[position[0]][position[1]+1]=0;
-            map[position[0]][position[1]+2]=0;
-            map[position[0]-1][position[1]+1]=0;
-            map[position[0]+1][position[1]+1]=0;
+            mark[0][0]= position[0]; mark[0][1]= position[1] ;
+            mark[1][0]= position[0]; mark[1][1]= position[1]+1 ;
+            mark[2][0]= position[0]; mark[2][1]= position[1]+2 ;
+            mark[3][0]= position[0]-1; mark[3][1]= position[1]+1 ;
+            mark[4][0]= position[0]+1; mark[4][1]= position[1]+1 ;
 
             mapCountWalk[position[0]][position[1]+1]= 1;
+            map[position[0]][position[1]+1]=0;
         }
         //DOWN
         else if(map[position[0]-1][position[1]]==orange){
-            map[position[0]][position[1]]=0;
-            map[position[0]-1][position[1]]=0;
-            map[position[0]-2][position[1]]=0;
-            map[position[0]-1][position[1]-1]=0;
-            map[position[0]-1][position[1]+1]=0;
+            mark[0][0]= position[0]; mark[0][1]= position[1] ;
+            mark[1][0]= position[0]-1; mark[1][1]= position[1] ;
+            mark[2][0]= position[0]-2; mark[2][1]= position[1] ;
+            mark[3][0]= position[0]-1; mark[3][1]= position[1]-1 ;
+            mark[4][0]= position[0]-1; mark[4][1]= position[1]+1 ;
 
             mapCountWalk[position[0]-1][position[1]]= 1;
+            map[position[0]-1][position[1]]=0;
+        }
+
+        for(int i=0;i<5;i++){
+            if(map[mark[i][0]][mark[i][1]]<drop1BoxLEFT){
+                map[mark[i][0]][mark[i][1]]=0;
+            }
+
         }
 
     }
@@ -663,40 +686,55 @@ void deleteMark(){
     //2 Box
     if(map[position[0]][position[1]]>=grab2BoxLEFT&&map[position[0]][position[1]]<drop1BoxLEFT){
         if(map[position[0]][position[1]] == grab2BoxDOWN){
-            map[position[0]][position[1]]=0;
-            map[position[0]+1][position[1]]=0;
-            map[position[0]+2][position[1]]=0;
-            map[position[0]+3][position[1]]=0;
+            mark[0][0]= position[0]; mark[0][1]= position[1] ;
+            mark[1][0]= position[0]+1; mark[1][1]= position[1] ;
+            mark[2][0]= position[0]+2; mark[2][1]= position[1] ;
+            mark[3][0]= position[0]+3; mark[3][1]= position[1] ;
 
             mapCountWalk[position[0]+1][position[1]]=1;
             mapCountWalk[position[0]+2][position[1]]=1;
+            map[position[0]+1][position[1]]=0;
+            map[position[0]+2][position[1]]=0;
         }
         else if(map[position[0]][position[1]] == grab2BoxUP){
-            map[position[0]][position[1]]=0;
-            map[position[0]-1][position[1]]=0;
-            map[position[0]-2][position[1]]=0;
-            map[position[0]-3][position[1]]=0;
+            mark[0][0]= position[0]; mark[0][1]= position[1] ;
+            mark[1][0]= position[0]-1; mark[1][1]= position[1] ;
+            mark[2][0]= position[0]-2; mark[2][1]= position[1] ;
+            mark[3][0]= position[0]-3; mark[3][1]= position[1] ;
 
             mapCountWalk[position[0]-1][position[1]]=1;
             mapCountWalk[position[0]-2][position[1]]=1;
+            map[position[0]-1][position[1]]=0;
+            map[position[0]-2][position[1]]=0;
         }
         else if(map[position[0]][position[1]] == grab2BoxRIGHT){
-            map[position[0]][position[1]]=0;
-            map[position[0]][position[1]+1]=0;
-            map[position[0]][position[1]+2]=0;
-            map[position[0]][position[1]+3]=0;
+            mark[0][0]= position[0]; mark[0][1]= position[1] ;
+            mark[1][0]= position[0]; mark[1][1]= position[1]+1 ;
+            mark[2][0]= position[0]; mark[2][1]= position[1]+2;
+            mark[3][0]= position[0]; mark[3][1]= position[1]+3 ;
 
             mapCountWalk[position[0]][position[1]+1]=1;
             mapCountWalk[position[0]][position[1]+2]=1;
+            map[position[0]][position[1]+1]=0;
+            map[position[0]][position[1]+2]=0;
         }
         else if(map[position[0]][position[1]] == grab2BoxLEFT){
-            map[position[0]][position[1]]=0;
-            map[position[0]][position[1]-1]=0;
-            map[position[0]][position[1]-2]=0;
-            map[position[0]][position[1]-3]=0;
+            mark[0][0]= position[0]; mark[0][1]= position[1] ;
+            mark[1][0]= position[0]; mark[1][1]= position[1]-1 ;
+            mark[2][0]= position[0]; mark[2][1]= position[1]-2 ;
+            mark[3][0]= position[0]; mark[3][1]= position[1]-3 ;
 
             mapCountWalk[position[0]][position[1]-1]=1;
             mapCountWalk[position[0]][position[1]-2]=1;
+            map[position[0]][position[1]-1]=0;
+            map[position[0]][position[1]-2]=0;
+        }
+
+        for(int i=0;i<4;i++){
+            if(map[mark[i][0]][mark[i][1]]<drop1BoxLEFT){
+                map[mark[i][0]][mark[i][1]]=0;
+            }
+
         }
     }
 }
