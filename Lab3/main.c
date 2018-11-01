@@ -26,12 +26,10 @@ void grabNearBox();
 void deleteMark();
 void setPosition();
 void test();
-void turnLeft();
-void turnRight();
-void printMap();
 void dropNearBox();
 void setBox();
 void findIndex(int positionX,int positionY);
+void turnRobotToBox();
 
 //Jane variable
 int box=41;
@@ -91,23 +89,16 @@ char mapCountWalk[10][10]={
 #define routeSize 50
 #define HeapSize 50
 #define stackSize 70
-void checkFrontWall();
-char getMapWall(char row,char col);
-char getWall(float s1,float s2,float s3);
-void setMapWall(char row,char col,char wall);
-void showMeDawae();
 void appendHeap(char row,char col);
 char isHeapEmpty();
 void popHeap();
 void clearHeap();
-void printHeap();
 int shortestPath(char targetRow,char targetCol,char startRow,char startCol);
 int runShortestRoute();
 void pushStack(char num);
 char popStack(void);
 char isStackEmpty(void);
 int showMeDabox();
-void printMapCountWalk();
 int searchNext();
 int dropYourBox(char t_row,char t_col,char size);
 int decodeRoute();
@@ -117,11 +108,6 @@ int moveForwardTemp();
 int checkTurnRight(char row,char col,char d);
 int checkTurnLeft(char row,char col,char d);
 int shortestPathV2(char targetRow,char targetCol,char startRow,char startCol);
-
-Node heap[HeapSize];
-char popRow=0,popCol=0,useHeap=0,createHeap=0,nextHeap=1,route[routeSize],routeCode[routeSize],routeCodeIndex=0,stack[stackSize],topStack=1,countShortestPathBlock=0,countBox=7;
-char searchTarget[2]={1,1};
-
 //heap
 typedef struct{
     signed char next,row,col;
@@ -234,366 +220,6 @@ task main()
    while(1){
    justmove(baseSpeed);
    }*/
-}
-
-//====================================== Jane Code =======================
-void startASM(){
-   for(int i =0;i<2;i++){
-        mergeBox();
-        findNearBox(position[0],position[1]);
-        grabNearBox();
-
-        findIndex(position[0],position[1]);
-        //dropNearBox();
-        dropYourBox(minX,minY,41);
-        setBox();
-    }
-}
-
-
-//Perfect!!
-void mergeBox(){
-    for(int i=1;i<X;i++){
-        for(int j=1;j<Y;j++){
-            if(map[i][j]==orange){
-                //one Box check around Box
-                if(map[i-1][j]!=orange && map[i+1][j]!=orange && map[i][j-1]!=orange && map[i][j+1]!=orange){
-                    //Top of Box
-                    if(map[i-1][j]!=orange && map[i-1][j]!=black && map[i-1][j]<20){
-                        map[i-1][j]=grab1BoxDOWN;
-                    }
-                    //Buttom of Box
-                    if(map[i+1][j]!=orange && map[i+1][j]!=black && map[i+1][j]<20){
-                        map[i+1][j]=grab1BoxUP;
-                    }
-                    //Left of Box
-                    if(map[i][j-1]!=orange && map[i][j-1]!=black && map[i][j-1]<20){
-                        map[i][j-1]=grab1BoxRIGHT;
-                    }
-                    //Right of Box
-                    if(map[i][j+1]!=orange && map[i][j+1]!=black && map[i][j+1]<20){
-                        map[i][j+1]=grab1BoxLEFT;
-                    }
-                }//End if check around 1 Box
-
-                //two Box check Box
-                else{
-                    //Box in Column
-                    if((map[i-1][j]==orange)||map[i+1][j]==orange){
-                        //UP
-                        if(map[i-1][j]==orange){
-                            if(map[i-2][j]!=black && map[i-2][j]<20){
-                                map[i-2][j]=grab2BoxDOWN;
-                            }
-                            if(map[i+1][j]!=black && map[i+1][j]<20){
-                                map[i+1][j]=grab2BoxUP;
-                            }
-                        }
-                        //DOWN
-                        else if(map[i+1][j]==orange){
-                            if(map[i+2][j]!=black && map[i+2][j]<20){
-                                map[i+2][j]=grab2BoxUP;
-                            }
-                            if(map[i-1][j]!=black && map[i-1][j]<20){
-                                map[i-1][j]=grab2BoxDOWN;
-                            }
-                        }
-
-                    }//End if Box in Column
-
-                    //Box in Row
-                    if((map[i][j-1]==orange)||(map[i][j+1]==orange)){
-                        //LEFT
-                        if(map[i][j-1]==orange){
-                            if(map[i][j-2]!=black && map[i][j-2]<20){
-                                map[i][j-2]=grab2BoxRIGHT;
-                            }
-                            if(map[i][j+1]!=black && map[i][j+1]<20){
-                                map[i][j+1]=grab2BoxLEFT;
-                            }
-                        }
-                        //RIGHT
-                        if(map[i][j+1]==orange){
-                            if(map[i][j-1]!=black && map[i][j-1]<20){
-                                map[i][j-1]=grab2BoxRIGHT;
-                            }
-                            if(map[i][j+2]!=black && map[i][j+2]<20){
-                                map[i][j+2]=grab2BoxLEFT;
-                            }
-                        }
-                    }//End if Box in Row
-                }//End if check 2 Box
-            }//End if check IS Box
-
-
-        }//End for J
-    }//End for I
-
-}
-//Little Box OK
-
-int findNearBox(int positionX,int positionY){
-    //find NEAR box
-    min=100;
-
-    //little box first
-    if(littleBox!=0){
-        for(int i=0;i<10;i++){
-            for(int j=0;j<10;j++){
-                if((map[i][j] < drop1BoxLEFT ) && (map[i][j]>0)){
-                    if((((positionX-i)*(positionX-i))+((positionY-j)*(positionY-j)))<=min){
-                        searchTarget[0]=i;
-                        searchTarget[1]=j;
-                        minX=i;
-                        minY=j;
-                        min=(((positionX-i)*(positionX-i))+((positionY-j)*(positionY-j)));
-                    }
-                }
-            }
-        }//END find NEAR box
-    }
-    // create for big box
-    else if(0){
-
-    }
-    //printf("near pos is (%d , %d)\n",minX,minY);
-    return 0;
-}
-//Insert GRAB
-void findIndex(int positionX,int positionY){
-//find Index
-    min=100;
-
-    //little box first
-    if(littleBox!=0){
-        for(int i=0;i<10;i++){
-            for(int j=0;j<10;j++){
-                if(map[i][j]== drop1BoxLEFT ){
-                    if((((positionX-i)*(positionX-i))+((positionY-j)*(positionY-j)))<=min){
-                        searchTarget[0]=i;
-                        searchTarget[1]=j;
-                        minX=i;
-                        minY=j;
-                        min=(((positionX-i)*(positionX-i))+((positionY-j)*(positionY-j)));
-                    }
-                }
-            }
-        }//END find NEAR box
-    }
-    // create for big box
-    else if(0){
-
-    }
-}
-
-void grabNearBox(){
-    shortestPath(position[0],position[1],searchTarget[0],searchTarget[1]);
-    runShortestRoute();
-    turnRobotToBox();
-    moveToGrab();
-    deleteMark();
-
-}
-
-void dropNearBox(){
-    shortestPath(position[0],position[1],searchTarget[0],searchTarget[1]);
-    runShortestRoute();
-    if(littleBox!=0){
-    turnRobotToBox();
-    }
-    else{
-    	box=box-1;
-    }
-    moveToRelease();
-    setBox();
-
-}
-void setBox(){
-    if(littleBox!=0){
-        mapCountWalk[position[0]][position[1]]=0;
-        map[position[0]][position[1]]=40;
-    }
-}
-
-void turnRobotToBox(){
-    //direction Robot is UP
-    if(direction==8){
-        //TOP of box target
-        if((map[minX][minY]%10)==2){
-            turnLeft();
-            turnLeft();
-            //grap
-        }
-        //Buttom of box target
-        else if((map[minX][minY]%10)==8){
-            //grap
-        }
-        //Left of box target
-        else if((map[minX][minY]%10)==4){
-            turnRight();
-            //grap
-        }
-        //Right of box target
-        else if((map[minX][minY]%10)==1){
-            turnLeft();
-            //grap
-        }
-    }
-    //direction Robot is DOWN
-    else if(direction==2){
-        //TOP of box target
-        if((map[minX][minY]%10)==2){
-            //grap
-        }
-        //Buttom of box target
-        else if((map[minX][minY]%10)==8){
-            turnRight();
-            turnRight();
-            //grap
-        }
-        //Left of box target
-        else if((map[minX][minY]%10)==4){
-            turnLeft();
-            //grap
-        }
-        //Right of box target
-        else if((map[minX][minY]%10)==1){
-            turnRight();
-        }
-    }
-    //direction Robot is LEFT
-    else if(direction==1){
-        //TOP of box target
-        if((map[minX][minY]%10)==2){
-            turnLeft();
-            //grap
-        }
-        //Buttom of box target
-        else if((map[minX][minY]%10)==8){
-            turnRight();
-            //grap
-        }
-        //Left of box target
-        else if((map[minX][minY]%10)==4){
-            turnRight();
-            turnRight();
-            //grap
-        }
-        //Right of box target
-        else if((map[minX][minY]%10)==1){
-            //grap
-        }
-    }
-    //direction Robot is RIGHT
-    else if(direction==4){
-        //TOP of box target
-        if((map[minX][minY]%10)==2){
-            turnRight();
-            //grap
-        }
-        //Buttom of box target
-        else if((map[minX][minY]%10)==8){
-            turnLeft();
-            //grap
-        }
-        //Left of box target
-        else if((map[minX][minY]%10)==4){
-            //grap
-        }
-        //Right of box target
-        else if((map[minX][minY]%10)==1){
-            turnRight();
-            turnRight();
-            //grap
-        }
-    }
-}
-
-void deleteMark(){
-    //1 Box
-    if(map[position[0]][position[1]]>=grab1BoxLEFT&&map[position[0]][position[1]]<grab2BoxLEFT){
-        //TOP
-        if(map[position[0]+1][position[1]]==orange){
-            map[position[0]][position[1]]=0;
-            map[position[0]+1][position[1]]=0;
-            map[position[0]+1][position[1]-1]=0;
-            map[position[0]+1][position[1]+1]=0;
-            map[position[0]+2][position[1]]=0;
-
-            mapCountWalk[position[0]+1][position[1]]= 1;
-        }
-        //RIGHT
-        else if(map[position[0]][position[1]-1]==orange){
-            map[position[0]][position[1]-2]=0;
-            map[position[0]][position[1]-1]=0;
-            map[position[0]][position[1]]=0;
-            map[position[0]+1][position[1]-1]=0;
-            map[position[0]-1][position[1]-1]=0;
-
-            mapCountWalk[position[0]][position[1]-1]= 1;
-        }
-        //LEFT
-        else if(map[position[0]][position[1]+1]==orange){
-            map[position[0]][position[1]]=0;
-            map[position[0]][position[1]+1]=0;
-            map[position[0]][position[1]+2]=0;
-            map[position[0]-1][position[1]+1]=0;
-            map[position[0]+1][position[1]+1]=0;
-
-            mapCountWalk[position[0]][position[1]+1]= 1;
-        }
-        //DOWN
-        else if(map[position[0]-1][position[1]]==orange){
-            map[position[0]][position[1]]=0;
-            map[position[0]-1][position[1]]=0;
-            map[position[0]-2][position[1]]=0;
-            map[position[0]-1][position[1]-1]=0;
-            map[position[0]-1][position[1]+1]=0;
-
-            mapCountWalk[position[0]-1][position[1]]= 1;
-        }
-
-    }
-
-    //2 Box
-    if(map[position[0]][position[1]]>=grab2BoxLEFT&&map[position[0]][position[1]]<drop1BoxLEFT){
-        if(map[position[0]][position[1]] == grab2BoxDOWN){
-            map[position[0]][position[1]]=0;
-            map[position[0]+1][position[1]]=0;
-            map[position[0]+2][position[1]]=0;
-            map[position[0]+3][position[1]]=0;
-
-            mapCountWalk[position[0]+1][position[1]]=1;
-            mapCountWalk[position[0]+2][position[1]]=1;
-        }
-        else if(map[position[0]][position[1]] == grab2BoxUP){
-            map[position[0]][position[1]]=0;
-            map[position[0]-1][position[1]]=0;
-            map[position[0]-2][position[1]]=0;
-            map[position[0]-3][position[1]]=0;
-
-            mapCountWalk[position[0]-1][position[1]]=1;
-            mapCountWalk[position[0]-2][position[1]]=1;
-        }
-        else if(map[position[0]][position[1]] == grab2BoxRIGHT){
-            map[position[0]][position[1]]=0;
-            map[position[0]][position[1]+1]=0;
-            map[position[0]][position[1]+2]=0;
-            map[position[0]][position[1]+3]=0;
-
-            mapCountWalk[position[0]][position[1]+1]=1;
-            mapCountWalk[position[0]][position[1]+2]=1;
-        }
-        else if(map[position[0]][position[1]] == grab2BoxLEFT){
-            map[position[0]][position[1]]=0;
-            map[position[0]][position[1]-1]=0;
-            map[position[0]][position[1]-2]=0;
-            map[position[0]][position[1]-3]=0;
-
-            mapCountWalk[position[0]][position[1]-1]=1;
-            mapCountWalk[position[0]][position[1]-2]=1;
-        }
-    }
 }
 //================================== J ==================================================
 void justMove(int speed){
@@ -1010,8 +636,564 @@ void displayMap(){
 	}
 }
 
+// ================================================= JANE  ================================================================
 
-// ============================= FIELD
+//Perfect!!
+void mergeBox(){
+    for(int i=1;i<X;i++){
+        for(int j=1;j<Y;j++){
+            if(map[i][j]==orange){
+                //one Box check around Box
+                if(map[i-1][j]!=orange && map[i+1][j]!=orange && map[i][j-1]!=orange && map[i][j+1]!=orange){
+                    //Top of Box
+                    if(map[i-1][j]!=orange && map[i-1][j]!=black && map[i-1][j]<20){
+                        map[i-1][j]=grab1BoxDOWN;
+                    }
+                    //Buttom of Box
+                    if(map[i+1][j]!=orange && map[i+1][j]!=black && map[i+1][j]<20){
+                        map[i+1][j]=grab1BoxUP;
+                    }
+                    //Left of Box
+                    if(map[i][j-1]!=orange && map[i][j-1]!=black && map[i][j-1]<20){
+                        map[i][j-1]=grab1BoxRIGHT;
+                    }
+                    //Right of Box
+                    if(map[i][j+1]!=orange && map[i][j+1]!=black && map[i][j+1]<20){
+                        map[i][j+1]=grab1BoxLEFT;
+                    }
+                }//End if check around 1 Box
+
+                //two Box check Box
+                else{
+                    //Box in Column
+                    if((map[i-1][j]==orange)||map[i+1][j]==orange){
+                        //UP
+                        if(map[i-1][j]==orange){
+                            map[i][j]=42;
+                            map[i-1][j]=42;
+                            if(map[i-2][j]!=black && map[i-2][j]<20){
+                                map[i-2][j]=grab2BoxDOWN;
+                            }
+                            if(map[i+1][j]!=black && map[i+1][j]<20){
+                                map[i+1][j]=grab2BoxUP;
+                            }
+                        }
+                        //DOWN
+                        else if(map[i+1][j]==orange){
+                            map[i][j]=42;
+                            map[i+1][j]=42;
+                            if(map[i+2][j]!=black && map[i+2][j]<20){
+                                map[i+2][j]=grab2BoxUP;
+                            }
+                            if(map[i-1][j]!=black && map[i-1][j]<20){
+                                map[i-1][j]=grab2BoxDOWN;
+                            }
+                        }
+
+                    }//End if Box in Column
+
+                    //Box in Row
+                    if((map[i][j-1]==orange)||(map[i][j+1]==orange)){
+                        //LEFT
+                        if(map[i][j-1]==orange){
+                            map[i][j]=42;
+                            map[i][j-1]=42;
+                            if(map[i][j-2]!=black && map[i][j-2]<20){
+                                map[i][j-2]=grab2BoxRIGHT;
+                            }
+                            if(map[i][j+1]!=black && map[i][j+1]<20){
+                                map[i][j+1]=grab2BoxLEFT;
+                            }
+                        }
+                        //RIGHT
+                        if(map[i][j+1]==orange){
+                            map[i][j]=42;
+                            map[i][j+1]=42;
+                            if(map[i][j-1]!=black && map[i][j-1]<20){
+                                map[i][j-1]=grab2BoxRIGHT;
+                            }
+                            if(map[i][j+2]!=black && map[i][j+2]<20){
+                                map[i][j+2]=grab2BoxLEFT;
+                            }
+                        }
+                    }//End if Box in Row
+                }//End if check 2 Box
+            // for(int i=0;i<10;i++){
+            //     for(int j=0;j<10;j++){
+            //         printf("%d ",map[i][j]);
+            //     }
+            //     printf("\n");
+            // }
+            // printf("\n");
+
+            }//End if check IS Box
+
+
+        }//End for J
+    }//End for I
+
+}
+//Little Box OK
+int findNearBox(int positionX,int positionY){
+    //find NEAR box
+    min=1000;
+
+    //little box first
+    if(littleBox!=0){
+        for(int i=0;i<10;i++){
+            for(int j=0;j<10;j++){
+                if((map[i][j] >= grab1BoxLEFT ) && (map[i][j]<grab2BoxLEFT)){
+                    if((((positionX-i)*(positionX-i))+((positionY-j)*(positionY-j)))<=min){
+                        searchTarget[0]=i;
+                        searchTarget[1]=j;
+                        minX=i;
+                        minY=j;
+                        min=(((positionX-i)*(positionX-i))+((positionY-j)*(positionY-j)));
+                        //printf("== FIND Little Box ==\ndirection:%d .\nlittle box in map : minX=%d minY=%d. \nDistance is: %d\nRobot position[%d,%d] , Robot direction %d\n",map[minX][minY],searchTarget[0],searchTarget[1],min,position[0],position[1],direction);
+                    }
+                }
+            }
+        }//END find NEAR box
+    }
+    // create for big box
+    if(littleBox==0){
+        for(int i=0;i<10;i++){
+            for(int j=0;j<10;j++){
+                if((map[i][j] >= grab2BoxLEFT ) && (map[i][j]<drop1BoxLEFT)){
+                    if((((positionX-i)*(positionX-i))+((positionY-j)*(positionY-j)))<=min){
+                        searchTarget[0]=i;
+                        searchTarget[1]=j;
+                        minX=i;
+                        minY=j;
+                        min=(((positionX-i)*(positionX-i))+((positionY-j)*(positionY-j)));
+                        //printf("== FIND Big Box ==\ndirection:%d .\nBIG box in map : minX=%d minY=%d. \nDistance is: %d\n",map[minX][minY],searchTarget[0],searchTarget[1],min);
+                    }
+                }
+            }
+        }//END find NEAR box
+    }    //printf("near pos is (%d , %d)\n",minX,minY);
+    return 0;
+}
+//Insert GRAB
+void findIndex(int positionX,int positionY){
+//find Index
+    min=10000;
+
+    //little box first
+    if(littleBox!=0){
+        //printf("EIEI %d",littleBox);
+        for(int i=0;i<10;i++){
+            for(int j=0;j<10;j++){
+                if(map[i][j]==drop1BoxLEFT ){
+                    //printf("dropBOX");
+                    if((((positionX-i)*(positionX-i))+((positionY-j)*(positionY-j)))<=min){
+                       //printf("FoundDropBOX");
+                        searchTarget[0]=i;
+                        searchTarget[1]=j;
+                        minX=i;
+                        minY=j;
+                        min=(((positionX-i)*(positionX-i))+((positionY-j)*(positionY-j)));
+                        //printf("== FIND Little INDEX ==\ndirection:%d .\nlittle INDEX in map : minX=%d minY=%d. \nDistance is: %d\n",map[minX][minY],searchTarget[0],searchTarget[1],min);
+
+                    }
+                }
+            }
+        }//END find NEAR box
+    }
+    // create for big box
+    else if(littleBox==0){
+        checkMinBox=1000;
+        minBox=0;
+        for(int i=0;i<10;i++){
+            for(int j=0;j<10;j++){
+                if(map[i][j]>=drop2BoxLEFT && map[i][j]<= drop2BoxUP){
+                        //TOP
+                        if(map[i][j]!=black && map[i][j]!=orange){
+                            if(map[i][j]==drop2BoxDOWN){
+
+                                if(mapCountWalk[i][j-1]==0){
+                                    minBox=minBox+3;
+                                }
+                                else if(mapCountWalk[i][j+1]==0){
+                                    minBox=minBox+3;
+                                }
+                                else if(mapCountWalk[i+1][j-1]==0){
+                                    minBox=minBox+2;
+                                }
+                                else if(mapCountWalk[i+1][j+1]==0){
+                                    minBox=minBox+2;
+                                }
+                                else if(mapCountWalk[i-1][j-1]==0){
+                                    minBox=minBox+1;
+                                }
+                                else if(mapCountWalk[i-1][j]==0){
+                                    minBox=minBox+1;
+                                }
+                                else if(mapCountWalk[i-1][j+1]==0){
+                                    minBox=minBox+1;
+                                }
+                                //============================
+                                if(minBox<=checkMinBox){
+                                    minX=i;
+                                    minY=j;
+                                    searchTarget[0]=i;
+                                    searchTarget[1]=j;
+
+                                }
+                            }
+                            //BUTTOM
+                            else if(map[i][j]==drop2BoxUP){
+                                if(mapCountWalk[i][j+1]==0){
+                                    minBox=minBox+3;
+                                }
+                                else if(mapCountWalk[i][j-1]==0){
+                                    minBox=minBox+3;
+                                }
+                                else if(mapCountWalk[i-1][j-1]==0){
+                                    minBox=minBox+2;
+                                }
+                                else if(mapCountWalk[i-1][j+1]==0){
+                                    minBox=minBox+2;
+                                }
+                                else if(mapCountWalk[i+1][j-1]==0){
+                                    minBox=minBox+1;
+                                }
+                                else if(mapCountWalk[i+1][j]==0){
+                                    minBox=minBox+1;
+                                }
+                                else if(mapCountWalk[i+1][j+1]==0){
+                                    minBox=minBox+1;
+                                }
+                                //============================
+                                if(minBox<=checkMinBox){
+                                    minX=i;
+                                    minY=j;
+                                    searchTarget[0]=i;
+                                    searchTarget[1]=j;
+
+                                }
+                            }
+                            //RIGHT
+                            else if(map[i][j]==drop2BoxLEFT){
+                                if(mapCountWalk[i-1][j]==0){
+                                    minBox=minBox+3;
+                                }
+                                else if(mapCountWalk[i+1][j]==0){
+                                    minBox=minBox+3;
+                                }
+                                else if(mapCountWalk[i-1][j-1]==0){
+                                    minBox=minBox+2;
+                                }
+                                else if(mapCountWalk[i+1][j-1]==0){
+                                    minBox=minBox+2;
+                                }
+                                else if(mapCountWalk[i-1][j+1]==0){
+                                    minBox=minBox+1;
+                                }
+                                else if(mapCountWalk[i][j+1]==0){
+                                    minBox=minBox+1;
+                                }
+                                else if(mapCountWalk[i+1][j+1]==0){
+                                    minBox=minBox+1;
+                                }
+                                //============================
+                                if(minBox<=checkMinBox){
+                                    minX=i;
+                                    minY=j;
+                                    searchTarget[0]=i;
+                                    searchTarget[1]=j;
+
+                                }
+                            }
+                            //LEFT
+                            else if(map[i][j]==drop2BoxRIGHT){
+                                if(mapCountWalk[i-1][j]==0){
+                                    minBox=minBox+3;
+                                }
+                                else if(mapCountWalk[i+1][j]==0){
+                                    minBox=minBox+3;
+                                }
+                                else if(mapCountWalk[i-1][j+1]==0){
+                                    minBox=minBox+2;
+                                }
+                                else if(mapCountWalk[i+1][j+1]==0){
+                                    minBox=minBox+2;
+                                }
+                                else if(mapCountWalk[i-1][j-1]==0){
+                                    minBox=minBox+1;
+                                }
+                                else if(mapCountWalk[i][j-1]==0){
+                                    minBox=minBox+1;
+                                }
+                                else if(mapCountWalk[i+1][j-1]==0){
+                                    minBox=minBox+1;
+                                }
+
+                                //============================
+                                if(minBox<=checkMinBox){
+                                    minX=i;
+                                    minY=j;
+                                    searchTarget[0]=i;
+                                    searchTarget[1]=j;
+
+                                }
+                            }
+                        }
+
+                }
+            }
+        }
+        //printf("== FIND BIG INDEX ==\ndirection:%d .\nBIG INDEX in map : minX=%d minY=%d. \nDistance is: %d\n",map[minX][minY],searchTarget[0],searchTarget[1],min);
+
+
+    }
+    //printf("near pos is (%d , %d)\n",minX,minY);
+}
+
+void grabNearBox(){
+    shortestPath(position[0],position[1],searchTarget[0],searchTarget[1]);
+    //printf("\n >>>>>>>>>>>>>>>>> grab Route <<<<<<<<<<<<<<");
+    //for(int i = 0;i<strlen(route);i++)printf("%d",route[i]);
+    runShortestRoute();
+    turnRobotToBox();
+    //grab
+    deleteMark();
+
+}
+
+void dropNearBox(){
+    shortestPath(position[0],position[1],searchTarget[0],searchTarget[1]);
+    runShortestRoute();
+    if(littleBox!=0){
+    turnRobotToBox();
+    }
+    //Drop
+    setBox();
+
+}
+void setBox(){
+    if(littleBox!=0){
+        mapCountWalk[minX][minY]=0;
+        map[minX][minY]=40;
+        littleBox=littleBox-1;
+    }
+}
+void setPosition(){
+    //position[0]=minX;
+    //position[1]=minY;
+    map[position[0]][position[1]]='X';
+    //printMap();
+}
+void turnRobotToBox(){
+    //direction Robot is UP
+    if(direction==8){
+        //TOP of box target
+        if((map[minX][minY]%10)==2){
+            turnLeft();
+            turnLeft();
+            //grap
+        }
+        //Buttom of box target
+        else if((map[minX][minY]%10)==8){
+            //grap
+        }
+        //Left of box target
+        else if((map[minX][minY]%10)==4){
+            turnRight();
+            //grap
+        }
+        //Right of box target
+        else if((map[minX][minY]%10)==1){
+            turnLeft();
+            //grap
+        }
+    }
+    //direction Robot is DOWN
+    else if(direction==2){
+        //TOP of box target
+        if((map[minX][minY]%10)==2){
+            //grap
+        }
+        //Buttom of box target
+        else if((map[minX][minY]%10)==8){
+            turnRight();
+            turnRight();
+            //grap
+        }
+        //Left of box target
+        else if((map[minX][minY]%10)==4){
+            turnLeft();
+            //grap
+        }
+        //Right of box target
+        else if((map[minX][minY]%10)==1){
+            turnRight();
+        }
+    }
+    //direction Robot is LEFT
+    else if(direction==1){
+        //TOP of box target
+        if((map[minX][minY]%10)==2){
+            turnLeft();
+            //grap
+        }
+        //Buttom of box target
+        else if((map[minX][minY]%10)==8){
+            turnRight();
+            //grap
+        }
+        //Left of box target
+        else if((map[minX][minY]%10)==4){
+            turnRight();
+            turnRight();
+            //grap
+        }
+        //Right of box target
+        else if((map[minX][minY]%10)==1){
+            //grap
+        }
+    }
+    //direction Robot is RIGHT
+    else if(direction==4){
+        //TOP of box target
+        if((map[minX][minY]%10)==2){
+            turnRight();
+            //grap
+        }
+        //Buttom of box target
+        else if((map[minX][minY]%10)==8){
+            turnLeft();
+            //grap
+        }
+        //Left of box target
+        else if((map[minX][minY]%10)==4){
+            //grap
+        }
+        //Right of box target
+        else if((map[minX][minY]%10)==1){
+            turnRight();
+            turnRight();
+            //grap
+        }
+    }
+}
+
+void deleteMark(){
+    //1 Box
+    if(map[position[0]][position[1]]>=grab1BoxLEFT && map[position[0]][position[1]]<grab2BoxLEFT){
+        //TOP
+        if(map[position[0]+1][position[1]]==orange){
+
+            mark[0][0]= position[0]+1; mark[0][1]= position[1]   ;
+            mark[1][0]= position[0]+1; mark[1][1]= position[1]-1 ;
+            mark[2][0]= position[0]+1; mark[2][1]= position[1]+1 ;
+            mark[3][0]= position[0]+2; mark[3][1]= position[1]   ;
+            mark[4][0]= position[0]  ; mark[4][1]= position[1]   ;
+
+            mapCountWalk[position[0]+1][position[1]]= 1;
+            map[position[0]+1][position[1]]=0;
+        }
+        //RIGHT
+        else if(map[position[0]][position[1]-1]==orange){
+
+            mark[0][0]= position[0]; mark[0][1]= position[1]-2 ;
+            mark[1][0]= position[0]; mark[1][1]= position[1] -1;
+            mark[2][0]= position[0]; mark[2][1]= position[1] ;
+            mark[3][0]= position[0]+1; mark[3][1]= position[1]-1 ;
+            mark[4][0]= position[0]-1; mark[4][1]= position[1]-1;
+
+            mapCountWalk[position[0]][position[1]-1]= 1;
+            map[position[0]][position[1]-1]=0;
+        }
+        //LEFT
+        else if(map[position[0]][position[1]+1]==orange){
+            mark[0][0]= position[0]; mark[0][1]= position[1] ;
+            mark[1][0]= position[0]; mark[1][1]= position[1]+1 ;
+            mark[2][0]= position[0]; mark[2][1]= position[1]+2 ;
+            mark[3][0]= position[0]-1; mark[3][1]= position[1]+1 ;
+            mark[4][0]= position[0]+1; mark[4][1]= position[1]+1 ;
+
+            mapCountWalk[position[0]][position[1]+1]= 1;
+            map[position[0]][position[1]+1]=0;
+        }
+        //DOWN
+        else if(map[position[0]-1][position[1]]==orange){
+            mark[0][0]= position[0]; mark[0][1]= position[1] ;
+            mark[1][0]= position[0]-1; mark[1][1]= position[1] ;
+            mark[2][0]= position[0]-2; mark[2][1]= position[1] ;
+            mark[3][0]= position[0]-1; mark[3][1]= position[1]-1 ;
+            mark[4][0]= position[0]-1; mark[4][1]= position[1]+1 ;
+
+            mapCountWalk[position[0]-1][position[1]]= 1;
+            map[position[0]-1][position[1]]=0;
+        }
+
+        for(int i=0;i<5;i++){
+            if(map[mark[i][0]][mark[i][1]]<drop1BoxLEFT){
+                map[mark[i][0]][mark[i][1]]=0;
+            }
+
+        }
+
+    }
+
+    //2 Box
+    if(map[position[0]][position[1]]>=grab2BoxLEFT&&map[position[0]][position[1]]<drop1BoxLEFT){
+        if(map[position[0]][position[1]] == grab2BoxDOWN){
+            mark[0][0]= position[0]; mark[0][1]= position[1] ;
+            mark[1][0]= position[0]+1; mark[1][1]= position[1] ;
+            mark[2][0]= position[0]+2; mark[2][1]= position[1] ;
+            mark[3][0]= position[0]+3; mark[3][1]= position[1] ;
+
+            mapCountWalk[position[0]+1][position[1]]=1;
+            mapCountWalk[position[0]+2][position[1]]=1;
+            map[position[0]+1][position[1]]=0;
+            map[position[0]+2][position[1]]=0;
+        }
+        else if(map[position[0]][position[1]] == grab2BoxUP){
+            mark[0][0]= position[0]; mark[0][1]= position[1] ;
+            mark[1][0]= position[0]-1; mark[1][1]= position[1] ;
+            mark[2][0]= position[0]-2; mark[2][1]= position[1] ;
+            mark[3][0]= position[0]-3; mark[3][1]= position[1] ;
+
+            mapCountWalk[position[0]-1][position[1]]=1;
+            mapCountWalk[position[0]-2][position[1]]=1;
+            map[position[0]-1][position[1]]=0;
+            map[position[0]-2][position[1]]=0;
+        }
+        else if(map[position[0]][position[1]] == grab2BoxRIGHT){
+            mark[0][0]= position[0]; mark[0][1]= position[1] ;
+            mark[1][0]= position[0]; mark[1][1]= position[1]+1 ;
+            mark[2][0]= position[0]; mark[2][1]= position[1]+2;
+            mark[3][0]= position[0]; mark[3][1]= position[1]+3 ;
+
+            mapCountWalk[position[0]][position[1]+1]=1;
+            mapCountWalk[position[0]][position[1]+2]=1;
+            map[position[0]][position[1]+1]=0;
+            map[position[0]][position[1]+2]=0;
+        }
+        else if(map[position[0]][position[1]] == grab2BoxLEFT){
+            mark[0][0]= position[0]; mark[0][1]= position[1] ;
+            mark[1][0]= position[0]; mark[1][1]= position[1]-1 ;
+            mark[2][0]= position[0]; mark[2][1]= position[1]-2 ;
+            mark[3][0]= position[0]; mark[3][1]= position[1]-3 ;
+
+            mapCountWalk[position[0]][position[1]-1]=1;
+            mapCountWalk[position[0]][position[1]-2]=1;
+            map[position[0]][position[1]-1]=0;
+            map[position[0]][position[1]-2]=0;
+        }
+
+        for(int i=0;i<4;i++){
+            if(map[mark[i][0]][mark[i][1]]<drop1BoxLEFT){
+                map[mark[i][0]][mark[i][1]]=0;
+            }
+
+        }
+    }
+}
+
+//====================================== Field code ======================
 
 int searchNext(){
     if(searchTarget[0] != 0 || searchTarget[1] != 8){
@@ -1037,7 +1219,9 @@ int showMeDabox(){
     char a;
     do{
         do{
+            //printMapCountWalk();
             while(mapCountWalk[searchTarget[0]][searchTarget[1]] == 0){
+                //printf("WTF !!");
                 if(!searchNext())return 0;
             }
             shortestPath(position[0],position[1],searchTarget[0],searchTarget[1]);
@@ -1045,6 +1229,7 @@ int showMeDabox(){
             if(a == 2)return 0;
         }while(a);
     }while(searchNext());
+    //printf("BYE !!");
     return 0;
 }
 
@@ -1089,9 +1274,142 @@ void clearHeap(){
     popCol = 0;
 }
 
+void printHeap(){
+    char i;
+    for(i=0;i<HeapSize;i++){
+        //printf("heap Row: %d Col: %d Next: %d | \n",heap[i].row,heap[i].col,heap[i].next);
+    }
+}
 
-void shortestPath(char targetRow,char targetCol,char startRow,char startCol){
+int shortestPath(char targetRow,char targetCol,char startRow,char startCol){
     char i,j,row=startRow,col=startCol;
+    int count=0;
+    //printf("Start searching shortestPath \n From: %d,%d  -> %d,%d\n",startRow,startCol,targetRow,targetCol);
+
+    typedef struct{
+        char preRow,preCol,preDirection,isCheck;
+    }Box;
+
+    Box mapBox[10][10];
+
+    //init mapNode
+    for(i = 0;i<10;i++){
+        for(j=0;j<10;j++){
+            mapBox[i][j].isCheck = 0;
+            mapBox[i][j].preRow = 0;
+            mapBox[i][j].preCol = 0;
+            mapBox[i][j].preDirection = 0;
+        }
+    }
+    mapBox[startRow][startCol].isCheck = 1;
+
+    if(startRow == targetRow && startCol == targetCol){
+        //printf("\n========= route count: %d ===========\n",strlen(route));
+    }else{
+        do{
+
+            //printf("search Row: %d Col: %d Wall: %d | \n",row,col,map[row][col]);
+            //left
+            if((col-1 >= 0) && (mapCountWalk[row][col-1] == 1) &&(mapBox[row][col-1].isCheck == 0) && (mapBlockTurn[row][col-1] == 1)){
+                //printf("left  ");
+                            //set value to next Box
+                mapBox[row][col-1].isCheck = 1;
+                mapBox[row][col-1].preRow = row;
+                mapBox[row][col-1].preCol = col;
+                mapBox[row][col-1].preDirection = 1;
+                if(row == targetRow && col-1 == targetCol){
+                        //printf("Found !!!\n");
+                    break;
+                }
+                appendHeap(row,col-1);
+            }
+            //top
+            if((row-1 >= 0) &&(mapCountWalk[row-1][col] == 1) && (mapBox[row-1][col].isCheck == 0) && (mapBlockTurn[row-1][col] == 1)){
+
+                //printf("Top  ");
+                //set value to next Box
+                mapBox[row-1][col].isCheck = 1;
+                mapBox[row-1][col].preRow = row;
+                mapBox[row-1][col].preCol = col;
+                mapBox[row-1][col].preDirection = 8;
+                if(row-1 == targetRow && col == targetCol){
+                    //printf("Found !!!\n");
+                    break;
+                }
+                appendHeap(row-1,col);
+            }
+            //right
+            if((col+1 <= 9) &&(mapCountWalk[row][col+1] == 1 )&&( mapBox[row][col+1].isCheck == 0) && (mapBlockTurn[row][col+1] == 1)){
+
+                //printf("right  ");
+                            //set value to next Box
+                mapBox[row][col+1].isCheck = 1;
+                mapBox[row][col+1].preRow = row;
+                mapBox[row][col+1].preCol = col;
+                mapBox[row][col+1].preDirection = 4;
+                if(row == targetRow && col+1 == targetCol){
+                        //printf("Found !!!\n");
+                    break;
+                }
+                appendHeap(row,col+1);
+            }
+            //bottom
+            if((row+1 <= 9) &&(mapCountWalk[row+1][col] == 1) && (mapBox[row+1][col].isCheck == 0) && (mapBlockTurn[row+1][col] == 1)){
+
+                //printf("bottom  ");
+                            //set value to next Box
+                mapBox[row+1][col].isCheck = 1;
+                mapBox[row+1][col].preRow = row;
+                mapBox[row+1][col].preCol = col;
+                mapBox[row+1][col].preDirection = 2;
+                if(row+1 == targetRow && col == targetCol){
+                    //printf("Found !!!\n");
+                    break;
+                }
+                appendHeap(row+1,col);
+            }
+            if(isHeapEmpty() == 0){
+                popHeap();
+                row = popRow;
+                col = popCol;
+            }
+
+        }while(1);
+        //generate route
+        //for(int i= 0;i<routeSize;i++)route[i]=0;
+        row = targetRow;
+        col = targetCol;
+        char index = 0,temp;
+
+        do{
+            route[index] = mapBox[row][col].preDirection;
+            temp = row;
+            row = mapBox[row][col].preRow;
+            col = mapBox[temp][col].preCol;
+        }while(route[index++] != 0);
+
+		//set shortest path count
+		countShortestPathBlock = strlen(route)+1;
+
+        //clear heap
+        clearHeap();
+
+        //print route
+
+        for(i=0;i<index-1;i++){
+            //printf("%d ",route[i]);
+        }
+
+
+        index = 0;
+    }
+    return 0;
+}
+
+
+int shortestPathV2(char targetRow,char targetCol,char startRow,char startCol){
+    char i,j,row=startRow,col=startCol;
+    int count=0;
     //printf("Start searching shortestPath \n From: %d,%d  -> %d,%d\n",startRow,startCol,targetRow,targetCol);
 
     typedef struct{
@@ -1116,58 +1434,18 @@ void shortestPath(char targetRow,char targetCol,char startRow,char startCol){
     }else{
         do{
             //printf("search Row: %d Col: %d Wall: %d | \n",row,col,map[row][col]);
-            //left
-            if((col-1 >= 0) && (mapCountWalk[row][col-1] == 1) &&(mapBox[row][col-1].isCheck == 0)){
-          //      printf("left  ");
-                            //set value to next Box
-                mapBox[row][col-1].isCheck = 1;
-                mapBox[row][col-1].preRow = row;
-                mapBox[row][col-1].preCol = col;
-                mapBox[row][col-1].preDirection = 1;
-                if(row == targetRow && col-1 == targetCol){
-           //             printf("Found !!!\n");
-                    break;
-                }
-                appendHeap(row,col-1);
-            }
-            //top
-            if((row-1 >= 0) &&(mapCountWalk[row-1][col] == 1) && (mapBox[row-1][col].isCheck == 0)){
-          //      printf("Top  ");
-                //set value to next Box
-                mapBox[row-1][col].isCheck = 1;
-                mapBox[row-1][col].preRow = row;
-                mapBox[row-1][col].preCol = col;
-                mapBox[row-1][col].preDirection = 8;
-                if(row-1 == targetRow && col == targetCol){
-           //         printf("Found !!!\n");
-                    break;
-                }
-                appendHeap(row-1,col);
-            }
-            //right
-            if((col+1 <= 9) &&(mapCountWalk[row][col+1] == 1 )&&( mapBox[row][col+1].isCheck == 0)){
-         //       printf("right  ");
-                            //set value to next Box
-                mapBox[row][col+1].isCheck = 1;
-                mapBox[row][col+1].preRow = row;
-                mapBox[row][col+1].preCol = col;
-                mapBox[row][col+1].preDirection = 4;
-                if(row == targetRow && col+1 == targetCol){
-           //             printf("Found !!!\n");
-                    break;
-                }
-                appendHeap(row,col+1);
-            }
+
+
             //bottom
-            if((row+1 <= 9) &&(mapCountWalk[row+1][col] == 1) && (mapBox[row+1][col].isCheck == 0)){
-          //      printf("bottom  ");
+            if((row+1 <= 9) &&(mapCountWalk[row+1][col] == 1) && (mapBox[row+1][col].isCheck == 0) && (mapBlockTurn[row+1][col] == 1)){
+                //printf("bottom  ");
                             //set value to next Box
                 mapBox[row+1][col].isCheck = 1;
                 mapBox[row+1][col].preRow = row;
                 mapBox[row+1][col].preCol = col;
                 mapBox[row+1][col].preDirection = 2;
                 if(row+1 == targetRow && col == targetCol){
-        //                printf("Found !!!\n");
+                        //printf("Found !!!\n");
                     break;
                 }
                 appendHeap(row+1,col);
@@ -1177,8 +1455,50 @@ void shortestPath(char targetRow,char targetCol,char startRow,char startCol){
                 row = popRow;
                 col = popCol;
             }
-
-       //     printf("\n");
+            //left
+            if((col-1 >= 0) && (mapCountWalk[row][col-1] == 1) &&(mapBox[row][col-1].isCheck == 0) && (mapBlockTurn[row][col-1] == 1)){
+                //printf("left  ");
+                            //set value to next Box
+                mapBox[row][col-1].isCheck = 1;
+                mapBox[row][col-1].preRow = row;
+                mapBox[row][col-1].preCol = col;
+                mapBox[row][col-1].preDirection = 1;
+                if(row == targetRow && col-1 == targetCol){
+                        //printf("Found !!!\n");
+                    break;
+                }
+                appendHeap(row,col-1);
+            }
+            //top
+            if((row-1 >= 0) &&(mapCountWalk[row-1][col] == 1) && (mapBox[row-1][col].isCheck == 0) && (mapBlockTurn[row-1][col] == 1)){
+                //printf("Top  ");
+                //set value to next Box
+                mapBox[row-1][col].isCheck = 1;
+                mapBox[row-1][col].preRow = row;
+                mapBox[row-1][col].preCol = col;
+                mapBox[row-1][col].preDirection = 8;
+                if(row-1 == targetRow && col == targetCol){
+                    //printf("Found !!!\n");
+                    break;
+                }
+                appendHeap(row-1,col);
+            }
+            //right
+            if((col+1 <= 9) &&(mapCountWalk[row][col+1] == 1 )&&( mapBox[row][col+1].isCheck == 0) && (mapBlockTurn[row][col+1] == 1)){
+                //printf("right  ");
+                            //set value to next Box
+                mapBox[row][col+1].isCheck = 1;
+                mapBox[row][col+1].preRow = row;
+                mapBox[row][col+1].preCol = col;
+                mapBox[row][col+1].preDirection = 4;
+                if(row == targetRow && col+1 == targetCol){
+                        //printf("Found !!!\n");
+                    break;
+                }
+                appendHeap(row,col+1);
+            }
+            //printf("%d",count++);
+            if(count > 100)return 0;
         }while(1);
 
 
@@ -1201,14 +1521,16 @@ void shortestPath(char targetRow,char targetCol,char startRow,char startCol){
         clearHeap();
 
         //print route
-/*
+				/*
         for(i=0;i<index-1;i++){
             printf("%d ",route[i]);
-        }*/
+        }
+        */
 
 
         index = 0;
     }
+    return 1;
 
 
     //print searched box
@@ -1234,64 +1556,54 @@ void shortestPath(char targetRow,char targetCol,char startRow,char startCol){
 
     //return route
 }
-/*
-int moveForward(){
-    int a;
-    scanf("%d",&a);
-    if(a == 1){
-        if(direction == 8)position[0]--;
-        else if(direction == 4)position[1]++;
-        else if(direction == 2)position[0]++;
-        else if(direction == 1)position[1]--;
-    }
-    return (char)a;
-}*/
 
 int runShortestRoute(){
-    char i;
 
+    char i;
+    //printf("\nrunShortestRoute : ");
     for(i = 0;i<strlen(route);i++){
         switch(route[i]){
         case 8:                             //8 revert to 2
             if(direction == 1){
-                //printf("L");
+                //printf("L+");
                 turnLeft();
             }else if(direction == 8){
-                //printf("LL");
+                //printf("LL+");
                 turnLeft();
                 turnLeft();
             }else if(direction == 4){
-                //printf("R");
+                //printf("R+");
                 turnRight();
+
             }
             //debug
             //direction = 2;
             break;
         case 4:                             //4 revert to 1
             if(direction == 8){
-                //printf("L");
-                turnLeft();
+                //printf("L+");
+								turnLeft();
             }else if(direction == 4){
-                //printf("LL");
-                turnLeft();
-                turnLeft();
+                //printf("LL+");
+		            turnLeft();
+		            turnLeft();
             }else if(direction == 2){
-                //printf("R");
-                turnRight();
+                //printf("R+");
+            		turnRight();
             }
             //debug
             //direction = 1;
             break;
         case 2:                             //2 revert to 8
             if(direction == 4){
-                //printf("L");
+                //printf("L+");
                 turnLeft();
             }else if(direction == 2){
-                //printf("LL");
+                //printf("LL+");
                 turnLeft();
-                turnLeft();
+		            turnLeft();
             }else if(direction == 1){
-                //printf("R");
+                //printf("R+");
                 turnRight();
             }
 
@@ -1300,28 +1612,24 @@ int runShortestRoute(){
             break;
         case 1:                             //1 revert to 4
             if(direction == 2){
-                //printf("L");
-                turnLeft();
+                //printf("L+");
+            		turnLeft();
             }else if(direction == 1){
-                //printf("LL");
-                turnLeft();
-                turnLeft();
+                //printf("LL+");
+		            turnLeft();
+		            turnLeft();
             }else if(direction == 8){
-                //printf("R");
-                turnRight();
+                //printf("R+");
+            		turnRight();
             }
             //debug
             //direction = 4;
             break;
         default:;
         }
-        //printf("M");
-        // check found 8 box
-        if(countBox == 8){
-            for(int j = 0;j<routeSize;j++)route[j]=0;
-            //printf(" >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> BREAK ");
-            return 2;
-        }
+        //printf("M+");
+
+        // move with check front have a box ?
         char re = moveStrightTarget();
         if(re != 1){
             if(route[i] == 8 && mapCountWalk[position[0]+1][position[1]] == 1){
@@ -1341,13 +1649,16 @@ int runShortestRoute(){
                 map[position[0]][position[1]+1] = re;
                 countBox++;
             }
+            //check search 8 box
             if(countBox == 8){
-		            for(int j = 0;j<routeSize;j++)route[j]=0;
-		            //printf(" >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> BREAK ");
-		            return 2;
-		        }
+                for(int j = 0;j<routeSize;j++)route[j]=0;
+                //printf(" >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> BREAK count = 8\n");
+                countBox = 0;
+                return 2;
+            }
             return 1;
         }
+        //printMapCountWalk();
     }
     //clear route
     for(i = 0;i<routeSize;i++)route[i]=0;
@@ -1421,26 +1732,27 @@ int checkTurnRight(char row,char col,char d){
 }
 
 int moveForwardTemp(){
-    int a;
-    if(a == 1){
-        if(direction == 8)position[0]--;
-        else if(direction == 4)position[1]++;
-        else if(direction == 2)position[0]++;
-        else if(direction == 1)position[1]--;
-    }
-    return (char)a;
+        if(directionTemp == 8)positionTemp[0]--;
+        else if(directionTemp == 4)positionTemp[1]++;
+        else if(directionTemp == 2)positionTemp[0]++;
+        else if(directionTemp == 1)positionTemp[1]--;
+        return 0;
 }
 
 void addRouteCode(char c,int n){
     for(int i =0;i<n;i++){
         routeCode[routeCodeIndex] = c;
+        //printf("%c-",c);
         routeCodeIndex++;
     }
 }
 
 int checkShortestRoute(){
-    char positionTemp[2] ={position[0],position[1]},directionTemp = direction;
+    positionTemp[0] = position[0];
+    positionTemp[1] = position[1];
+    directionTemp = direction;
     char i;
+    //printf("\nCheckShortestRoute from : %d,%d\n",positionTemp[0],positionTemp[1]);
 
     for(i = 0;i<strlen(route);i++){
         switch(route[i]){
@@ -1553,10 +1865,7 @@ int checkShortestRoute(){
         }
         addRouteCode('M',1);
         //move forward
-        if(directionTemp == 8)positionTemp[0]--;
-        else if(directionTemp == 4)positionTemp[1]++;
-        else if(directionTemp == 2)positionTemp[0]++;
-        else if(directionTemp == 1)positionTemp[1]--;
+        moveForwardTemp();
     }
 
     //clear route
@@ -1568,42 +1877,57 @@ int checkShortestRoute(){
 int decodeRoute(){
     for(int i =0;i<routeCodeIndex;i++){
         char code = routeCode[i];
+        //printf("%c\n",code);
         if(code == 'L'){
             turnLeft();
         }else if(code == 'R'){
             turnRight();
         }else if(code == 'M'){
             moveForward();
-            printMapCountWalk();
+            //printMapCountWalk();
         }
     }
+    return 0;
 }
 
-int dropYourBox(char t_row,char t_col,char size){
-        char a;
+int moveAvoidBox(char t_row,char t_col,char size){
+    //printf("moveAvoidBox -> Start %d,%d : Target %d,%d\n",position[0],position[1],t_row,t_col);
+        char a,count=0;
 
         // find the way
         do{
+            //printf("%d ",count++);
             //clear route
             for(int i = 0;i<strlen(route);i++)route[i]=0;
             for(int i = 0;i<routeCodeIndex;i++)routeCode[i]=0;
             routeCodeIndex=0;
 
-            shortestPath(position[0],position[1],t_row,t_col);
+            //check infinity loop
+            if(!shortestPath(position[0],position[1],t_row,t_col)){
+                return 0;
+            }
+
+            //printf("route size :  %d ",strlen(route));
+
             if(size == 42 && t_row == 4 && t_col == 6)route[strlen(route)] = 8;
             else if(size == 42 && t_row == 7 && t_col == 6)route[strlen(route)] = 2;
             a= checkShortestRoute();
+            //printf("\n");
         }while(!a);
 
         //delete last M
         routeCode[--routeCodeIndex]=0;
 
-    //drop
+        //print
+        /*
+        printf("\nshortest route Code : ");
+        for(int i = 0;i<strlen(routeCode);i++){
+            printf("%c",routeCode[i]);
+        }
+        printf("\nStarting DECODE ROUTE \n");
+        */
     //run code
     decodeRoute();
-
-    //drop
-    moveToRelease();
 
     //clear route
     for(int i = 0;i<strlen(route);i++)route[i]=0;
@@ -1614,4 +1938,20 @@ int dropYourBox(char t_row,char t_col,char size){
     for(int i =0;i<10;i++)
         for(int j=0;j<10;j++)
             mapBlockTurn[i][j]=1;
+    return 1;
+}
+
+int dropYourBox(char t_row,char t_col,char size){
+
+    if(!moveAvoidBox(t_row,t_col,size)){
+       //printf("BOOM!!!");
+    	while(1){
+    		playSound(soundBeepBeep);
+    		delay(500);
+    	}
+    }
+    //drop item here
+		// DROP !!!
+    moveToRelease();
+    return 0;
 }
