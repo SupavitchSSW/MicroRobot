@@ -971,6 +971,7 @@ int shortestPath(char targetRow,char targetCol,char startRow,char startCol){
                 row = popRow;
                 col = popCol;
             }
+            printf(".");
 
         }while(1);
         //generate route

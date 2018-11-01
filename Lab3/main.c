@@ -36,7 +36,7 @@ void turnRobotToBox();
 int box=41;
 int littleBox=2;
 int X=9,Y=9;
-int min=100,minX=0,minY=0,minBox=0,checkMinBox=0;
+int min=100,minX=0,minY=0,minBox=0,checkMinBox=1000;
 int mark[5][2];
 
 //*****************************************
@@ -827,7 +827,6 @@ void findIndex(int positionX,int positionY){
     }
     // create for big box
     else if(littleBox==0){
-        checkMinBox=1000;
         minBox=0;
         for(int i=0;i<10;i++){
             for(int j=0;j<10;j++){
@@ -863,6 +862,7 @@ void findIndex(int positionX,int positionY){
                                     minY=j;
                                     searchTarget[0]=i;
                                     searchTarget[1]=j;
+                                    checkMinBox=minBox;
 
                                 }
                             }
@@ -895,6 +895,7 @@ void findIndex(int positionX,int positionY){
                                     minY=j;
                                     searchTarget[0]=i;
                                     searchTarget[1]=j;
+                                    checkMinBox=minBox;
 
                                 }
                             }
@@ -927,6 +928,7 @@ void findIndex(int positionX,int positionY){
                                     minY=j;
                                     searchTarget[0]=i;
                                     searchTarget[1]=j;
+                                    checkMinBox=minBox;
 
                                 }
                             }
@@ -960,6 +962,7 @@ void findIndex(int positionX,int positionY){
                                     minY=j;
                                     searchTarget[0]=i;
                                     searchTarget[1]=j;
+                                    checkMinBox=minBox;
 
                                 }
                             }
@@ -1432,7 +1435,7 @@ int shortestPath(char targetRow,char targetCol,char startRow,char startCol){
 
         index = 0;
     }
-    return 0;
+    return 1;
 }
 
 
