@@ -194,7 +194,7 @@ float Kd = 0.008;
 int turnSpeed = 10;
 bool isGrab = true;
 bool isGrabingBigBox = false;
-bool faceBigBox = false
+bool faceBigBox = false;
 
 task main()
 {
@@ -242,6 +242,8 @@ void justMoveBackward(){
 
        motor[leftMotor]  = -30 ;
        motor[rightMotor] = -30 ;
+       rightSensor = getColorReflected(rightTrack);
+	     leftSensor  = getColorReflected(leftTrack);
 
 }
 
@@ -272,6 +274,11 @@ int moveStrightTarget(){
 
        justMove(baseSpeed);
 
+       if(frontSensorValue <= baseDistance+2 ){
+
+            faceBigBox = true ;
+       }
+
        if(frontSensorValue <= baseDistance ){
             stopMoving();
             releaseGrab();
@@ -280,7 +287,8 @@ int moveStrightTarget(){
             grab();
             isDone = true;
 
-       }
+        }
+
 
        else if(rightSensor <= 10 && leftSensor <= 10){
           moveAgainEncoder();
@@ -310,12 +318,18 @@ void moveForward(){
     int box = 1;
     isDone = false ;
     playSound(soundUpwardTones);
+    resetMotorEncoder(leftMotor);
+	  resetMotorEncoder(rightMotor);
+	  int leftdist = getMotorEncoder(leftMotor);
+	  int rightdist = getMotorEncoder(rightMotor);
 
 
     // =========================  looping move and check if box ahead ==============================================
     while(!isDone){
 
        justMove(baseSpeed);
+       leftdist = getMotorEncoder(leftMotor);
+	     rightdist = getMotorEncoder(rightMotor);
 
 
        if(rightSensor <= 10 && leftSensor <= 10){
@@ -323,6 +337,8 @@ void moveForward(){
           isDone = true;
           box = 1;
        }
+
+
 
 
     }
@@ -334,20 +350,13 @@ void moveForward(){
 }
 int moveAgainToCheckColor(){
 
-       resetMotorEncoder(leftMotor);
-	     resetMotorEncoder(rightMotor);
-	     int leftdist = getMotorEncoder(leftMotor);
-	     int rightdist = getMotorEncoder(rightMotor);
+
 
     while(frontSensorValue >= checkColorDistance){
-    	 leftdist = getMotorEncoder(leftMotor);
-	     rightdist = getMotorEncoder(rightMotor);
+
     	 justMove(30);
     }
     stopMoving();
-    if(leftdist >= 250  && rightdist >= 250 ){
-        faceBigBox = true ;
-    }
 
     int colorSensorValue = SensorValue(colorCheck);
     if(colorSensorValue >= BlackBox){
@@ -370,23 +379,29 @@ void moveReverse(){
 	     int leftdist = getMotorEncoder(leftMotor);
 	     int rightdist = getMotorEncoder(rightMotor);
 	     int temp = 200;
-	     if(isGrabingBigBox || faceBigBox){
+	     bool done = true;
+
+	     if(isGrabingBigBox ){
         	 temp = 350;
         }
-        else{
-        	 temp = 200;
+       else if(faceBigBox){
+        	 temp = 310;
         }
+        faceBigBox = false ;
 
-	     while(leftdist >= -temp || rightdist >= -temp){
+
+	     while(done){
 
 	     leftdist = getMotorEncoder(leftMotor);
 	     rightdist = getMotorEncoder(rightMotor);
 	     justMoveBackward();
+	     if(rightSensor <= 10 && leftSensor <= 10){
+          moveAgainEncoder();
+          done = false;
+       }
 
        }
        stopMoving();
-       faceBigBox = true ;
-
 
 }
 
@@ -498,7 +513,7 @@ void turnRight(){
 	  	  }
 
 
-	  	  while( rightSensor <= 31){
+	  	  while( rightSensor <= 20.5){
 
 	  	      rightSensor = getColorReflected(rightTrack);
 	          leftSensor = getColorReflected(leftTrack);
