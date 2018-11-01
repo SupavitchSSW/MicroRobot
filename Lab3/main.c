@@ -194,6 +194,7 @@ float Kd = 0.008;
 int turnSpeed = 10;
 bool isGrab = true;
 bool isGrabingBigBox = false;
+bool faceBigBox = false
 
 task main()
 {
@@ -333,10 +334,20 @@ void moveForward(){
 }
 int moveAgainToCheckColor(){
 
+       resetMotorEncoder(leftMotor);
+	     resetMotorEncoder(rightMotor);
+	     int leftdist = getMotorEncoder(leftMotor);
+	     int rightdist = getMotorEncoder(rightMotor);
+
     while(frontSensorValue >= checkColorDistance){
+    	 leftdist = getMotorEncoder(leftMotor);
+	     rightdist = getMotorEncoder(rightMotor);
     	 justMove(30);
     }
     stopMoving();
+    if(leftdist >= 250  && rightdist >= 250 ){
+        faceBigBox = true ;
+    }
 
     int colorSensorValue = SensorValue(colorCheck);
     if(colorSensorValue >= BlackBox){
@@ -359,7 +370,7 @@ void moveReverse(){
 	     int leftdist = getMotorEncoder(leftMotor);
 	     int rightdist = getMotorEncoder(rightMotor);
 	     int temp = 200;
-	     if(isGrabingBigBox){
+	     if(isGrabingBigBox || faceBigBox){
         	 temp = 350;
         }
         else{
@@ -374,6 +385,7 @@ void moveReverse(){
 
        }
        stopMoving();
+       faceBigBox = true ;
 
 
 }
@@ -486,7 +498,7 @@ void turnRight(){
 	  	  }
 
 
-	  	  while( rightSensor <= whiteTreshold){
+	  	  while( rightSensor <= 31){
 
 	  	      rightSensor = getColorReflected(rightTrack);
 	          leftSensor = getColorReflected(leftTrack);
