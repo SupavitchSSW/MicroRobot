@@ -24,16 +24,22 @@ void mergeBox();
 int findNearBox(int positionX,int positionY);
 void grabNearBox();
 void deleteMark();
+void setPosition();
+void test();
+void turnLeft();
+void turnRight();
+void printMap();
 void dropNearBox();
 void setBox();
-void turnRobotToBox();
 void findIndex(int positionX,int positionY);
-void startASM();
 
 //Jane variable
-int X=9,Y=9;
-int min=100,minX=0,minY=0,box=0;
+int box=41;
 int littleBox=2;
+int X=9,Y=9;
+int min=100,minX=0,minY=0,minBox=0,checkMinBox=0;
+int mark[5][2];
+
 //*****************************************
 //color
 //black=40 orange=41
@@ -81,9 +87,10 @@ char mapCountWalk[10][10]={
 
 
 // =================================== FIELD ===================
-#define routeSize 30
-#define HeapSize 30
-#define stackSize 50
+#define wallDistance 18
+#define routeSize 50
+#define HeapSize 50
+#define stackSize 70
 void checkFrontWall();
 char getMapWall(char row,char col);
 char getWall(float s1,float s2,float s3);
@@ -94,12 +101,13 @@ char isHeapEmpty();
 void popHeap();
 void clearHeap();
 void printHeap();
-void shortestPath(char targetRow,char targetCol,char startRow,char startCol);
+int shortestPath(char targetRow,char targetCol,char startRow,char startCol);
 int runShortestRoute();
 void pushStack(char num);
 char popStack(void);
 char isStackEmpty(void);
 int showMeDabox();
+void printMapCountWalk();
 int searchNext();
 int dropYourBox(char t_row,char t_col,char size);
 int decodeRoute();
@@ -108,25 +116,31 @@ void addRouteCode(char c,int n);
 int moveForwardTemp();
 int checkTurnRight(char row,char col,char d);
 int checkTurnLeft(char row,char col,char d);
+int shortestPathV2(char targetRow,char targetCol,char startRow,char startCol);
+
+Node heap[HeapSize];
+char popRow=0,popCol=0,useHeap=0,createHeap=0,nextHeap=1,route[routeSize],routeCode[routeSize],routeCodeIndex=0,stack[stackSize],topStack=1,countShortestPathBlock=0,countBox=7;
+char searchTarget[2]={1,1};
+
 //heap
 typedef struct{
     signed char next,row,col;
 }Node;
 
 Node heap[HeapSize];
-char popRow=0,popCol=0,useHeap=0,createHeap=0,nextHeap=1,route[routeSize],routeCode[routeSize],routeCodeIndex=0,stack[stackSize],topStack=1,countShortestPathBlock=0,countBox=7;
-char searchTarget[2]={1,1};
+char popRow=0,popCol=0,useHeap=0,createHeap=0,nextHeap=1,route[routeSize],routeCode[routeSize],routeCodeIndex=0,stack[stackSize],topStack=1,countShortestPathBlock=0,countBox=0;
+char searchTarget[2]={8,9},positionTemp[2],directionTemp=8;
 
 char map[10][10]={
     0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
-    0 ,0 ,0 ,0 ,0,0 ,0 ,21,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,0 ,0 ,21,0 ,0 ,
     0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
-    0 ,40 ,0 ,41 ,0 ,0 ,40 ,0 ,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
     0 ,0 ,0 ,0 ,0 ,0 ,32,0 ,0 ,0 ,
-    0 ,0 ,0 ,0 ,0 ,0 ,0 ,41 ,0 ,0 ,
-    0 ,0 ,0 ,0 ,0 ,0 ,0 ,41 ,0 ,0 ,
-    0 ,0 ,21,0 ,0 ,0 ,38,40 ,0 ,0 ,
-    0 ,0 ,0 ,0 ,0 ,41 ,0 ,0 ,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
+    0 ,0 ,21,0 ,0 ,0 ,38,0 ,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
     0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0
 };
 
@@ -134,12 +148,12 @@ char mapCountWalk[10][10]={
     1,1,1,1,1,1,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1,
-    1,0,1,0,1,1,0,1,1,1,
     1,1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,0,1,1,
-    1,1,1,1,1,1,1,0,1,1,
-    1,1,1,1,1,1,1,0,1,1,
-    1,1,1,1,1,0,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1
 };
 
@@ -581,7 +595,7 @@ void deleteMark(){
         }
     }
 }
-//================================================================================================
+//================================== J ==================================================
 void justMove(int speed){
 
 
