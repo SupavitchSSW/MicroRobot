@@ -13,7 +13,7 @@
 
 #define baseSpeed 60
 #define BlackBox 11
-#define whiteTreshold 35
+#define whiteTreshold 34.2
 #define blackTreshold 7
 
 #define baseDistance 17
@@ -33,11 +33,11 @@ void findIndex(int positionX,int positionY);
 void turnRobotToBox();
 
 //Jane variable
-int box=41;
 int littleBox=2;
 int X=9,Y=9;
 int min=100,minX=0,minY=0,minBox=0,checkMinBox=1000;
 int mark[5][2];
+int  boxJane=41;
 
 //*****************************************
 //color
@@ -115,9 +115,25 @@ typedef struct{
 }Node;
 
 Node heap[HeapSize];
-char popRow=0,popCol=0,useHeap=0,createHeap=0,nextHeap=1,route[routeSize],routeCode[routeSize],routeCodeIndex=0,stack[stackSize],topStack=1,countShortestPathBlock=0,countBox=0;
-char searchTarget[2]={8,9},positionTemp[2],directionTemp=8;
+char popRow=0,popCol=0,useHeap=0,createHeap=0,nextHeap=1,route[routeSize],routeCode[routeSize],routeCodeIndex=0,stack[stackSize],topStack=1,countShortestPathBlock=0,countBox=6;
+char searchTarget[2]={1,4},positionTemp[2],directionTemp=8;
 
+
+char map[10][10]={
+    0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,0 ,0 ,21,0 ,0 ,
+    0 ,0 ,41 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
+    0 ,0 ,0 ,0 ,40 ,0 ,0 ,0 ,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,0 ,32,0 ,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,41 ,0 ,0 ,0 ,0 ,
+    0 ,0 ,40 ,0 ,0 ,41 ,0 ,40 ,0 ,0 ,
+    0 ,0 ,21,0 ,0 ,0 ,38,0 ,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0
+};
+
+
+/*
 char map[10][10]={
     0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
     0 ,0 ,0 ,0 ,0 ,0 ,0 ,21,0 ,0 ,
@@ -130,16 +146,16 @@ char map[10][10]={
     0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
     0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0
 };
-
+*/
 char mapCountWalk[10][10]={
     1,1,1,1,1,1,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1,
+    1,1,0,1,1,1,1,1,1,1,
+    1,1,1,1,0,1,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,1,
+    1,1,0,1,1,0,1,0,1,1,
+    1,1,1,1,1,0,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1
 };
@@ -162,7 +178,7 @@ char mapBlockTurn[10][10]={
 static void turnLeft(void);
 static void turnRight(void);
 static void stopMoving(void);
-static char moveStrightTarget();
+static int moveStrightTarget();
 static void grab();
 static void releaseGrab(void);
 static void calDirection(char dirFunc);
@@ -182,8 +198,8 @@ static void moveToGrab(void);
 //global variabal
 int rightSensor = getColorReflected(rightTrack);
 int leftSensor  = getColorReflected(leftTrack);
-int direction = 8;
-int position[2] = {9,9};
+int direction = 4;
+int position[2] = {1,3};
 bool isDone = false ;
 float frontSensorValue = getUSDistance(frontSensor);
 float error = rightSensor - leftSensor;
@@ -212,11 +228,11 @@ void startASM(){
         findNearBox(position[0],position[1]);
         grabNearBox();
         if (littleBox==0){
-            box=42;
-            littleBox=true;
+            boxJane=42;
+            isGrabingBigBox=true;
         }
         findIndex(position[0],position[1]);
-        dropYourBox(minX,minY,box);
+        dropYourBox(minX,minY,boxJane);
         setBox();
     }
 }
@@ -317,36 +333,34 @@ void moveForward(){
 
     int box = 1;
     isDone = false ;
+    if(isGrabingBigBox){
+        	 Kp = 0.285;
+           Kd = 0.0086;
+        }
+        else{
+        	 Kp = 0.298;
+           Kd = 0.008;
+        }
     playSound(soundUpwardTones);
-    resetMotorEncoder(leftMotor);
-	  resetMotorEncoder(rightMotor);
-	  int leftdist = getMotorEncoder(leftMotor);
-	  int rightdist = getMotorEncoder(rightMotor);
 
 
     // =========================  looping move and check if box ahead ==============================================
     while(!isDone){
 
        justMove(baseSpeed);
-       leftdist = getMotorEncoder(leftMotor);
-	     rightdist = getMotorEncoder(rightMotor);
-
 
        if(rightSensor <= 10 && leftSensor <= 10){
           moveAgainEncoder();
           isDone = true;
+          calPosition();
           box = 1;
        }
-
-
 
 
     }
 
     stopMoving();
     displayMap();
-
-
 }
 int moveAgainToCheckColor(){
 
@@ -1915,7 +1929,8 @@ int decodeRoute(){
         }else if(code == 'R'){
             turnRight();
         }else if(code == 'M'){
-            moveForward();
+            //moveStrightTarget();
+        		moveForward();
             //printMapCountWalk();
         }
     }
