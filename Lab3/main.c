@@ -224,16 +224,16 @@ float Kd = 0.008;
 int turnSpeed = 10;
 bool isGrab = true;
 bool isGrabingBigBox = false;
-bool faceBigBox = false;
+bool faceBigBox = true;
 
 task main()
 {
-   showMeDabox();
-	 startASM();
-   /*
+  /* showMeDabox();
+	 startASM();*/
+
    while(1){
    justmove(baseSpeed);
-   }*/
+   }
 }
 
 void startASM(){
@@ -289,8 +289,8 @@ int moveStrightTarget(){
     int box = 1;
     isDone = false ;
     if(isGrabingBigBox){
-        	 Kp = 0.285;
-           Kd = 0.0086;
+        	 Kp = 0.312;
+           Kd = 0.0057;
         }
         else{
         	 Kp = 0.298;
