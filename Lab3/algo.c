@@ -59,7 +59,7 @@ char position[2]={9,9},searchTarget[2]={8,9},positionTemp[2],directionTemp=8;
 
 //Jane variable
 int X=9,Y=9;
-int min=100,minX=0,minY=0,minBox=0,checkMinBox=0;
+int min=100,minX=0,minY=0,minBox=0,checkMinBox=1000;
 int mark[5][2];
 //*****************************************
 //color
@@ -348,7 +348,6 @@ void findIndex(int positionX,int positionY){
     }
     // create for big box
     else if(littleBox==0){
-        checkMinBox=1000;
         minBox=0;
         for(int i=0;i<10;i++){
             for(int j=0;j<10;j++){
