@@ -813,6 +813,27 @@ int searchNext(){
     }else return 0;
 }
 
+
+int searchNextV2(){
+    if(searchTarget[0] != 8 || searchTarget[1] != 0){
+        if(searchTarget[1]%2 == 0){ //8 6 4 2 0 search up
+            if(searchTarget[0] == 1){
+                searchTarget[1]--;  // col -1 (left)
+            }else{
+                searchTarget[0]--;  // row -1 (UP)
+            }
+        }else{                      //9 7 5 3 1 search right
+            if(searchTarget[0] == 8){
+                searchTarget[1]--;  // col -1 (left)
+                if(searchTarget[1] == 0)return 0; //check case end point have box
+            }else{
+                searchTarget[0]++;  // row -1 (down)
+            }
+        }
+        return 1;
+    }else return 0;
+}
+
 int showMeDabox(){
     char a;
     do{
@@ -820,13 +841,13 @@ int showMeDabox(){
             printMapCountWalk();
             while(mapCountWalk[searchTarget[0]][searchTarget[1]] == 0){
                 printf("WTF !!");
-                if(!searchNext())return 0;
+                if(!searchNextV2())return 0;
             }
             shortestPath(position[0],position[1],searchTarget[0],searchTarget[1]);
             a = runShortestRoute();
             if(a == 2)return 0;
         }while(a);
-    }while(searchNext());
+    }while(searchNextV2());
     printf("BYE !!");
     return 0;
 }
