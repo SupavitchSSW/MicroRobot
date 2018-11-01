@@ -55,15 +55,15 @@ int drop2BoxUP=38,drop2BoxDOWN=32,drop2BoxRIGHT=34,drop2BoxLEFT=31;
 //Not have Box
 /*char map[10][10]={
   //0  1  2  3  4  5  6  7  8  9
-    0 ,0 ,0 ,0 ,0 ,0 ,0 ,22,0 ,0 ,
-    0 ,0 ,0 ,0 ,0 ,0 ,24,0 ,21,0 ,
-    0 ,0 ,0 ,0 ,0 ,0 ,0 ,28,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,0 ,0 ,21,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
     0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
     0 ,0 ,0 ,0 ,0 ,0 ,32,0 ,0 ,0 ,
     0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
-    0 ,0 ,22,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
-    0 ,24,0 ,21,0 ,0 ,38,0 ,0 ,0 ,
-    0 ,0 ,28,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
+    0 ,0 ,21,0 ,0 ,0 ,38,0 ,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
     0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0
 };*/
 
@@ -72,13 +72,13 @@ int drop2BoxUP=38,drop2BoxDOWN=32,drop2BoxRIGHT=34,drop2BoxLEFT=31;
 char mapCountWalk[10][10]={
   //0 1 2 3 4 5 6 7 8 9
     1,1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,0,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1,
-    1,0,1,1,0,1,1,1,1,1,
-    1,1,1,1,0,1,0,1,1,1,
-    1,1,0,1,1,1,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,0,1,1,0,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1
 };*/
@@ -118,23 +118,9 @@ Node heap[HeapSize];
 char popRow=0,popCol=0,useHeap=0,createHeap=0,nextHeap=1,route[routeSize],routeCode[routeSize],routeCodeIndex=0,stack[stackSize],topStack=1,countShortestPathBlock=0,countBox=6;
 char searchTarget[2]={1,4},positionTemp[2],directionTemp=8;
 
-
+//Not have Box
 char map[10][10]={
-    0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
-    0 ,0 ,0 ,0 ,0 ,0 ,0 ,21,0 ,0 ,
-    0 ,0 ,41 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
-    0 ,0 ,0 ,0 ,40 ,0 ,0 ,0 ,0 ,0 ,
-    0 ,0 ,0 ,0 ,0 ,0 ,32,0 ,0 ,0 ,
-    0 ,0 ,0 ,0 ,0 ,41 ,0 ,0 ,0 ,0 ,
-    0 ,0 ,40 ,0 ,0 ,41 ,0 ,40 ,0 ,0 ,
-    0 ,0 ,21,0 ,0 ,0 ,38,0 ,0 ,0 ,
-    0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
-    0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0
-};
-
-
-/*
-char map[10][10]={
+  //0  1  2  3  4  5  6  7  8  9
     0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
     0 ,0 ,0 ,0 ,0 ,0 ,0 ,21,0 ,0 ,
     0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
@@ -146,19 +132,47 @@ char map[10][10]={
     0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
     0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0
 };
-*/
+
+//serch canWalk=1 cant=0
+
 char mapCountWalk[10][10]={
+  //0 1 2 3 4 5 6 7 8 9
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1
+};
+/*char map[10][10]={
+    0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,0 ,0 ,21,0 ,0 ,
+    0 ,0 ,41,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
+    0 ,0 ,0 ,0 ,40,0 ,0 ,0 ,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,0 ,32,0 ,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,0 ,0 ,40,0 ,0 ,
+    0 ,0 ,40,0 ,0 ,41,0 ,0 ,0 ,0 ,
+    0 ,0 ,21,0 ,0 ,41,38,0 ,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,
+    0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0
+};*/
+
+/*char mapCountWalk[10][10]={
     1,1,1,1,1,1,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1,
     1,1,0,1,1,1,1,1,1,1,
     1,1,1,1,0,1,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,1,
-    1,1,0,1,1,0,1,0,1,1,
+    1,1,1,1,1,1,1,0,1,1,
+    1,1,0,1,1,0,1,1,1,1,
     1,1,1,1,1,0,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1
-};
+};*/
 
 char mapBlockTurn[10][10]={
     1,1,1,1,1,1,1,1,1,1,
@@ -844,7 +858,7 @@ void findIndex(int positionX,int positionY){
         minBox=0;
         for(int i=0;i<10;i++){
             for(int j=0;j<10;j++){
-                if(map[i][j]>=drop2BoxLEFT && map[i][j]<= drop2BoxUP){
+                if(map[i][j]>=drop2BoxDOWN || map[i][j]<= drop2BoxUP){
                         //TOP
                         if(map[i][j]!=black && map[i][j]!=orange){
                             if(map[i][j]==drop2BoxDOWN){
@@ -852,22 +866,22 @@ void findIndex(int positionX,int positionY){
                                 if(mapCountWalk[i][j-1]==0){
                                     minBox=minBox+3;
                                 }
-                                else if(mapCountWalk[i][j+1]==0){
+                                if(mapCountWalk[i][j+1]==0){
                                     minBox=minBox+3;
                                 }
-                                else if(mapCountWalk[i+1][j-1]==0){
+                                if(mapCountWalk[i+1][j-1]==0){
                                     minBox=minBox+2;
                                 }
-                                else if(mapCountWalk[i+1][j+1]==0){
+                                if(mapCountWalk[i+1][j+1]==0){
                                     minBox=minBox+2;
                                 }
-                                else if(mapCountWalk[i-1][j-1]==0){
+                                if(mapCountWalk[i-1][j-1]==0){
                                     minBox=minBox+1;
                                 }
-                                else if(mapCountWalk[i-1][j]==0){
+                                if(mapCountWalk[i-1][j]==0){
                                     minBox=minBox+1;
                                 }
-                                else if(mapCountWalk[i-1][j+1]==0){
+                                if(mapCountWalk[i-1][j+1]==0){
                                     minBox=minBox+1;
                                 }
                                 //============================
@@ -877,7 +891,6 @@ void findIndex(int positionX,int positionY){
                                     searchTarget[0]=i;
                                     searchTarget[1]=j;
                                     checkMinBox=minBox;
-
                                 }
                             }
                             //BUTTOM
@@ -885,22 +898,22 @@ void findIndex(int positionX,int positionY){
                                 if(mapCountWalk[i][j+1]==0){
                                     minBox=minBox+3;
                                 }
-                                else if(mapCountWalk[i][j-1]==0){
+                                if(mapCountWalk[i][j-1]==0){
                                     minBox=minBox+3;
                                 }
-                                else if(mapCountWalk[i-1][j-1]==0){
+                                if(mapCountWalk[i-1][j-1]==0){
                                     minBox=minBox+2;
                                 }
-                                else if(mapCountWalk[i-1][j+1]==0){
+                                if(mapCountWalk[i-1][j+1]==0){
                                     minBox=minBox+2;
                                 }
-                                else if(mapCountWalk[i+1][j-1]==0){
+                                if(mapCountWalk[i+1][j-1]==0){
                                     minBox=minBox+1;
                                 }
-                                else if(mapCountWalk[i+1][j]==0){
+                                if(mapCountWalk[i+1][j]==0){
                                     minBox=minBox+1;
                                 }
-                                else if(mapCountWalk[i+1][j+1]==0){
+                                if(mapCountWalk[i+1][j+1]==0){
                                     minBox=minBox+1;
                                 }
                                 //============================
@@ -913,73 +926,7 @@ void findIndex(int positionX,int positionY){
 
                                 }
                             }
-                            //RIGHT
-                            else if(map[i][j]==drop2BoxLEFT){
-                                if(mapCountWalk[i-1][j]==0){
-                                    minBox=minBox+3;
-                                }
-                                else if(mapCountWalk[i+1][j]==0){
-                                    minBox=minBox+3;
-                                }
-                                else if(mapCountWalk[i-1][j-1]==0){
-                                    minBox=minBox+2;
-                                }
-                                else if(mapCountWalk[i+1][j-1]==0){
-                                    minBox=minBox+2;
-                                }
-                                else if(mapCountWalk[i-1][j+1]==0){
-                                    minBox=minBox+1;
-                                }
-                                else if(mapCountWalk[i][j+1]==0){
-                                    minBox=minBox+1;
-                                }
-                                else if(mapCountWalk[i+1][j+1]==0){
-                                    minBox=minBox+1;
-                                }
-                                //============================
-                                if(minBox<=checkMinBox){
-                                    minX=i;
-                                    minY=j;
-                                    searchTarget[0]=i;
-                                    searchTarget[1]=j;
-                                    checkMinBox=minBox;
 
-                                }
-                            }
-                            //LEFT
-                            else if(map[i][j]==drop2BoxRIGHT){
-                                if(mapCountWalk[i-1][j]==0){
-                                    minBox=minBox+3;
-                                }
-                                else if(mapCountWalk[i+1][j]==0){
-                                    minBox=minBox+3;
-                                }
-                                else if(mapCountWalk[i-1][j+1]==0){
-                                    minBox=minBox+2;
-                                }
-                                else if(mapCountWalk[i+1][j+1]==0){
-                                    minBox=minBox+2;
-                                }
-                                else if(mapCountWalk[i-1][j-1]==0){
-                                    minBox=minBox+1;
-                                }
-                                else if(mapCountWalk[i][j-1]==0){
-                                    minBox=minBox+1;
-                                }
-                                else if(mapCountWalk[i+1][j-1]==0){
-                                    minBox=minBox+1;
-                                }
-
-                                //============================
-                                if(minBox<=checkMinBox){
-                                    minX=i;
-                                    minY=j;
-                                    searchTarget[0]=i;
-                                    searchTarget[1]=j;
-                                    checkMinBox=minBox;
-
-                                }
-                            }
                         }
 
                 }
