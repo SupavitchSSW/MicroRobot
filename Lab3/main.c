@@ -21,6 +21,7 @@
 // ============ Jane ====================
 //Jane
 void mergeBox();
+void startASM();
 int findNearBox(int positionX,int positionY);
 void grabNearBox();
 void deleteMark();
@@ -182,7 +183,7 @@ static void moveToGrab(void);
 int rightSensor = getColorReflected(rightTrack);
 int leftSensor  = getColorReflected(leftTrack);
 int direction = 8;
-int position[2] = {2,1};
+int position[2] = {9,9};
 bool isDone = false ;
 float frontSensorValue = getUSDistance(frontSensor);
 float error = rightSensor - leftSensor;
@@ -192,34 +193,31 @@ float Kp = 0.298;
 float Kd = 0.008;
 int turnSpeed = 10;
 bool isGrab = true;
-bool isGrabingBigBox = true;
+bool isGrabingBigBox = false;
 
 task main()
 {
-	 moveForward();
-   moveToGrab();
-   moveForward();
-   moveForward();
-   turnRight();
-   moveForward();
-   moveForward();
-   moveForward();
-   turnRight();
-   moveForward();
-   moveForward();
-   moveForward();
-   turnRight();
-   moveForward();
-   moveForward();
-   moveForward();
-   moveToRelease();
-
-   //showMeDabox();
-	 //startASM();
+   showMeDabox();
+	 startASM();
    /*
    while(1){
    justmove(baseSpeed);
    }*/
+}
+
+void startASM(){
+	for(int i =0;i<3;i++){
+        mergeBox();
+        findNearBox(position[0],position[1]);
+        grabNearBox();
+        if (littleBox==0){
+            box=42;
+            littleBox=true;
+        }
+        findIndex(position[0],position[1]);
+        dropYourBox(minX,minY,box);
+        setBox();
+    }
 }
 //================================== J ==================================================
 void justMove(int speed){
@@ -957,6 +955,7 @@ void grabNearBox(){
     runShortestRoute();
     turnRobotToBox();
     //grab
+    moveToGrab();
     deleteMark();
 
 }
@@ -976,6 +975,9 @@ void setBox(){
         mapCountWalk[minX][minY]=0;
         map[minX][minY]=40;
         littleBox=littleBox-1;
+    }
+    else if(littleBox==0){
+    	isGrabingBigBox=true;
     }
 }
 void setPosition(){
