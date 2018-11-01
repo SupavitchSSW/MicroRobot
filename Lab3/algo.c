@@ -384,6 +384,7 @@ void findIndex(int positionX,int positionY){
                                     minY=j;
                                     searchTarget[0]=i;
                                     searchTarget[1]=j;
+                                    checkMinBox=minBox;
 
                                 }
                             }
@@ -416,6 +417,7 @@ void findIndex(int positionX,int positionY){
                                     minY=j;
                                     searchTarget[0]=i;
                                     searchTarget[1]=j;
+                                    checkMinBox=minBox;
 
                                 }
                             }
@@ -448,6 +450,7 @@ void findIndex(int positionX,int positionY){
                                     minY=j;
                                     searchTarget[0]=i;
                                     searchTarget[1]=j;
+                                    checkMinBox=minBox;
 
                                 }
                             }
@@ -481,6 +484,7 @@ void findIndex(int positionX,int positionY){
                                     minY=j;
                                     searchTarget[0]=i;
                                     searchTarget[1]=j;
+                                    checkMinBox=minBox;
 
                                 }
                             }
