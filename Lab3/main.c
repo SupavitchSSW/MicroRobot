@@ -115,8 +115,8 @@ typedef struct{
 }Node;
 
 Node heap[HeapSize];
-char popRow=0,popCol=0,useHeap=0,createHeap=0,nextHeap=1,route[routeSize],routeCode[routeSize],routeCodeIndex=0,stack[stackSize],topStack=1,countShortestPathBlock=0,countBox=6;
-char searchTarget[2]={1,4},positionTemp[2],directionTemp=8;
+char popRow=0,popCol=0,useHeap=0,createHeap=0,nextHeap=1,route[routeSize],routeCode[routeSize],routeCodeIndex=0,stack[stackSize],topStack=1,countShortestPathBlock=0,countBox=0;
+char searchTarget[2]={8,9},positionTemp[2],directionTemp=8;
 
 //Not have Box
 char map[10][10]={
@@ -212,8 +212,8 @@ static void moveToGrab(void);
 //global variabal
 int rightSensor = getColorReflected(rightTrack);
 int leftSensor  = getColorReflected(leftTrack);
-int direction = 4;
-int position[2] = {1,3};
+int direction = 8;
+int position[2] = {9,9};
 bool isDone = false ;
 float frontSensorValue = getUSDistance(frontSensor);
 float error = rightSensor - leftSensor;
